@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Portal | Aevix Studio</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #0b0f17;
+            --card-bg: #111827;
+            --border-color: #1f2937;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #4ade80;
+            --accent-yellow: #facc15;
+            --accent-red: #f87171;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+        }
+
+        .portal-container {
+            max-width: 1080px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Header */
+        .portal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        /* Project Selector Grid/Tabs */
+        .project-selector-wrapper {
+            margin-bottom: 2rem;
+        }
+
+        .selector-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .project-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .project-card-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 1rem 1.25rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+        }
+
+        .project-card-btn:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .project-card-btn.active {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.08);
+        }
+
+        .p-btn-title {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 0.35rem;
+        }
+
+        .p-btn-status {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Main Dashboard Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-display-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-active, .status-completed {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .status-in-progress, .status-working {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-review, .status-on-hold {
+            background: rgba(250, 204, 21, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+        }
+
+        /* Progress Bar */
+        .progress-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-blue);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .project-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .detail-val {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        /* Activity Timeline */
+        .section-heading {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1.25rem;
+        }
+
+        .timeline-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            padding-left: 1rem;
+            border-left: 2px solid var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.35rem;
+            top: 0.35rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+        }
+
+        .timeline-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-text {
+            font-size: 0.9rem;
+            color: #e5e7eb;
+            line-height: 1.4;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="portal-container">
+        <!-- Header Navigation -->
+        <div class="portal-header">
+            <div>
+                <h1 class="brand-title">Client Workspace</h1>
+                <div id="user-info-display" class="user-info">Authenticating portal access...</div>
+            </div>
+            <button id="logout-btn" class="logout-btn" style="display: none;">Sign Out</button>
+        </div>
+
+        <div id="auth-loading" class="empty-state">
+            <p>Loading your project dashboard...</p>
+        </div>
+
+        <div id="no-projects-view" class="empty-state" style="display: none;">
+            <h3>No Projects Found</h3>
+            <p style="margin-top: 0.5rem;">There are currently no active projects linked to your account email.</p>
+        </div>
+
+        <div id="portal-main-view" style="display: none;">
+            <!-- Multi-project Switcher (Shows if client has 1 or more projects) -->
+            <div id="project-selector-wrapper" class="project-selector-wrapper">
+                <div class="selector-label">Your Projects</div>
+                <div id="project-cards-grid" class="project-cards-grid"></div>
+            </div>
+
+            <!-- Active Project Details Card -->
+            <div class="card">
+                <div class="project-header-row">
+                    <div>
+                        <h2 id="active-proj-title" class="project-display-title">Project Title</h2>
+                        <p id="active-proj-desc" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">-</p>
+                    </div>
+                    <div>
+                        <span id="active-proj-status" class="status-badge status-active">Active</span>
+                    </div>
+                </div>
+
+                <div class="progress-wrapper">
+                    <div class="progress-info">
+                        <span>Overall Project Progress</span>
+                        <span id="active-proj-progress-num">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div id="active-proj-progress-bar" class="progress-fill"></div>
+                    </div>
+                </div>
+
+                <div class="project-details-grid">
+                    <div class="detail-item">
+                        <span class="detail-label">Target Completion</span>
+                        <span id="active-proj-deadline" class="detail-val">N/A</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Project Budget</span>
+                        <span id="active-proj-budget" class="detail-val">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Logs Section for Selected Project -->
+            <div class="card">
+                <h3 class="section-heading">Project Updates & Activity Log</h3>
+                <div id="timeline-container">
+                    <div id="timeline-list" class="timeline-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://bfabowxtvgknggpqnrpf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmYWJvd3h0dmdrbmdncHFucnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTQwMDQsImV4cCI6MjEwMzU5MDAwNH0.zRuc9gF7qtihFHJJrUDXIwD1l0QJBBVHP_KasxJGMKM';
+
+        let supabaseClient = null;
+        let userProjects = [];
+        let selectedProjectId = null;
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function getSupabase() {
+            if (!supabaseClient) {
+                const config = {
+                    auth: {
+                        flowType: 'pkce',
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                };
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                } else if (typeof createClient === 'function') {
+                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                }
+            }
+            return supabaseClient;
+        }
+
+        // DOM Elements
+        const authLoading = document.getElementById('auth-loading');
+        const portalMainView = document.getElementById('portal-main-view');
+        const noProjectsView = document.getElementById('no-projects-view');
+        const logoutBtn = document.getElementById('logout-btn');
+        const userInfoDisplay = document.getElementById('user-info-display');
+
+        logoutBtn.addEventListener('click', async () => {
+            const client = getSupabase();
+            if (client) await client.auth.signOut();
+            window.location.replace('index.html');
+        });
+
+        async function initClientPortal(session) {
+            if (!session || !session.user) {
+                window.location.replace('index.html');
+                return;
+            }
+
+            const client = getSupabase();
+            const email = (session.user.email || '').toLowerCase();
+
+            userInfoDisplay.textContent = `Logged in as ${email}`;
+            logoutBtn.style.display = 'inline-block';
+
+            // Fetch projects corresponding to this client's email
+            const { data: projects, error } = await client
+                .from('projects')
+                .select('*')
+                .ilike('client_email', email)
+                .order('created_at', { ascending: false });
+
+            authLoading.style.display = 'none';
+
+            if (error || !projects || projects.length === 0) {
+                noProjectsView.style.display = 'block';
+                return;
+            }
+
+            userProjects = projects;
+            portalMainView.style.display = 'block';
+
+            renderProjectSelector();
+            selectProject(userProjects[0].id);
+        }
+
+        function renderProjectSelector() {
+            const grid = document.getElementById('project-cards-grid');
+            
+            grid.innerHTML = userProjects.map(p => `
+                <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" id="p-btn-${p.id}" onclick="selectProject('${p.id}')">
+                    <div class="p-btn-title">${escapeHtml(p.title || p.project_name || 'Untitled')}</div>
+                    <div class="p-btn-status">Status: ${escapeHtml(p.status || 'Active')}</div>
+                </button>
+            `).join('');
+        }
+
+        async function selectProject(projectId) {
+            selectedProjectId = projectId;
+            const project = userProjects.find(p => p.id === projectId);
+            if (!project) return;
+
+            // Update Active State in Switcher Grid
+            document.querySelectorAll('.project-card-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById(`p-btn-${projectId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Render Active Project Card Information
+            document.getElementById('active-proj-title').textContent = project.title || project.project_name || 'Untitled Project';
+            document.getElementById('active-proj-desc').textContent = project.description || 'No detailed scope description provided.';
+            
+            const statusBadge = document.getElementById('active-proj-status');
+            const statusStr = project.status || 'Active';
+            statusBadge.textContent = statusStr;
+            statusBadge.className = `status-badge status-${statusStr.toLowerCase().replace(/\s+/g, '-')}`;
+
+            const progress = project.progress || 0;
+            document.getElementById('active-proj-progress-num').textContent = `${progress}%`;
+            document.getElementById('active-proj-progress-bar').style.width = `${progress}%`;
+
+            document.getElementById('active-proj-deadline').textContent = project.deadline ? new Date(project.deadline).toLocaleDateString() : 'TBD';
+            document.getElementById('active-proj-budget').textContent = `$${Number(project.budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+
+            // Fetch and render logs for this specific project
+            await loadProjectLogs(projectId);
+        }
+
+        async function loadProjectLogs(projectId) {
+            const client = getSupabase();
+            const listEl = document.getElementById('timeline-list');
+            listEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Loading updates...</p>';
+
+            const { data: logs, error } = await client
+                .from('activity_logs')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: false });
+
+            if (error || !logs || logs.length === 0) {
+                listEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No updates logged for this project yet.</p>';
+                return;
+            }
+
+            listEl.innerHTML = logs.map(l => `
+                <div class="timeline-item">
+                    <div class="timeline-date">${new Date(l.created_at).toLocaleString()}</div>
+                    <div class="timeline-text">${escapeHtml(l.log_text || l.message || '-')}</div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const client = getSupabase();
+            if (!client) {
+                authLoading.innerHTML = '<p style="color: var(--accent-red);">Failed to connect to backend service.</p>';
+                return;
+            }
+
+            const { data: { session } } = await client.auth.getSession();
+            await initClientPortal(session);
+
+            client.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                    await initClientPortal(session);
+                } else if (event === 'SIGNED_OUT' || !session) {
+                    window.location.replace('index.html');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
