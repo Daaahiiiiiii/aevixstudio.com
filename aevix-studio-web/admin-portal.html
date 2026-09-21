@@ -283,6 +283,22 @@
             background: rgba(59, 130, 246, 0.15);
         }
 
+        .warning-btn {
+            background: transparent;
+            color: var(--accent-yellow);
+            border: 1px solid var(--accent-yellow);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+            margin-right: 0.5rem;
+        }
+
+        .warning-btn:hover {
+            background: rgba(250, 204, 21, 0.15);
+        }
+
         /* Tables */
         .table-responsive {
             overflow-x: auto;
@@ -331,7 +347,7 @@
             text-transform: capitalize;
         }
 
-        .status-paid, .status-completed, .status-active {
+        .status-paid, .status-completed {
             background: rgba(74, 222, 128, 0.15);
             color: var(--accent-green);
             border: 1px solid rgba(74, 222, 128, 0.3);
@@ -408,6 +424,16 @@
             width: 250px;
             font-size: 0.85rem;
         }
+
+        .role-badge {
+            background: var(--accent-purple);
+            color: #000;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-left: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -425,7 +451,7 @@
         </div>
 
         <div id="auth-loading" style="text-align: center; padding: 4rem 0;">
-            <p style="color: var(--text-muted);">Verifying master access rights...</p>
+            <p style="color: var(--text-muted);">Verifying administrative access rights...</p>
         </div>
 
         <div id="admin-main-wrapper" style="display: none;">
@@ -439,7 +465,7 @@
                 <div class="metric-card">
                     <span class="metric-title">Active Projects</span>
                     <span id="metric-projects" class="metric-value">0</span>
-                    <span class="metric-subtext">In progress / active</span>
+                    <span class="metric-subtext">In progress</span>
                 </div>
                 <div class="metric-card">
                     <span class="metric-title">Pending Invoices</span>
@@ -452,6 +478,7 @@
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="tab-projects">Projects</button>
                 <button class="tab-btn" data-tab="tab-payments">Payments Ledger</button>
+                <button class="tab-btn" data-tab="tab-errors">Error Logs</button>
                 <button class="tab-btn" data-tab="tab-activity">Activity Logs</button>
                 <button class="tab-btn" data-tab="tab-clients">Clients</button>
             </div>
@@ -469,16 +496,6 @@
                             <div class="form-group">
                                 <label>Client Email / Identifier</label>
                                 <input type="email" id="proj-client-email" required placeholder="client@acme.com">
-                            </div>
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select id="proj-status">
-                                    <option value="Active">Active</option>
-                                    <option value="In Progress">In Progress</option>
-                                    <option value="Review">Review</option>
-                                    <option value="Completed">Completed</option>
-                                    <option value="On Hold">On Hold</option>
-                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Progress (%)</label>
@@ -512,7 +529,6 @@
                                 <tr>
                                     <th>Project Title</th>
                                     <th>Client</th>
-                                    <th>Status</th>
                                     <th>Progress</th>
                                     <th>Budget</th>
                                     <th>Deadline</th>
@@ -520,7 +536,7 @@
                                 </tr>
                             </thead>
                             <tbody id="projects-table-body">
-                                <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading projects...</td></tr>
+                                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading projects...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -577,20 +593,51 @@
                                     <th>Date</th>
                                     <th>Client</th>
                                     <th>Milestone / Description</th>
-                                    <th>Amount</th>
+                                    <th>Base Amount</th>
+                                    <th>Late Fee</th>
+                                    <th>Total Payable</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="payments-table-body">
-                                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
+                                <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 3: ACTIVITY LOGS -->
+            <!-- TAB 3: ERROR LOGGING -->
+            <div id="tab-errors" class="tab-content">
+                <div class="card">
+                    <div class="section-title">
+                        <span>Ledger Adjustment & Error Logging</span>
+                        <button class="action-btn" onclick="openModal('log-error-modal')">+ Log New Error / Adjustment</button>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+                        Track accounting anomalies, adjustments, and corrections. Every log automatically displays the email of the logger.
+                    </p>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action Type</th>
+                                    <th>Adjustment Amount</th>
+                                    <th>Reason / Explanation Details</th>
+                                    <th>Logged By (Email)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="errors-table-body">
+                                <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Loading error logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: ACTIVITY LOGS -->
             <div id="tab-activity" class="tab-content">
                 <div class="card">
                     <h3 class="section-title">Post Timeline Activity Update</h3>
@@ -618,7 +665,7 @@
                             <thead>
                                 <tr>
                                     <th>Timestamp</th>
-                                    <th>Project ID / Name</th>
+                                    <th>Project Name</th>
                                     <th>Activity Details</th>
                                     <th>Actions</th>
                                 </tr>
@@ -631,7 +678,7 @@
                 </div>
             </div>
 
-            <!-- TAB 4: CLIENT DIRECTORY -->
+            <!-- TAB 5: CLIENT DIRECTORY -->
             <div id="tab-clients" class="tab-content">
                 <div class="card">
                     <h3 class="section-title">Registered Client Accounts</h3>
@@ -656,7 +703,7 @@
         </div>
     </div>
 
-    <!-- Edit Project Modal -->
+    <!-- Edit Project Modal (Hadmin only) -->
     <div id="edit-project-modal" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal('edit-project-modal')">&times;</button>
@@ -667,16 +714,6 @@
                     <div class="form-group">
                         <label>Title</label>
                         <input type="text" id="edit-proj-title" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Status</label>
-                        <select id="edit-proj-status">
-                            <option value="Active">Active</option>
-                            <option value="In Progress">In Progress</option>
-                            <option value="Review">Review</option>
-                            <option value="Completed">Completed</option>
-                            <option value="On Hold">On Hold</option>
-                        </select>
                     </div>
                     <div class="form-group">
                         <label>Progress (%)</label>
@@ -695,14 +732,67 @@
         </div>
     </div>
 
+    <!-- Late Fee Modal (Hadmin / Accountant) -->
+    <div id="late-fee-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('late-fee-modal')">&times;</button>
+            <h3 style="margin-bottom: 1.25rem;">Apply Overdue Late Fee</h3>
+            <form id="late-fee-form">
+                <input type="hidden" id="late-fee-payment-id">
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label>Late Fee Amount ($)</label>
+                    <input type="number" id="late-fee-amount" step="0.01" required placeholder="50.00">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                    <button type="button" class="danger-btn" onclick="closeModal('late-fee-modal')">Cancel</button>
+                    <button type="submit" class="action-btn">Apply Fee</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Log Error Modal -->
+    <div id="log-error-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('log-error-modal')">&times;</button>
+            <h3 style="margin-bottom: 1.25rem;">Log Error / Financial Adjustment</h3>
+            <form id="log-error-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Adjustment Type</label>
+                        <select id="error-type" required>
+                            <option value="Add">Add Amount (+)</option>
+                            <option value="Deduct">Deduct Amount (-)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Adjustment Amount ($)</label>
+                        <input type="number" id="error-amount" step="0.01" required placeholder="100.00">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Reason / Specific Explanation Details *</label>
+                        <textarea id="error-details" rows="3" required placeholder="Explain why this adjustment or error is being logged..."></textarea>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1rem;">
+                    <button type="button" class="danger-btn" onclick="closeModal('log-error-modal')">Cancel</button>
+                    <button type="submit" class="action-btn">Submit Log Entry</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://bfabowxtvgknggpqnrpf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmYWJvd3h0dmdrbmdncHFucnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTQwMDQsImV4cCI6MjEwMzU5MDAwNH0.zRuc9gF7qtihFHJJrUDXIwD1l0QJBBVHP_KasxJGMKM';
 
         let supabaseClient = null;
+        let currentUserSession = null;
+        let currentUserRole = 'user'; // 'Hadmin' or standard user
         let cachedProjects = [];
         let cachedPayments = [];
         let cachedLogs = [];
+        let cachedErrors = [];
 
         function escapeHtml(str) {
             if (!str) return '';
@@ -733,22 +823,18 @@
             return supabaseClient;
         }
 
-        // Global DOM Elements
         const authLoading = document.getElementById('auth-loading');
         const adminWrapper = document.getElementById('admin-main-wrapper');
         const logoutBtn = document.getElementById('admin-logout-btn');
         const userInfoDisplay = document.getElementById('user-info-display');
 
-        // Logout Event Listener
         logoutBtn.addEventListener('click', async () => {
             const client = getSupabase();
-            if (client) {
-                await client.auth.signOut();
-            }
+            if (client) await client.auth.signOut();
             window.location.replace('index.html');
         });
 
-        // Tab Switching Logic
+        // Tab Switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -760,40 +846,32 @@
             });
         });
 
-        // Modal Helpers
-        function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
-        }
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
 
-        function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
-        }
-
-        // Authentication & Role Verification Logic
+        // Role & Auth Verification
         async function verifyAdminAndInit(session) {
             if (!session || !session.user) {
                 window.location.replace('index.html');
                 return;
             }
 
+            currentUserSession = session;
             const client = getSupabase();
 
-            // Fetch profile to verify admin role
-            const { data: profile, error } = await client
+            // Check role in profiles
+            const { data: profile } = await client
                 .from('profiles')
                 .select('role')
                 .eq('id', session.user.id)
                 .single();
 
-            if (error || !profile || profile.role !== 'admin') {
-                alert('Unauthorized access. Admin privileges required.');
-                await client.auth.signOut();
-                window.location.replace('index.html');
-                return;
-            }
+            currentUserRole = profile?.role || 'user'; // e.g. 'Hadmin' or 'admin'
+            const isHadmin = currentUserRole === 'Hadmin';
 
             const email = (session.user.email || '').toLowerCase();
-            userInfoDisplay.textContent = `Signed in as Admin (${email})`;
+            userInfoDisplay.innerHTML = `Signed in as <strong>${escapeHtml(email)}</strong> ${isHadmin ? '<span class="role-badge">Hadmin</span>' : ''}`;
+            
             logoutBtn.style.display = 'inline-block';
             authLoading.style.display = 'none';
             adminWrapper.style.display = 'block';
@@ -819,13 +897,14 @@
                 }
             });
 
-            // Initialize Form Event Handlers
+            // Handlers
             document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
             document.getElementById('create-payment-form').addEventListener('submit', handleCreatePayment);
             document.getElementById('create-log-form').addEventListener('submit', handleCreateLog);
             document.getElementById('edit-project-form').addEventListener('submit', handleUpdateProject);
+            document.getElementById('late-fee-form').addEventListener('submit', handleApplyLateFee);
+            document.getElementById('log-error-form').addEventListener('submit', handleLogError);
 
-            // Search filter listener
             document.getElementById('project-search').addEventListener('input', (e) => {
                 const query = e.target.value.toLowerCase();
                 const filtered = cachedProjects.filter(p => 
@@ -836,25 +915,28 @@
             });
         });
 
-        // Fetch Data from Supabase
+        // Load Data
         async function loadAllAdminData() {
             const client = getSupabase();
 
             try {
-                const [projRes, payRes, logRes] = await Promise.all([
+                const [projRes, payRes, logRes, errRes] = await Promise.all([
                     client.from('projects').select('*').order('created_at', { ascending: false }),
                     client.from('payments').select('*').order('created_at', { ascending: false }),
-                    client.from('activity_logs').select('*').order('created_at', { ascending: false })
+                    client.from('activity_logs').select('*').order('created_at', { ascending: false }),
+                    client.from('ledger_errors').select('*').order('created_at', { ascending: false })
                 ]);
 
                 cachedProjects = projRes.data || [];
                 cachedPayments = payRes.data || [];
                 cachedLogs = logRes.data || [];
+                cachedErrors = errRes.data || [];
 
                 calculateMetrics();
                 populateDropdowns();
                 renderProjectsTable(cachedProjects);
                 renderPaymentsTable(cachedPayments);
+                renderErrorsTable(cachedErrors);
                 renderLogsTable(cachedLogs);
                 renderClientsTable();
             } catch (err) {
@@ -862,28 +944,23 @@
             }
         }
 
-        // Analytics Calculation
         function calculateMetrics() {
             let totalRevenue = 0;
             let pendingRevenue = 0;
 
             cachedPayments.forEach(p => {
-                const amt = Number(p.amount || 0);
+                const baseAmt = Number(p.amount || 0);
+                const fee = Number(p.late_fee || 0);
+                const total = baseAmt + fee;
                 const st = (p.status || p.payment_status || '').toLowerCase();
-                if (st === 'paid') {
-                    totalRevenue += amt;
-                } else if (st === 'pending' || st === 'overdue') {
-                    pendingRevenue += amt;
-                }
-            });
 
-            const activeProjectsCount = cachedProjects.filter(p => 
-                (p.status || '').toLowerCase() !== 'completed' && (p.status || '').toLowerCase() !== 'cancelled'
-            ).length;
+                if (st === 'paid') totalRevenue += total;
+                else if (st === 'pending' || st === 'overdue') pendingRevenue += total;
+            });
 
             document.getElementById('metric-revenue').textContent = `$${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
             document.getElementById('metric-pending').textContent = `$${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('metric-projects').textContent = activeProjectsCount;
+            document.getElementById('metric-projects').textContent = cachedProjects.length;
         }
 
         function populateDropdowns() {
@@ -897,11 +974,13 @@
             logDropdown.innerHTML = optionsHtml;
         }
 
-        // Render Tables
+        // Render Functions
         function renderProjectsTable(projects) {
             const tbody = document.getElementById('projects-table-body');
+            const isHadmin = currentUserRole === 'Hadmin';
+
             if (projects.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No matching projects found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No matching projects found.</td></tr>';
                 return;
             }
 
@@ -909,13 +988,14 @@
                 <tr>
                     <td style="font-weight: 600;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
                     <td>${escapeHtml(p.client_email || p.client_name || 'N/A')}</td>
-                    <td><span class="status-badge status-${(p.status || 'active').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'Active')}</span></td>
                     <td>${p.progress || 0}%</td>
                     <td>$${Number(p.budget || 0).toLocaleString()}</td>
                     <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
                     <td>
-                        <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
-                        <button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>
+                        ${isHadmin ? `
+                            <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
+                            <button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>
+                        ` : `<span style="color:var(--text-muted); font-size:0.8rem;">View Only</span>`}
                     </td>
                 </tr>
             `).join('');
@@ -923,27 +1003,65 @@
 
         function renderPaymentsTable(payments) {
             const tbody = document.getElementById('payments-table-body');
+            const isHadmin = currentUserRole === 'Hadmin';
+
             if (payments.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No payment records logged.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No payment records logged.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = payments.map(p => `
+            tbody.innerHTML = payments.map(p => {
+                const baseAmt = Number(p.amount || 0);
+                const lateFee = Number(p.late_fee || 0);
+                const total = baseAmt + lateFee;
+                const status = (p.status || p.payment_status || 'Paid');
+
+                return `
+                    <tr>
+                        <td>${new Date(p.created_at || p.due_date || Date.now()).toLocaleDateString()}</td>
+                        <td>${escapeHtml(p.client_name || 'N/A')}</td>
+                        <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
+                        <td>$${baseAmt.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                        <td style="color: ${lateFee > 0 ? 'var(--accent-red)' : 'var(--text-muted)'};">
+                            $${lateFee.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                        </td>
+                        <td style="font-weight: 700;">$${total.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                        <td><span class="status-badge status-${status.toLowerCase()}">${escapeHtml(status)}</span></td>
+                        <td>
+                            ${status.toLowerCase() === 'overdue' ? `<button class="warning-btn" onclick="openLateFeeModal('${p.id}')">+ Late Fee</button>` : ''}
+                            ${isHadmin ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Remove</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderErrorsTable(errors) {
+            const tbody = document.getElementById('errors-table-body');
+            if (errors.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No financial errors or adjustments logged.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = errors.map(e => `
                 <tr>
-                    <td>${new Date(p.created_at || p.due_date || Date.now()).toLocaleDateString()}</td>
-                    <td>${escapeHtml(p.client_name || 'N/A')}</td>
-                    <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
-                    <td style="font-weight: 600;">$${Number(p.amount || 0).toLocaleString()}</td>
-                    <td><span class="status-badge status-${(p.status || p.payment_status || 'paid').toLowerCase()}">${escapeHtml(p.status || p.payment_status || 'Paid')}</span></td>
+                    <td style="font-size: 0.8rem; color: var(--text-muted);">${new Date(e.created_at).toLocaleString()}</td>
                     <td>
-                        <button class="danger-btn" onclick="deletePayment('${p.id}')">Remove</button>
+                        <span class="status-badge ${e.type === 'Add' ? 'status-paid' : 'status-overdue'}">${escapeHtml(e.type)}</span>
                     </td>
+                    <td style="font-weight: 700; color: ${e.type === 'Add' ? 'var(--accent-green)' : 'var(--accent-red)'};">
+                        ${e.type === 'Add' ? '+' : '-'}$${Math.abs(Number(e.amount || 0)).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                    </td>
+                    <td>${escapeHtml(e.details || '-')}</td>
+                    <td style="font-weight: 600; color: var(--accent-blue);">${escapeHtml(e.logged_by || 'Unknown')}</td>
                 </tr>
             `).join('');
         }
 
         function renderLogsTable(logs) {
             const tbody = document.getElementById('logs-table-body');
+            const isHadmin = currentUserRole === 'Hadmin';
+
             if (logs.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">No activity updates published.</td></tr>';
                 return;
@@ -959,7 +1077,7 @@
                         <td style="font-weight: 500;">${escapeHtml(projName)}</td>
                         <td>${escapeHtml(l.log_text || l.message || '-')}</td>
                         <td>
-                            <button class="danger-btn" onclick="deleteLog('${l.id}')">Delete</button>
+                            ${isHadmin ? `<button class="danger-btn" onclick="deleteLog('${l.id}')">Delete</button>` : '-'}
                         </td>
                     </tr>
                 `;
@@ -968,9 +1086,8 @@
 
         function renderClientsTable() {
             const tbody = document.getElementById('clients-table-body');
-            
-            // Deduplicate clients by client_email
             const clientMap = {};
+
             cachedProjects.forEach(p => {
                 const email = p.client_email || 'Unassigned';
                 if (!clientMap[email]) {
@@ -990,7 +1107,7 @@
             tbody.innerHTML = clients.map(c => `
                 <tr>
                     <td style="font-weight: 600;">${escapeHtml(c.email)}</td>
-                    <td>${c.projectsCount} Active Project(s)</td>
+                    <td>${c.projectsCount} Project(s)</td>
                     <td>$${c.totalBilled.toLocaleString()}</td>
                     <td>
                         <a href="mailto:${escapeHtml(c.email)}" class="action-btn" style="text-decoration:none; padding: 4px 10px; font-size:0.75rem;">Contact Client</a>
@@ -999,7 +1116,7 @@
             `).join('');
         }
 
-        // CRUD Form Handlers
+        // Actions & Event Handlers
         async function handleCreateProject(e) {
             e.preventDefault();
             const client = getSupabase();
@@ -1008,7 +1125,6 @@
                 title: document.getElementById('proj-title').value,
                 project_name: document.getElementById('proj-title').value,
                 client_email: document.getElementById('proj-client-email').value,
-                status: document.getElementById('proj-status').value,
                 progress: parseInt(document.getElementById('proj-progress').value) || 0,
                 budget: parseFloat(document.getElementById('proj-budget').value) || 0,
                 deadline: document.getElementById('proj-deadline').value || null,
@@ -1016,10 +1132,8 @@
             };
 
             const { error } = await client.from('projects').insert([payload]);
-
-            if (error) {
-                alert('Error creating project: ' + error.message);
-            } else {
+            if (error) alert('Error creating project: ' + error.message);
+            else {
                 alert('Project successfully created!');
                 document.getElementById('create-project-form').reset();
                 await loadAllAdminData();
@@ -1030,25 +1144,78 @@
             e.preventDefault();
             const client = getSupabase();
 
-            const projId = document.getElementById('pay-project-id').value;
-
             const payload = {
                 client_name: document.getElementById('pay-client').value,
-                project_id: projId || null,
+                project_id: document.getElementById('pay-project-id').value || null,
                 amount: parseFloat(document.getElementById('pay-amount').value),
                 milestone: document.getElementById('pay-milestone').value || 'Payment Invoice',
                 status: document.getElementById('pay-status').value,
                 payment_status: document.getElementById('pay-status').value,
-                due_date: document.getElementById('pay-date').value || null
+                due_date: document.getElementById('pay-date').value || null,
+                late_fee: 0
             };
 
             const { error } = await client.from('payments').insert([payload]);
-
-            if (error) {
-                alert('Error recording payment: ' + error.message);
-            } else {
+            if (error) alert('Error recording payment: ' + error.message);
+            else {
                 alert('Payment invoice saved!');
                 document.getElementById('create-payment-form').reset();
+                await loadAllAdminData();
+            }
+        }
+
+        function openLateFeeModal(paymentId) {
+            document.getElementById('late-fee-payment-id').value = paymentId;
+            openModal('late-fee-modal');
+        }
+
+        async function handleApplyLateFee(e) {
+            e.preventDefault();
+            const client = getSupabase();
+            const paymentId = document.getElementById('late-fee-payment-id').value;
+            const feeAmount = parseFloat(document.getElementById('late-fee-amount').value) || 0;
+
+            const { error } = await client
+                .from('payments')
+                .update({ late_fee: feeAmount, status: 'Overdue' })
+                .eq('id', paymentId);
+
+            if (error) alert('Failed to apply late fee: ' + error.message);
+            else {
+                closeModal('late-fee-modal');
+                await loadAllAdminData();
+            }
+        }
+
+        async function handleLogError(e) {
+            e.preventDefault();
+            const client = getSupabase();
+            const currentEmail = currentUserSession?.user?.email || 'Unknown';
+
+            const type = document.getElementById('error-type').value;
+            const amount = parseFloat(document.getElementById('error-amount').value) || 0;
+            const details = document.getElementById('error-details').value;
+
+            if (!details.trim()) {
+                alert("Please provide details for the error log.");
+                return;
+            }
+
+            const payload = {
+                type: type,
+                amount: amount,
+                details: details,
+                logged_by: currentEmail,
+                created_at: new Date()
+            };
+
+            const { error } = await client.from('ledger_errors').insert([payload]);
+
+            if (error) alert('Error submitting log: ' + error.message);
+            else {
+                alert('Error/Adjustment successfully logged!');
+                document.getElementById('log-error-form').reset();
+                closeModal('log-error-modal');
                 await loadAllAdminData();
             }
         }
@@ -1064,24 +1231,26 @@
             };
 
             const { error } = await client.from('activity_logs').insert([payload]);
-
-            if (error) {
-                alert('Error posting update: ' + error.message);
-            } else {
+            if (error) alert('Error posting update: ' + error.message);
+            else {
                 alert('Activity log entry published!');
                 document.getElementById('create-log-form').reset();
                 await loadAllAdminData();
             }
         }
 
-        // Edit & Delete Operations
+        // Hadmin Operations
         function openEditProject(id) {
+            if (currentUserRole !== 'Hadmin') {
+                alert('Permission denied. Hadmin role required.');
+                return;
+            }
+
             const proj = cachedProjects.find(p => p.id === id);
             if (!proj) return;
 
             document.getElementById('edit-proj-id').value = proj.id;
             document.getElementById('edit-proj-title').value = proj.title || proj.project_name || '';
-            document.getElementById('edit-proj-status').value = proj.status || 'Active';
             document.getElementById('edit-proj-progress').value = proj.progress || 0;
             document.getElementById('edit-proj-budget').value = proj.budget || 0;
 
@@ -1090,28 +1259,31 @@
 
         async function handleUpdateProject(e) {
             e.preventDefault();
+            if (currentUserRole !== 'Hadmin') return;
+
             const client = getSupabase();
             const id = document.getElementById('edit-proj-id').value;
 
             const payload = {
                 title: document.getElementById('edit-proj-title').value,
                 project_name: document.getElementById('edit-proj-title').value,
-                status: document.getElementById('edit-proj-status').value,
                 progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
                 budget: parseFloat(document.getElementById('edit-proj-budget').value) || 0
             };
 
             const { error } = await client.from('projects').update(payload).eq('id', id);
-
-            if (error) {
-                alert('Failed to update project: ' + error.message);
-            } else {
+            if (error) alert('Failed to update project: ' + error.message);
+            else {
                 closeModal('edit-project-modal');
                 await loadAllAdminData();
             }
         }
 
         async function deleteProject(id) {
+            if (currentUserRole !== 'Hadmin') {
+                alert('Permission denied. Hadmin role required to delete.');
+                return;
+            }
             if (!confirm('Are you sure you want to permanently delete this project?')) return;
             const client = getSupabase();
             const { error } = await client.from('projects').delete().eq('id', id);
@@ -1121,6 +1293,10 @@
         }
 
         async function deletePayment(id) {
+            if (currentUserRole !== 'Hadmin') {
+                alert('Permission denied. Hadmin role required to remove ledger records.');
+                return;
+            }
             if (!confirm('Delete this payment transaction entry?')) return;
             const client = getSupabase();
             const { error } = await client.from('payments').delete().eq('id', id);
@@ -1130,6 +1306,7 @@
         }
 
         async function deleteLog(id) {
+            if (currentUserRole !== 'Hadmin') return;
             if (!confirm('Delete this activity log entry?')) return;
             const client = getSupabase();
             const { error } = await client.from('activity_logs').delete().eq('id', id);
