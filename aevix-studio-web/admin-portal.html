@@ -781,20 +781,49 @@
             // Fetch profile to verify admin / hadmin role
             const { data: profile, error } = await client
                 .from('profiles')
-                .select('role')
+                .select('*')
                 .eq('id', session.user.id)
-                .single();
+                .maybeSingle();
 
-            const userRole = (profile?.role || '').toLowerCase();
-            if (error || !profile || !['admin', 'hadmin'].includes(userRole)) {
+            let roles = [];
+            
+            // Check profiles table role
+            if (profile) {
+                if (Array.isArray(profile.role)) {
+                    roles = profile.role.map(r => String(r).toLowerCase().trim());
+                } else if (typeof profile.role === 'string') {
+                    roles = profile.role.toLowerCase().split(',').map(r => r.trim());
+                }
+            }
+
+            // Check metadata fallbacks
+            const userMetadataRole = session.user.user_metadata?.role || session.user.app_metadata?.role;
+            if (userMetadataRole) {
+                if (Array.isArray(userMetadataRole)) {
+                    roles.push(...userMetadataRole.map(r => String(r).toLowerCase().trim()));
+                } else if (typeof userMetadataRole === 'string') {
+                    roles.push(...userMetadataRole.toLowerCase().split(',').map(r => r.trim()));
+                }
+            }
+
+            // Check app_metadata roles array (common in Supabase Auth RBAC)
+            const appRoles = session.user.app_metadata?.roles;
+            if (Array.isArray(appRoles)) {
+                roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
+            }
+
+            const isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
+
+            if (!isAuthorized) {
                 alert('Unauthorized access. Admin privileges required.');
                 await client.auth.signOut();
                 window.location.replace('index.html');
                 return;
             }
 
+            const displayRole = roles.find(r => ['hadmin', 'admin', 'superadmin'].includes(r)) || 'admin';
             const email = (session.user.email || '').toLowerCase();
-            userInfoDisplay.textContent = `Signed in as ${profile.role} (${email})`;
+            userInfoDisplay.textContent = `Signed in as ${displayRole.toUpperCase()} (${email})`;
             logoutBtn.style.display = 'inline-block';
             authLoading.style.display = 'none';
             adminWrapper.style.display = 'block';
