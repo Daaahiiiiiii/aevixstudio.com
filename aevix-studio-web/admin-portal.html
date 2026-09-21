@@ -181,7 +181,7 @@
             margin-bottom: 1.25rem;
             font-size: 1.25rem;
             font-weight: 600;
-            color: #fff;
+            color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -349,7 +349,7 @@
             border: 1px solid rgba(248, 113, 113, 0.3);
         }
 
-        .status-review {
+        .status-review, .status-on-hold {
             background: rgba(250, 204, 21, 0.15);
             color: var(--accent-yellow);
             border: 1px solid rgba(250, 204, 21, 0.3);
@@ -425,7 +425,7 @@
         </div>
 
         <div id="auth-loading" style="text-align: center; padding: 4rem 0;">
-            <p style="color: var(--text-muted);">Verifying master access rights...</p>
+            <p style="color: var(--text-muted);">Verifying administrative access rights...</p>
         </div>
 
         <div id="admin-main-wrapper" style="display: none;">
@@ -463,15 +463,15 @@
                     <form id="create-project-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Project Name / Title</label>
+                                <label for="proj-title">Project Name / Title</label>
                                 <input type="text" id="proj-title" required placeholder="e.g. Acme Website Redesign">
                             </div>
                             <div class="form-group">
-                                <label>Client Email / Identifier</label>
+                                <label for="proj-client-email">Client Email / Identifier</label>
                                 <input type="email" id="proj-client-email" required placeholder="client@acme.com">
                             </div>
                             <div class="form-group">
-                                <label>Status</label>
+                                <label for="proj-status">Status</label>
                                 <select id="proj-status">
                                     <option value="Active">Active</option>
                                     <option value="In Progress">In Progress</option>
@@ -481,19 +481,19 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Progress (%)</label>
+                                <label for="proj-progress">Progress (%)</label>
                                 <input type="number" id="proj-progress" min="0" max="100" value="0">
                             </div>
                             <div class="form-group">
-                                <label>Total Budget ($)</label>
+                                <label for="proj-budget">Total Budget ($)</label>
                                 <input type="number" id="proj-budget" step="0.01" placeholder="3500.00">
                             </div>
                             <div class="form-group">
-                                <label>Target Completion Date</label>
+                                <label for="proj-deadline">Target Completion Date</label>
                                 <input type="date" id="proj-deadline">
                             </div>
                             <div class="form-group full-width">
-                                <label>Project Overview / Scope</label>
+                                <label for="proj-desc">Project Overview / Scope</label>
                                 <textarea id="proj-desc" rows="3" placeholder="Briefly describe the key project scope and deliverables..."></textarea>
                             </div>
                         </div>
@@ -534,25 +534,25 @@
                     <form id="create-payment-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Client Name / Company</label>
+                                <label for="pay-client">Client Name / Company</label>
                                 <input type="text" id="pay-client" required placeholder="e.g. Apex Corp">
                             </div>
                             <div class="form-group">
-                                <label>Associated Project (Optional)</label>
+                                <label for="pay-project-id">Associated Project (Optional)</label>
                                 <select id="pay-project-id">
                                     <option value="">-- Select Project --</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Amount ($)</label>
+                                <label for="pay-amount">Amount ($)</label>
                                 <input type="number" id="pay-amount" step="0.01" required placeholder="1250.00">
                             </div>
                             <div class="form-group">
-                                <label>Milestone / Note</label>
+                                <label for="pay-milestone">Milestone / Note</label>
                                 <input type="text" id="pay-milestone" placeholder="e.g. 50% Upfront Deposit">
                             </div>
                             <div class="form-group">
-                                <label>Status</label>
+                                <label for="pay-status">Status</label>
                                 <select id="pay-status">
                                     <option value="Paid">Paid</option>
                                     <option value="Pending">Pending</option>
@@ -560,7 +560,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Due Date / Paid Date</label>
+                                <label for="pay-date">Due Date / Paid Date</label>
                                 <input type="date" id="pay-date">
                             </div>
                         </div>
@@ -597,13 +597,13 @@
                     <form id="create-log-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Target Project</label>
+                                <label for="log-project-id">Target Project</label>
                                 <select id="log-project-id" required>
                                     <option value="">-- Select Project --</option>
                                 </select>
                             </div>
                             <div class="form-group" style="grid-column: span 2;">
-                                <label>Log Update Message</label>
+                                <label for="log-text">Log Update Message</label>
                                 <input type="text" id="log-text" required placeholder="Completed backend database migration and API setup...">
                             </div>
                         </div>
@@ -665,11 +665,11 @@
                 <input type="hidden" id="edit-proj-id">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Title</label>
+                        <label for="edit-proj-title">Title</label>
                         <input type="text" id="edit-proj-title" required>
                     </div>
                     <div class="form-group">
-                        <label>Status</label>
+                        <label for="edit-proj-status">Status</label>
                         <select id="edit-proj-status">
                             <option value="Active">Active</option>
                             <option value="In Progress">In Progress</option>
@@ -679,11 +679,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Progress (%)</label>
+                        <label for="edit-proj-progress">Progress (%)</label>
                         <input type="number" id="edit-proj-progress" min="0" max="100">
                     </div>
                     <div class="form-group">
-                        <label>Budget ($)</label>
+                        <label for="edit-proj-budget">Budget ($)</label>
                         <input type="number" id="edit-proj-budget" step="0.01">
                     </div>
                 </div>
@@ -703,9 +703,10 @@
         let cachedProjects = [];
         let cachedPayments = [];
         let cachedLogs = [];
+        let isAuthChecking = false;
 
         function escapeHtml(str) {
-            if (!str) return '';
+            if (str === null || str === undefined) return '';
             return String(str)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -756,21 +757,29 @@
 
                 btn.classList.add('active');
                 const targetTab = btn.getAttribute('data-tab');
-                document.getElementById(targetTab).classList.add('active');
+                const tabEl = document.getElementById(targetTab);
+                if (tabEl) {
+                    tabEl.classList.add('active');
+                }
             });
         });
 
         // Modal Helpers
         function openModal(modalId) {
-            document.getElementById(modalId).classList.add('active');
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
         }
 
         function closeModal(modalId) {
-            document.getElementById(modalId).classList.remove('active');
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
         }
 
         // Authentication & Role Verification Logic
         async function verifyAdminAndInit(session) {
+            if (isAuthChecking) return;
+            isAuthChecking = true;
+
             if (!session || !session.user) {
                 window.location.replace('index.html');
                 return;
@@ -778,57 +787,66 @@
 
             const client = getSupabase();
 
-            // Fetch profile to verify admin / hadmin role
-            const { data: profile, error } = await client
-                .from('profiles')
-                .select('*')
-                .eq('id', session.user.id)
-                .maybeSingle();
+            try {
+                // Fetch profile to verify admin / hadmin role
+                const { data: profile } = await client
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .maybeSingle();
 
-            let roles = [];
-            
-            // Check profiles table role
-            if (profile) {
-                if (Array.isArray(profile.role)) {
-                    roles = profile.role.map(r => String(r).toLowerCase().trim());
-                } else if (typeof profile.role === 'string') {
-                    roles = profile.role.toLowerCase().split(',').map(r => r.trim());
+                let roles = [];
+                
+                // Parse profile roles
+                if (profile && profile.role) {
+                    if (Array.isArray(profile.role)) {
+                        roles.push(...profile.role.map(r => String(r).toLowerCase().trim()));
+                    } else if (typeof profile.role === 'string') {
+                        roles.push(...profile.role.toLowerCase().split(',').map(r => r.trim()));
+                    }
                 }
-            }
 
-            // Check metadata fallbacks
-            const userMetadataRole = session.user.user_metadata?.role || session.user.app_metadata?.role;
-            if (userMetadataRole) {
-                if (Array.isArray(userMetadataRole)) {
-                    roles.push(...userMetadataRole.map(r => String(r).toLowerCase().trim()));
-                } else if (typeof userMetadataRole === 'string') {
-                    roles.push(...userMetadataRole.toLowerCase().split(',').map(r => r.trim()));
+                // Parse metadata roles
+                const userMetadataRole = session.user.user_metadata?.role || session.user.app_metadata?.role;
+                if (userMetadataRole) {
+                    if (Array.isArray(userMetadataRole)) {
+                        roles.push(...userMetadataRole.map(r => String(r).toLowerCase().trim()));
+                    } else if (typeof userMetadataRole === 'string') {
+                        roles.push(...userMetadataRole.toLowerCase().split(',').map(r => r.trim()));
+                    }
                 }
+
+                // Parse app_metadata roles array
+                const appRoles = session.user.app_metadata?.roles;
+                if (Array.isArray(appRoles)) {
+                    roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
+                }
+
+                // Explicit support for both 'admin' and 'hadmin' (as well as 'superadmin')
+                const isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
+
+                if (!isAuthorized) {
+                    alert('Unauthorized access. Administrative privileges required.');
+                    await client.auth.signOut();
+                    window.location.replace('index.html');
+                    return;
+                }
+
+                const displayRole = roles.find(r => ['hadmin', 'admin', 'superadmin'].includes(r)) || 'admin';
+                const email = (session.user.email || '').toLowerCase();
+                
+                userInfoDisplay.textContent = `Signed in as ${displayRole.toUpperCase()} (${email})`;
+                logoutBtn.style.display = 'inline-block';
+                authLoading.style.display = 'none';
+                adminWrapper.style.display = 'block';
+
+                await loadAllAdminData();
+            } catch (err) {
+                console.error('Error verifying administrative access:', err);
+                authLoading.innerHTML = `<p style="color: var(--accent-red);">Authentication error occurred.</p>`;
+            } finally {
+                isAuthChecking = false;
             }
-
-            // Check app_metadata roles array (common in Supabase Auth RBAC)
-            const appRoles = session.user.app_metadata?.roles;
-            if (Array.isArray(appRoles)) {
-                roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
-            }
-
-            const isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
-
-            if (!isAuthorized) {
-                alert('Unauthorized access. Admin privileges required.');
-                await client.auth.signOut();
-                window.location.replace('index.html');
-                return;
-            }
-
-            const displayRole = roles.find(r => ['hadmin', 'admin', 'superadmin'].includes(r)) || 'admin';
-            const email = (session.user.email || '').toLowerCase();
-            userInfoDisplay.textContent = `Signed in as ${displayRole.toUpperCase()} (${email})`;
-            logoutBtn.style.display = 'inline-block';
-            authLoading.style.display = 'none';
-            adminWrapper.style.display = 'block';
-
-            await loadAllAdminData();
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -839,12 +857,17 @@
             }
 
             const { data: { session } } = await client.auth.getSession();
-            await verifyAdminAndInit(session);
+            if (session) {
+                await verifyAdminAndInit(session);
+            } else {
+                window.location.replace('index.html');
+                return;
+            }
 
-            client.auth.onAuthStateChange(async (event, session) => {
-                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-                    await verifyAdminAndInit(session);
-                } else if (event === 'SIGNED_OUT' || !session) {
+            client.auth.onAuthStateChange(async (event, currentSession) => {
+                if (event === 'SIGNED_IN') {
+                    await verifyAdminAndInit(currentSession);
+                } else if (event === 'SIGNED_OUT' || !currentSession) {
                     window.location.replace('index.html');
                 }
             });
@@ -857,7 +880,7 @@
 
             // Search filter listener
             document.getElementById('project-search').addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase();
+                const query = e.target.value.toLowerCase().trim();
                 const filtered = cachedProjects.filter(p => 
                     (p.title || p.project_name || '').toLowerCase().includes(query) ||
                     (p.client_email || p.client_name || '').toLowerCase().includes(query)
@@ -907,12 +930,13 @@
                 }
             });
 
-            const activeProjectsCount = cachedProjects.filter(p => 
-                (p.status || '').toLowerCase() !== 'completed' && (p.status || '').toLowerCase() !== 'cancelled'
-            ).length;
+            const activeProjectsCount = cachedProjects.filter(p => {
+                const st = (p.status || '').toLowerCase();
+                return st !== 'completed' && st !== 'cancelled';
+            }).length;
 
-            document.getElementById('metric-revenue').textContent = `$${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('metric-pending').textContent = `$${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('metric-revenue').textContent = `$${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('metric-pending').textContent = `$${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('metric-projects').textContent = activeProjectsCount;
         }
 
@@ -940,8 +964,8 @@
                     <td style="font-weight: 600;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
                     <td>${escapeHtml(p.client_email || p.client_name || 'N/A')}</td>
                     <td><span class="status-badge status-${(p.status || 'active').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'Active')}</span></td>
-                    <td>${p.progress || 0}%</td>
-                    <td>$${Number(p.budget || 0).toLocaleString()}</td>
+                    <td>${Number(p.progress || 0)}%</td>
+                    <td>$${Number(p.budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                     <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
                     <td>
                         <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
@@ -963,7 +987,7 @@
                     <td>${new Date(p.created_at || p.due_date || Date.now()).toLocaleDateString()}</td>
                     <td>${escapeHtml(p.client_name || 'N/A')}</td>
                     <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
-                    <td style="font-weight: 600;">$${Number(p.amount || 0).toLocaleString()}</td>
+                    <td style="font-weight: 600;">$${Number(p.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                     <td><span class="status-badge status-${(p.status || p.payment_status || 'paid').toLowerCase()}">${escapeHtml(p.status || p.payment_status || 'Paid')}</span></td>
                     <td>
                         <button class="danger-btn" onclick="deletePayment('${p.id}')">Remove</button>
@@ -1021,7 +1045,7 @@
                 <tr>
                     <td style="font-weight: 600;">${escapeHtml(c.email)}</td>
                     <td>${c.projectsCount} Active Project(s)</td>
-                    <td>$${c.totalBilled.toLocaleString()}</td>
+                    <td>$${c.totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
                     <td>
                         <a href="mailto:${escapeHtml(c.email)}" class="action-btn" style="text-decoration:none; padding: 4px 10px; font-size:0.75rem;">Contact Client</a>
                     </td>
@@ -1039,7 +1063,7 @@
                 project_name: document.getElementById('proj-title').value,
                 client_email: document.getElementById('proj-client-email').value,
                 status: document.getElementById('proj-status').value,
-                progress: parseInt(document.getElementById('proj-progress').value) || 0,
+                progress: parseInt(document.getElementById('proj-progress').value, 10) || 0,
                 budget: parseFloat(document.getElementById('proj-budget').value) || 0,
                 deadline: document.getElementById('proj-deadline').value || null,
                 description: document.getElementById('proj-desc').value
@@ -1065,7 +1089,7 @@
             const payload = {
                 client_name: document.getElementById('pay-client').value,
                 project_id: projId || null,
-                amount: parseFloat(document.getElementById('pay-amount').value),
+                amount: parseFloat(document.getElementById('pay-amount').value) || 0,
                 milestone: document.getElementById('pay-milestone').value || 'Payment Invoice',
                 status: document.getElementById('pay-status').value,
                 payment_status: document.getElementById('pay-status').value,
@@ -1127,7 +1151,7 @@
                 title: document.getElementById('edit-proj-title').value,
                 project_name: document.getElementById('edit-proj-title').value,
                 status: document.getElementById('edit-proj-status').value,
-                progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
+                progress: parseInt(document.getElementById('edit-proj-progress').value, 10) || 0,
                 budget: parseFloat(document.getElementById('edit-proj-budget').value) || 0
             };
 
