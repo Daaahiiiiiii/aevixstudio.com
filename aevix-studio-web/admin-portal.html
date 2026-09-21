@@ -822,7 +822,7 @@
                     roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
                 }
 
-                // Explicit support for both 'admin' and 'hadmin' (as well as 'superadmin')
+                // Explicit support for 'admin', 'hadmin', and 'superadmin'
                 const isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
 
                 if (!isAuthorized) {
@@ -1023,7 +1023,6 @@
         function renderClientsTable() {
             const tbody = document.getElementById('clients-table-body');
             
-            // Deduplicate clients by client_email
             const clientMap = {};
             cachedProjects.forEach(p => {
                 const email = p.client_email || 'Unassigned';
