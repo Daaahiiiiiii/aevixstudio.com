@@ -788,10 +788,14 @@
                     roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
                 }
 
-                // If authenticated session exists, grant access (prevents lockouts)
-                let isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
-                if (!isAuthorized && session.user) {
-                    isAuthorized = true; // Fallback permit for active sessions
+                // Strict authorization check for admin, hadmin, and superadmin
+                const isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
+
+                if (!isAuthorized) {
+                    alert("Unauthorized access. Administrative privileges required.");
+                    await client.auth.signOut();
+                    window.location.replace('index.html');
+                    return;
                 }
 
                 const displayRole = roles.find(r => ['hadmin', 'admin', 'superadmin'].includes(r)) || 'admin';
@@ -805,10 +809,9 @@
                 await loadAllAdminData();
             } catch (err) {
                 console.error('Error verifying administrative access:', err);
-                // Force reveal UI on error if authenticated
-                authLoading.style.display = 'none';
-                adminWrapper.style.display = 'block';
-                await loadAllAdminData();
+                alert("An error occurred during authentication verification.");
+                await client.auth.signOut();
+                window.location.replace('index.html');
             } finally {
                 isAuthChecking = false;
             }
