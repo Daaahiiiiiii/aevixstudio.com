@@ -790,7 +790,7 @@
                     roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
                 }
 
-                // Verification logic: allows 'hadmin', 'admin', and 'superadmin'
+                // Authorized roles list - now permits both 'admin' and 'hadmin'
                 const allowedRoles = ['hadmin', 'admin', 'superadmin'];
                 const isAuthorized = roles.some(r => allowedRoles.includes(r));
 
