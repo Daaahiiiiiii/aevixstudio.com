@@ -757,7 +757,7 @@
             const client = getSupabase();
 
             try {
-                // Fetch profile
+                // Fetch user profile from database
                 const { data: profile } = await client
                     .from('profiles')
                     .select('*')
@@ -788,17 +788,18 @@
                     roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
                 }
 
-                // Strict authorization check for admin, hadmin, and superadmin
-                const isAuthorized = roles.some(r => ['admin', 'hadmin', 'superadmin'].includes(r));
+                // Updated permissions check: Allows 'admin', 'hadmin', and 'superadmin'
+                const allowedRoles = ['admin', 'hadmin', 'superadmin'];
+                const isAuthorized = roles.some(r => allowedRoles.includes(r));
 
                 if (!isAuthorized) {
-                    alert("Unauthorized access. Administrative privileges required.");
+                    alert("Unauthorized access. Admin privileges required.");
                     await client.auth.signOut();
                     window.location.replace('index.html');
                     return;
                 }
 
-                const displayRole = roles.find(r => ['hadmin', 'admin', 'superadmin'].includes(r)) || 'admin';
+                const displayRole = roles.find(r => allowedRoles.includes(r)) || 'admin';
                 const email = (session.user.email || '').toLowerCase();
                 
                 userInfoDisplay.textContent = `Signed in as ${displayRole.toUpperCase()} (${email})`;
