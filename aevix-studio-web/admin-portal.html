@@ -757,7 +757,7 @@
             const client = getSupabase();
 
             try {
-                // Fetch user profile from database
+                // Fetch profile row safely
                 const { data: profile } = await client
                     .from('profiles')
                     .select('*')
@@ -766,6 +766,7 @@
 
                 let roles = [];
                 
+                // Collect roles from public database profiles table
                 if (profile && profile.role) {
                     if (Array.isArray(profile.role)) {
                         roles.push(...profile.role.map(r => String(r).toLowerCase().trim()));
@@ -774,6 +775,7 @@
                     }
                 }
 
+                // Collect roles from auth metadata
                 const userMetadataRole = session.user.user_metadata?.role || session.user.app_metadata?.role;
                 if (userMetadataRole) {
                     if (Array.isArray(userMetadataRole)) {
@@ -788,8 +790,8 @@
                     roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
                 }
 
-                // Updated permissions check: Allows 'admin', 'hadmin', and 'superadmin'
-                const allowedRoles = ['admin', 'hadmin', 'superadmin'];
+                // Verification logic: allows 'hadmin', 'admin', and 'superadmin'
+                const allowedRoles = ['hadmin', 'admin', 'superadmin'];
                 const isAuthorized = roles.some(r => allowedRoles.includes(r));
 
                 if (!isAuthorized) {
