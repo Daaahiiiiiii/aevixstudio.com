@@ -3,169 +3,693 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aevix Studio | Digital Media & Development Agency</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Supabase JS CDN Integration -->
+    <title>Admin Portal | Aevix Studio</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
-        /* Center the bottom two cards in the Services section */
-        .services-container {
+        :root {
+            --bg-dark: #0b0f17;
+            --card-bg: #111827;
+            --card-bg-hover: #1f2937;
+            --border-color: #1f2937;
+            --border-highlight: #374151;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-blue-hover: #2563eb;
+            --accent-green: #4ade80;
+            --accent-red: #f87171;
+            --accent-yellow: #facc15;
+            --accent-purple: #c084fc;
+            --input-bg: #111827;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            max-width: 1200px;
+        }
+
+        .portal-container {
+            max-width: 1280px;
+            width: 100%;
             margin: 0 auto;
+            padding: 2rem 1.5rem;
         }
 
-        .services-top-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .services-bottom-row {
+        .admin-header {
             display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .services-bottom-row .card {
-            flex: 1 1 300px;
-            max-width: 380px;
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: #ffffff;
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: transparent;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .metric-subtext {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+        }
+
+        .tab-bar {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.85rem 1.25rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-main);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+
+        .section-title {
+            margin-top: 0;
+            margin-bottom: 1.25rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
+
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .action-btn {
+            background: var(--accent-blue);
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--accent-blue-hover);
+        }
+
+        .danger-btn {
+            background: transparent;
+            color: var(--accent-red);
+            border: 1px solid var(--accent-red);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .danger-btn:hover {
+            background: rgba(248, 113, 113, 0.15);
+        }
+
+        .edit-btn {
+            background: transparent;
+            color: #60a5fa;
+            border: 1px solid #3b82f6;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+            margin-right: 0.5rem;
+        }
+
+        .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--bg-dark);
+            color: var(--text-muted);
+            padding: 14px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: #e5e7eb;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-paid, .status-completed, .status-active {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(74, 222, 128, 0.3);
+        }
+
+        .status-pending, .status-working, .status-in-progress {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .status-overdue, .status-delayed, .status-cancelled {
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+
+        .status-review, .status-on-hold {
+            background: rgba(250, 204, 21, 0.15);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(250, 204, 21, 0.3);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: var(--text-main);
+            width: 250px;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
 
-    <!-- SVG Liquid Refraction Filter -->
-    <svg style="display: none;">
-      <defs>
-        <filter id="water-refraction" x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </defs>
-    </svg>
-
-    <!-- Header Navigation -->
-    <header>
-        <div class="brand"><a href="index.html" style="text-decoration:none; color:inherit;">AEVIX STUDIO</a></div>
-        <nav style="display: flex; align-items: center; gap: 1.5rem;">
-            <a href="#services">Services</a>
-            <a href="terms/">Terms & Policies</a>
-            
-            <!-- Google Auth Button -->
-            <button id="google-login-btn" type="button" style="background: transparent; border: 1px solid #3b82f6; color: #60a5fa; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
-                <svg width="18" height="18" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                Sign In
-            </button>
-
-            <a href="#contact" class="nav-cta">Start Project</a>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <img src="logo.png" alt="Aevix Studio Logo" class="hero-bg-logo" id="hero-logo">
-
-        <h1>Crafting Digital Experiences That Scale</h1>
-        <p>Aevix Studio delivers high-performance web development, creative direction, social media management, and digital media assets for global brands.</p>
-        <a href="#contact" class="cta-btn">Get Started</a>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="section-container">
-        <h2>Our Services</h2>
-        <div class="services-container">
-            <div class="services-top-row">
-                <div class="card">
-                    <h3>Creative Direction</h3>
-                    <p>Strategic brand positioning, visual storytelling, and comprehensive art direction to build brands that stand out.</p>
-                </div>
-                <div class="card">
-                    <h3>Social Media Management</h3>
-                    <p>End-to-end strategy, content curation, profile optimization (SMM), and audience engagement strategies.</p>
-                </div>
-                <div class="card">
-                    <h3>Web Development</h3>
-                    <p>High-performance, responsive websites built with modern frameworks and robust security protocols.</p>
-                </div>
+    <div class="portal-container">
+        <div class="admin-header">
+            <div>
+                <h1 class="brand-title">Admin Management Portal</h1>
+                <div id="user-info-display" class="user-info">Authenticating administrative session...</div>
             </div>
-            
-            <!-- Centered Bottom Row -->
-            <div class="services-bottom-row">
-                <div class="card">
-                    <h3>Visual & Media Design</h3>
-                    <p>Industry-standard video editing, photo editing, motion graphics, and tailored brand asset generation.</p>
-                </div>
-                <div class="card">
-                    <h3>Digital Solutions</h3>
-                    <p>End-to-end technical consulting, infrastructure management, and performance optimization.</p>
-                </div>
+            <div class="header-actions">
+                <button id="admin-logout-btn" class="logout-btn" style="display: none;">Sign Out</button>
             </div>
         </div>
-    </section>
 
-    <!-- Contact Form Section -->
-    <section id="contact" class="section-container">
-        <h2>Start Your Project</h2>
-        <p class="section-lead">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
-
-        <!-- Updated Formspree Endpoint -->
-        <form action="https://formspree.io/f/xnpqbdjv" method="POST" id="contact-form">
-            
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Your Name or Business" required>
-            </div>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="your@email.com" required>
-            </div>
-
-            <div class="form-group">
-                <label for="message">Project Details</label>
-                <textarea id="message" name="message" rows="5" placeholder="Tell us about your project scope, timeline, and budget..." required></textarea>
-            </div>
-
-            <!-- Acceptance Checkbox -->
-            <div style="display: flex; align-items: flex-start; gap: 10px; margin: 1.5rem 0; font-size: 0.9rem; color: #9ca3af;">
-                <input type="checkbox" id="terms" name="terms_agreed" value="agreed" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: #3b82f6;">
-                <label for="terms" style="cursor: pointer; line-height: 1.4;">
-                    I have read and agree to the <a href="terms/" target="_blank" style="color: #60a5fa; text-decoration: underline;">Terms & Policies</a>.
-                </label>
-            </div>
-
-            <button type="submit" id="submit-btn" class="submit-btn" disabled>Send Message</button>
-        </form>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <p style="color: #9ca3af; margin-bottom: 0.5rem;">
-            Direct Email: <a href="mailto:aevixstudio962@gmail.com"><strong>aevixstudio962@gmail.com</strong></a> | 
-            Instagram: <a href="https://www.instagram.com/aevixstudio?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer"><strong>@aevixstudio</strong></a>
-        </p>
-        <div class="copyright">
-            &copy; 2026 Aevix Studio. All Rights Reserved. | <a href="terms/">Terms & Policies</a>
+        <div id="auth-loading" style="text-align: center; padding: 4rem 0;">
+            <p style="color: var(--text-muted);">Verifying administrative access rights...</p>
         </div>
-    </footer>
 
-    <!-- Interactive Scripts & Direct Auth Handling -->
+        <div id="admin-main-wrapper" style="display: none;">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <span class="metric-title">Total Revenue</span>
+                    <span id="metric-revenue" class="metric-value">$0.00</span>
+                    <span class="metric-subtext">Collected all-time</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Active Projects</span>
+                    <span id="metric-projects" class="metric-value">0</span>
+                    <span class="metric-subtext">In progress / active</span>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-title">Pending Invoices</span>
+                    <span id="metric-pending" class="metric-value">$0.00</span>
+                    <span class="metric-subtext">Outstanding balance</span>
+                </div>
+            </div>
+
+            <div class="tab-bar">
+                <button class="tab-btn active" data-tab="tab-projects">Projects</button>
+                <button class="tab-btn" data-tab="tab-payments">Payments Ledger</button>
+                <button class="tab-btn" data-tab="tab-activity">Activity Logs</button>
+                <button class="tab-btn" data-tab="tab-clients">Clients</button>
+            </div>
+
+            <div id="tab-projects" class="tab-content active">
+                <div class="card">
+                    <h3 class="section-title">Create New Client Project</h3>
+                    <form id="create-project-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="proj-title">Project Name / Title</label>
+                                <input type="text" id="proj-title" required placeholder="e.g. Tuff Website Redesign">
+                            </div>
+                            <div class="form-group">
+                                <label for="proj-client-email">Client Email / Identifier</label>
+                                <input type="email" id="proj-client-email" required placeholder="client@example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="proj-status">Status</label>
+                                <select id="proj-status">
+                                    <option value="Active">Active</option>
+                                    <option value="In Progress">In Progress</option>
+                                    <option value="Review">Review</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="On Hold">On Hold</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="proj-progress">Progress (%)</label>
+                                <input type="number" id="proj-progress" min="0" max="100" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="proj-budget">Total Budget ($)</label>
+                                <input type="number" id="proj-budget" step="0.01" placeholder="3500.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="proj-deadline">Target Completion Date</label>
+                                <input type="date" id="proj-deadline">
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="proj-desc">Project Overview / Scope</label>
+                                <textarea id="proj-desc" rows="3" placeholder="Briefly describe key project scope..."></textarea>
+                            </div>
+                        </div>
+                        <button type="submit" class="action-btn">Create Project Record</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="section-title">
+                        <span>All Client Projects</span>
+                        <input type="text" id="project-search" class="search-bar" placeholder="Search projects or clients...">
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Project Title</th>
+                                    <th>Client</th>
+                                    <th>Status</th>
+                                    <th>Progress</th>
+                                    <th>Budget</th>
+                                    <th>Deadline</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projects-table-body">
+                                <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading projects...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-payments" class="tab-content">
+                <div class="card">
+                    <h3 class="section-title">Log New Payment Invoice</h3>
+                    <form id="create-payment-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="pay-client">Client Name / Company</label>
+                                <input type="text" id="pay-client" required placeholder="e.g. Apex Corp">
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-project-id">Associated Project (Optional)</label>
+                                <select id="pay-project-id">
+                                    <option value="">-- Select Project --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-amount">Amount ($)</label>
+                                <input type="number" id="pay-amount" step="0.01" required placeholder="1250.00">
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-milestone">Milestone / Note</label>
+                                <input type="text" id="pay-milestone" placeholder="e.g. 50% Upfront Deposit">
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-status">Status</label>
+                                <select id="pay-status">
+                                    <option value="Paid">Paid</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Overdue">Overdue</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="pay-date">Due Date / Paid Date</label>
+                                <input type="date" id="pay-date">
+                            </div>
+                        </div>
+                        <button type="submit" class="action-btn">Record Payment Entry</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 class="section-title">Financial Transactions History</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Client</th>
+                                    <th>Milestone / Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payments-table-body">
+                                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-activity" class="tab-content">
+                <div class="card">
+                    <h3 class="section-title">Post Timeline Activity Update</h3>
+                    <form id="create-log-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="log-project-id">Target Project</label>
+                                <select id="log-project-id" required>
+                                    <option value="">-- Select Project --</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="grid-column: span 2;">
+                                <label for="log-text">Log Update Message</label>
+                                <input type="text" id="log-text" required placeholder="Completed database migration...">
+                            </div>
+                        </div>
+                        <button type="submit" class="action-btn">Publish Activity Entry</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3 class="section-title">Recent Timeline Updates Across All Projects</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Project ID / Name</th>
+                                    <th>Activity Details</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-table-body">
+                                <tr><td colspan="4" style="text-align:center; color: var(--text-muted);">Loading activity logs...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-clients" class="tab-content">
+                <div class="card">
+                    <h3 class="section-title">Registered Client Accounts</h3>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Client Email</th>
+                                    <th>Associated Projects</th>
+                                    <th>Total Billed</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-table-body">
+                                <tr><td colspan="4" style="text-align:center; color: var(--text-muted);">Loading clients...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="edit-project-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('edit-project-modal')">&times;</button>
+            <h3 style="margin-bottom: 1.25rem;">Edit Project Details</h3>
+            <form id="edit-project-form">
+                <input type="hidden" id="edit-proj-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-proj-title">Title</label>
+                        <input type="text" id="edit-proj-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-proj-status">Status</label>
+                        <select id="edit-proj-status">
+                            <option value="Active">Active</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Review">Review</option>
+                            <option value="Completed">Completed</option>
+                            <option value="On Hold">On Hold</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-proj-progress">Progress (%)</label>
+                        <input type="number" id="edit-proj-progress" min="0" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-proj-budget">Budget ($)</label>
+                        <input type="number" id="edit-proj-budget" step="0.01">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button type="button" class="danger-btn" onclick="closeModal('edit-project-modal')">Cancel</button>
+                    <button type="submit" class="action-btn">Update Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         const SUPABASE_URL = 'https://bfabowxtvgknggpqnrpf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmYWJvd3h0dmdrbmdncHFucnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTQwMDQsImV4cCI6MjEwMzU5MDAwNH0.zRuc9gF7qtihFHJJrUDXIwD1l0QJBBVHP_KasxJGMKM';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmYWJvd3h0dmdrbmdncHFucnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTQwMDQsImV4cCI6MjA1Njg2MTMyOH0.zRuc9gF7qtihFHJJrUDXIwD1l0QJBBVHP_KasxJGMKM';
 
         let supabaseClient = null;
+        let cachedProjects = [];
+        let cachedPayments = [];
+        let cachedLogs = [];
+        let isAuthChecking = false;
+
+        function escapeHtml(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
         function getSupabase() {
             if (!supabaseClient) {
@@ -186,134 +710,450 @@
             return supabaseClient;
         }
 
-        // Direct Role Routing Logic
-        async function handleRoleRouting(session) {
-            if (!session || !session.user) return;
+        const authLoading = document.getElementById('auth-loading');
+        const adminWrapper = document.getElementById('admin-main-wrapper');
+        const logoutBtn = document.getElementById('admin-logout-btn');
+        const userInfoDisplay = document.getElementById('user-info-display');
 
-            const email = (session.user.email || '').toLowerCase();
+        logoutBtn.addEventListener('click', async () => {
+            const client = getSupabase();
+            if (client) {
+                await client.auth.signOut();
+            }
+            window.location.replace('index.html');
+        });
 
-            // 1. Super-Admin Check
-            if (email === 'aevixstudio962@gmail.com') {
-                window.location.replace('admin-portal.html');
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                btn.classList.add('active');
+                const targetTab = btn.getAttribute('data-tab');
+                const tabEl = document.getElementById(targetTab);
+                if (tabEl) tabEl.classList.add('active');
+            });
+        });
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
+        }
+
+        async function verifyAdminAndInit(session) {
+            if (isAuthChecking) return;
+            isAuthChecking = true;
+
+            if (!session || !session.user) {
+                window.location.replace('index.html');
                 return;
             }
 
-            // 2. Database Role Query
             const client = getSupabase();
+
             try {
+                // Fetch profile row safely
                 const { data: profile } = await client
                     .from('profiles')
-                    .select('role')
+                    .select('*')
                     .eq('id', session.user.id)
                     .maybeSingle();
 
-                if (profile && (profile.role === 'admin' || profile.role === 'team')) {
-                    window.location.replace('admin-portal.html');
-                } else {
-                    window.location.replace('client-portal.html');
+                let roles = [];
+                
+                // Collect roles from public database profiles table
+                if (profile && profile.role) {
+                    if (Array.isArray(profile.role)) {
+                        roles.push(...profile.role.map(r => String(r).toLowerCase().trim()));
+                    } else if (typeof profile.role === 'string') {
+                        roles.push(...profile.role.toLowerCase().split(',').map(r => r.trim()));
+                    }
                 }
+
+                // Collect roles from auth metadata
+                const userMetadataRole = session.user.user_metadata?.role || session.user.app_metadata?.role;
+                if (userMetadataRole) {
+                    if (Array.isArray(userMetadataRole)) {
+                        roles.push(...userMetadataRole.map(r => String(r).toLowerCase().trim()));
+                    } else if (typeof userMetadataRole === 'string') {
+                        roles.push(...userMetadataRole.toLowerCase().split(',').map(r => r.trim()));
+                    }
+                }
+
+                const appRoles = session.user.app_metadata?.roles;
+                if (Array.isArray(appRoles)) {
+                    roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
+                }
+
+                // Strictly authorized roles list (no hardcoded emails used)
+                const allowedRoles = ['hadmin', 'admin', 'superadmin'];
+                const isAuthorized = roles.some(r => allowedRoles.includes(r));
+
+                if (!isAuthorized) {
+                    alert("Unauthorized access. Admin privileges required.");
+                    await client.auth.signOut();
+                    window.location.replace('index.html');
+                    return;
+                }
+
+                const displayRole = roles.find(r => allowedRoles.includes(r)) || 'admin';
+                const email = (session.user.email || '').toLowerCase();
+                
+                userInfoDisplay.textContent = `Signed in as ${displayRole.toUpperCase()} (${email})`;
+                logoutBtn.style.display = 'inline-block';
+                authLoading.style.display = 'none';
+                adminWrapper.style.display = 'block';
+
+                await loadAllAdminData();
             } catch (err) {
-                console.error('Routing check error:', err);
-                window.location.replace('client-portal.html');
+                console.error('Error verifying administrative access:', err);
+                alert("An error occurred during authentication verification.");
+                await client.auth.signOut();
+                window.location.replace('index.html');
+            } finally {
+                isAuthChecking = false;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const client = getSupabase();
+            if (!client) {
+                authLoading.innerHTML = `<p style="color: var(--accent-red);">Failed to initialize Supabase connection.</p>`;
+                return;
+            }
+
+            const { data: { session } } = await client.auth.getSession();
+            if (session) {
+                await verifyAdminAndInit(session);
+            } else {
+                window.location.replace('index.html');
+                return;
+            }
+
+            client.auth.onAuthStateChange(async (event, currentSession) => {
+                if (event === 'SIGNED_IN') {
+                    await verifyAdminAndInit(currentSession);
+                } else if (event === 'SIGNED_OUT' || !currentSession) {
+                    window.location.replace('index.html');
+                }
+            });
+
+            document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
+            document.getElementById('create-payment-form').addEventListener('submit', handleCreatePayment);
+            document.getElementById('create-log-form').addEventListener('submit', handleCreateLog);
+            document.getElementById('edit-project-form').addEventListener('submit', handleUpdateProject);
+
+            document.getElementById('project-search').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const filtered = cachedProjects.filter(p => 
+                    (p.title || p.project_name || '').toLowerCase().includes(query) ||
+                    (p.client_email || p.client_name || '').toLowerCase().includes(query)
+                );
+                renderProjectsTable(filtered);
+            });
+        });
+
+        async function loadAllAdminData() {
             const client = getSupabase();
 
-            // Check if user is already logged in (or coming back from OAuth redirect)
-            if (client) {
-                const { data: { session } } = await client.auth.getSession();
-                if (session) {
-                    await handleRoleRouting(session);
+            try {
+                const [projRes, payRes, logRes] = await Promise.all([
+                    client.from('projects').select('*').order('created_at', { ascending: false }),
+                    client.from('payments').select('*').order('created_at', { ascending: false }),
+                    client.from('activity_logs').select('*').order('created_at', { ascending: false })
+                ]);
+
+                cachedProjects = projRes.data || [];
+                cachedPayments = payRes.data || [];
+                cachedLogs = logRes.data || [];
+
+                calculateMetrics();
+                populateDropdowns();
+                renderProjectsTable(cachedProjects);
+                renderPaymentsTable(cachedPayments);
+                renderLogsTable(cachedLogs);
+                renderClientsTable();
+            } catch (err) {
+                console.error('Error fetching admin data:', err);
+            }
+        }
+
+        function calculateMetrics() {
+            let totalRevenue = 0;
+            let pendingRevenue = 0;
+
+            cachedPayments.forEach(p => {
+                const amt = Number(p.amount || 0);
+                const st = (p.status || p.payment_status || '').toLowerCase();
+                if (st === 'paid') {
+                    totalRevenue += amt;
+                } else if (st === 'pending' || st === 'overdue') {
+                    pendingRevenue += amt;
                 }
+            });
 
-                client.auth.onAuthStateChange(async (event, session) => {
-                    if (session && event === 'SIGNED_IN') {
-                        await handleRoleRouting(session);
-                    }
-                });
+            const activeProjectsCount = cachedProjects.filter(p => {
+                const st = (p.status || '').toLowerCase();
+                return st !== 'completed' && st !== 'cancelled';
+            }).length;
+
+            document.getElementById('metric-revenue').textContent = `$${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('metric-pending').textContent = `$${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('metric-projects').textContent = activeProjectsCount;
+        }
+
+        function populateDropdowns() {
+            const payDropdown = document.getElementById('pay-project-id');
+            const logDropdown = document.getElementById('log-project-id');
+
+            const optionsHtml = '<option value="">-- Select Project --</option>' + 
+                cachedProjects.map(p => `<option value="${p.id}">${escapeHtml(p.title || p.project_name || 'Untitled Project')}</option>`).join('');
+
+            payDropdown.innerHTML = optionsHtml;
+            logDropdown.innerHTML = optionsHtml;
+        }
+
+        function renderProjectsTable(projects) {
+            const tbody = document.getElementById('projects-table-body');
+            if (projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No matching projects found.</td></tr>';
+                return;
             }
 
-            // 1. Form Checkbox Enable Logic
-            const termsCheckbox = document.getElementById('terms');
-            const submitBtn = document.getElementById('submit-btn');
+            tbody.innerHTML = projects.map(p => `
+                <tr>
+                    <td style="font-weight: 600;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
+                    <td>${escapeHtml(p.client_email || p.client_name || 'N/A')}</td>
+                    <td><span class="status-badge status-${(p.status || 'active').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'Active')}</span></td>
+                    <td>${Number(p.progress || 0)}%</td>
+                    <td>$${Number(p.budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
+                        <button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
 
-            function syncSubmitButtonState() {
-                if (termsCheckbox && submitBtn) {
-                    submitBtn.disabled = !termsCheckbox.checked;
+        function renderPaymentsTable(payments) {
+            const tbody = document.getElementById('payments-table-body');
+            if (payments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No payment records logged.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = payments.map(p => `
+                <tr>
+                    <td>${new Date(p.created_at || p.due_date || Date.now()).toLocaleDateString()}</td>
+                    <td>${escapeHtml(p.client_name || 'N/A')}</td>
+                    <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
+                    <td style="font-weight: 600;">$${Number(p.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td><span class="status-badge status-${(p.status || p.payment_status || 'paid').toLowerCase()}">${escapeHtml(p.status || p.payment_status || 'Paid')}</span></td>
+                    <td>
+                        <button class="danger-btn" onclick="deletePayment('${p.id}')">Remove</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderLogsTable(logs) {
+            const tbody = document.getElementById('logs-table-body');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">No activity updates published.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = logs.map(l => {
+                const proj = cachedProjects.find(p => p.id === l.project_id);
+                const projName = proj ? (proj.title || proj.project_name) : (l.project_id || 'Global');
+
+                return `
+                    <tr>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">${new Date(l.created_at).toLocaleString()}</td>
+                        <td style="font-weight: 500;">${escapeHtml(projName)}</td>
+                        <td>${escapeHtml(l.log_text || l.message || '-')}</td>
+                        <td>
+                            <button class="danger-btn" onclick="deleteLog('${l.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderClientsTable() {
+            const tbody = document.getElementById('clients-table-body');
+            
+            const clientMap = {};
+            cachedProjects.forEach(p => {
+                const email = p.client_email || 'Unassigned';
+                if (!clientMap[email]) {
+                    clientMap[email] = { email: email, projectsCount: 0, totalBilled: 0 };
                 }
+                clientMap[email].projectsCount += 1;
+                clientMap[email].totalBilled += Number(p.budget || 0);
+            });
+
+            const clients = Object.values(clientMap);
+
+            if (clients.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-muted);">No client records found.</td></tr>';
+                return;
             }
 
-            if (termsCheckbox && submitBtn) {
-                syncSubmitButtonState();
-                termsCheckbox.addEventListener('change', syncSubmitButtonState);
-                termsCheckbox.addEventListener('click', syncSubmitButtonState);
+            tbody.innerHTML = clients.map(c => `
+                <tr>
+                    <td style="font-weight: 600;">${escapeHtml(c.email)}</td>
+                    <td>${c.projectsCount} Active Project(s)</td>
+                    <td>$${c.totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td>
+                        <a href="mailto:${escapeHtml(c.email)}" class="action-btn" style="text-decoration:none; padding: 4px 10px; font-size:0.75rem;">Contact Client</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function handleCreateProject(e) {
+            e.preventDefault();
+            const client = getSupabase();
+
+            const payload = {
+                title: document.getElementById('proj-title').value,
+                project_name: document.getElementById('proj-title').value,
+                client_email: document.getElementById('proj-client-email').value,
+                status: document.getElementById('proj-status').value,
+                progress: parseInt(document.getElementById('proj-progress').value, 10) || 0,
+                budget: parseFloat(document.getElementById('proj-budget').value) || 0,
+                deadline: document.getElementById('proj-deadline').value || null,
+                description: document.getElementById('proj-desc').value
+            };
+
+            const { error } = await client.from('projects').insert([payload]);
+
+            if (error) {
+                alert('Error creating project: ' + error.message);
+            } else {
+                alert('Project successfully created!');
+                document.getElementById('create-project-form').reset();
+                await loadAllAdminData();
             }
+        }
 
-            // 2. Direct Google OAuth Trigger
-            const googleLoginBtn = document.getElementById('google-login-btn');
-            if (googleLoginBtn) {
-                googleLoginBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    
-                    if (!client) {
-                        alert('Supabase SDK failed to load. Check your network or browser ad-blockers.');
-                        return;
-                    }
+        async function handleCreatePayment(e) {
+            e.preventDefault();
+            const client = getSupabase();
 
-                    try {
-                        const { error } = await client.auth.signInWithOAuth({
-                            provider: 'google',
-                            options: {
-                                redirectTo: window.location.origin + '/index.html',
-                                queryParams: {
-                                    access_type: 'offline',
-                                    prompt: 'consent'
-                                }
-                            }
-                        });
+            const projId = document.getElementById('pay-project-id').value;
 
-                        if (error) {
-                            alert('Login Error: ' + error.message);
-                            console.error('OAuth Error:', error);
-                        }
-                    } catch (err) {
-                        alert('Authentication triggered an exception: ' + err.message);
-                        console.error('Execution Error:', err);
-                    }
-                });
+            const payload = {
+                client_name: document.getElementById('pay-client').value,
+                project_id: projId || null,
+                amount: parseFloat(document.getElementById('pay-amount').value) || 0,
+                milestone: document.getElementById('pay-milestone').value || 'Payment Invoice',
+                status: document.getElementById('pay-status').value,
+                payment_status: document.getElementById('pay-status').value,
+                due_date: document.getElementById('pay-date').value || null
+            };
+
+            const { error } = await client.from('payments').insert([payload]);
+
+            if (error) {
+                alert('Error recording payment: ' + error.message);
+            } else {
+                alert('Payment invoice saved!');
+                document.getElementById('create-payment-form').reset();
+                await loadAllAdminData();
             }
+        }
 
-            // 3. Hero Scroll Animation
-            const heroSection = document.getElementById('hero');
-            const heroLogo = document.getElementById('hero-logo');
-            const startColor = { r: 13, g: 26, b: 45 };
-            const endColor = { r: 11, g: 15, b: 23 };
+        async function handleCreateLog(e) {
+            e.preventDefault();
+            const client = getSupabase();
 
-            if (heroSection && heroLogo) {
-                window.addEventListener('scroll', () => {
-                    const scrollPosition = window.scrollY;
-                    const heroHeight = heroSection.offsetHeight;
+            const payload = {
+                project_id: document.getElementById('log-project-id').value,
+                log_text: document.getElementById('log-text').value,
+                message: document.getElementById('log-text').value
+            };
 
-                    if (scrollPosition <= heroHeight) {
-                        const progress = Math.min(scrollPosition / heroHeight, 1);
-                        const translateY = -50 - (progress * 100);
-                        const scale = 1 - (progress * 0.2);
-                        const opacity = Math.max(0, 0.22 * (1 - progress * 1.5));
-                        
-                        heroLogo.style.transform = `translate(-50%, ${translateY}%) scale(${scale})`;
-                        heroLogo.style.opacity = opacity;
+            const { error } = await client.from('activity_logs').insert([payload]);
 
-                        const r = Math.round(startColor.r + (endColor.r - startColor.r) * progress);
-                        const g = Math.round(startColor.g + (endColor.g - startColor.g) * progress);
-                        const b = Math.round(startColor.b + (endColor.b - startColor.b) * progress);
-
-                        heroSection.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-                    }
-                });
+            if (error) {
+                alert('Error posting update: ' + error.message);
+            } else {
+                alert('Activity log entry published!');
+                document.getElementById('create-log-form').reset();
+                await loadAllAdminData();
             }
-        });
+        }
+
+        function openEditProject(id) {
+            const proj = cachedProjects.find(p => p.id === id);
+            if (!proj) return;
+
+            document.getElementById('edit-proj-id').value = proj.id;
+            document.getElementById('edit-proj-title').value = proj.title || proj.project_name || '';
+            document.getElementById('edit-proj-status').value = proj.status || 'Active';
+            document.getElementById('edit-proj-progress').value = proj.progress || 0;
+            document.getElementById('edit-proj-budget').value = proj.budget || 0;
+
+            openModal('edit-project-modal');
+        }
+
+        async function handleUpdateProject(e) {
+            e.preventDefault();
+            const client = getSupabase();
+            const id = document.getElementById('edit-proj-id').value;
+
+            const payload = {
+                title: document.getElementById('edit-proj-title').value,
+                project_name: document.getElementById('edit-proj-title').value,
+                status: document.getElementById('edit-proj-status').value,
+                progress: parseInt(document.getElementById('edit-proj-progress').value, 10) || 0,
+                budget: parseFloat(document.getElementById('edit-proj-budget').value) || 0
+            };
+
+            const { error } = await client.from('projects').update(payload).eq('id', id);
+
+            if (error) {
+                alert('Failed to update project: ' + error.message);
+            } else {
+                closeModal('edit-project-modal');
+                await loadAllAdminData();
+            }
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('Are you sure you want to permanently delete this project?')) return;
+            const client = getSupabase();
+            const { error } = await client.from('projects').delete().eq('id', id);
+
+            if (error) alert('Error deleting project: ' + error.message);
+            else await loadAllAdminData();
+        }
+
+        async function deletePayment(id) {
+            if (!confirm('Delete this payment transaction entry?')) return;
+            const client = getSupabase();
+            const { error } = await client.from('payments').delete().eq('id', id);
+
+            if (error) alert('Error deleting payment: ' + error.message);
+            else await loadAllAdminData();
+        }
+
+        async function deleteLog(id) {
+            if (!confirm('Delete this activity log entry?')) return;
+            const client = getSupabase();
+            const { error } = await client.from('activity_logs').delete().eq('id', id);
+
+            if (error) alert('Error deleting log: ' + error.message);
+            else await loadAllAdminData();
+        }
     </script>
 </body>
 </html>
