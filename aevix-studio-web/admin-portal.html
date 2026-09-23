@@ -370,7 +370,7 @@
             border: 1px solid rgba(248, 113, 113, 0.3);
         }
 
-        .status-error-log {
+        .status-error-log, .status-error-fix {
             background: rgba(192, 132, 252, 0.15);
             color: var(--accent-purple);
             border: 1px solid rgba(192, 132, 252, 0.3);
@@ -652,14 +652,14 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Amount to be Logged (৳)</label>
-                                <input type="number" id="err-amount" step="0.01" required placeholder="e.g. 180000.00 (Difference for 200k vs 20k)">
+                                <label>Amount to be added or deducted (৳)</label>
+                                <input type="number" id="err-amount" step="0.01" required placeholder="Amount to be added or deducted">
                             </div>
                             <div class="form-group">
                                 <label>Transaction Type</label>
                                 <select id="err-type" required>
-                                    <option value="Trade Payable">Trade Payable (We Owe / Overcharged Adjustment)</option>
-                                    <option value="Trade Receivable">Trade Receivable (Owed to Us / Undercharged)</option>
+                                    <option value="Overcharged">Overcharged (We Owe / Deduct from Revenue)</option>
+                                    <option value="Undercharged">Undercharged (Owed to Us / Add to Revenue)</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -668,7 +668,7 @@
                             </div>
                             <div class="form-group full-width">
                                 <label>Reason / Audit Note</label>
-                                <input type="text" id="err-note" required placeholder="e.g. Mistyped payment as 200k instead of 20k. Adjusting balance by 180k.">
+                                <input type="text" id="err-note" required placeholder="e.g. Mistyped payment as 200k instead of 20k. Adjusting balance.">
                             </div>
                         </div>
                         <button type="submit" class="warning-btn">Create Error Log Entry</button>
@@ -1043,6 +1043,7 @@
             today.setHours(0, 0, 0, 0);
 
             cachedPayments.forEach(p => {
+                if (p.is_error_log) return; // Skip error logs from overdue auto-evaluation
                 const currentStatus = (p.status || p.payment_status || '').toLowerCase();
                 if (currentStatus === 'pending' && p.due_date) {
                     const dueDate = new Date(p.due_date);
@@ -1061,13 +1062,25 @@
             let pendingRevenue = 0;
 
             cachedPayments.forEach(p => {
-                if (p.is_error_log) return; // Skip error logs in standard revenue calculation
-                const amt = Number(p.amount || 0) + Number(p.overdue_amount || 0);
+                const amt = Number(p.amount || 0);
+                const overdueAmt = Number(p.overdue_amount || 0);
                 const st = (p.status || p.payment_status || '').toLowerCase();
+
+                // UPDATE 1: Error Logs impact Total Revenue Collected
+                if (p.is_error_log) {
+                    const type = (p.transaction_type || '').toLowerCase();
+                    if (type.includes('undercharged') || type.includes('receivable')) {
+                        totalRevenue += amt; // Add undercharged adjustments to total revenue
+                    } else if (type.includes('overcharged') || type.includes('payable')) {
+                        totalRevenue -= amt; // Deduct overcharged adjustments from total revenue
+                    }
+                    return;
+                }
+
                 if (st === 'paid') {
-                    totalRevenue += amt;
+                    totalRevenue += (amt + overdueAmt);
                 } else if (st === 'pending' || st === 'overdue') {
-                    pendingRevenue += amt;
+                    pendingRevenue += (amt + overdueAmt);
                 }
             });
 
@@ -1162,11 +1175,15 @@
                         </td>
                         <td style="font-weight: 600; ${isErrorLog ? 'color: var(--accent-red);' : ''}">৳${Number(p.amount || 0).toLocaleString()}</td>
                         <td>
-                            ৳${overdueAmount.toLocaleString()}
-                            ${!isPaid ? `<button class="edit-btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="openEditOverdue('${p.id}')">Edit</button>` : ''}
+                            ${isErrorLog ? 'N/A' : `
+                                ৳${overdueAmount.toLocaleString()}${!isPaid ? `<button class="edit-btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="openEditOverdue('${p.id}')">Edit</button>` : ''}
+                            `}
                         </td>
                         <td>
-                            ${isPaid ? `
+                            ${isErrorLog ? `
+                                <!-- UPDATE 2: Error log status always shows Error Fix -->
+                                <span class="status-badge status-error-fix">Error Fix</span>
+                            ` : isPaid ? `
                                 <span class="status-badge status-paid">Paid</span>
                             ` : `
                                 <select class="inline-select" onchange="updatePaymentStatus('${p.id}', this.value)">
@@ -1367,7 +1384,7 @@
             }
         }
 
-        // CREATE ERROR LOG WITH OPTIONAL PROJECT ID
+        // UPDATE 3: CREATE ERROR LOG WITH SWAPPED LABELS
         async function handleCreateErrorLog(e) {
             e.preventDefault();
             const client = getSupabase();
@@ -1391,8 +1408,8 @@
                 transaction_type: document.getElementById('err-type').value,
                 is_error_log: true,
                 logged_by_email: currentUserEmail,
-                status: 'Pending',
-                payment_status: 'Pending'
+                status: 'Error Fix',
+                payment_status: 'Error Fix'
             };
 
             const { error } = await client.from('payments').insert([payload]);
@@ -1451,7 +1468,8 @@
 
         function openEditOverdue(id) {
             const pay = cachedPayments.find(p => p.id === id);
-            if (!pay) return;
+            // UPDATE 4: Prevent editing overdue fee on error logs
+            if (!pay || pay.is_error_log) return;
 
             document.getElementById('edit-pay-id').value = pay.id;
             document.getElementById('edit-pay-overdue-amount').value = pay.overdue_amount || 0;
@@ -1534,7 +1552,13 @@
             }
         }
 
+        // UPDATE 6: Projects can only be deleted by Head Admin (hadmin)
         async function deleteProject(id) {
+            if (currentUserRole !== 'hadmin') {
+                alert('Permission Denied: Deleting client projects requires "Head Admin" role privileges.');
+                return;
+            }
+
             if (!confirm('Are you sure you want to permanently delete this project?')) return;
             const client = getSupabase();
             const { error } = await client.from('projects').delete().eq('id', id);
@@ -1543,9 +1567,10 @@
             else await loadAllAdminData();
         }
 
+        // UPDATE 5: Full form "Head Admin" in permission notification
         async function deletePayment(id) {
             if (currentUserRole !== 'hadmin') {
-                alert('Permission Denied: Deleting payment ledger entries requires "hadmin" role privileges.');
+                alert('Permission Denied: Deleting payment ledger entries requires "Head Admin" role privileges.');
                 return;
             }
 
