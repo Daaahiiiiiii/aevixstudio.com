@@ -417,6 +417,12 @@
             width: 250px;
             font-size: 0.85rem;
         }
+        
+        .payer-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
@@ -476,6 +482,10 @@
                                 <input type="text" id="proj-title" required placeholder="e.g. Tuff Website Redesign">
                             </div>
                             <div class="form-group">
+                                <label>Name of Person / Company</label>
+                                <input type="text" id="proj-client-name" required placeholder="e.g. Jeff Bezos / Amazon">
+                            </div>
+                            <div class="form-group">
                                 <label>Client Email / Identifier</label>
                                 <input type="email" id="proj-client-email" required placeholder="client@email.com">
                             </div>
@@ -523,7 +533,8 @@
                             <thead>
                                 <tr>
                                     <th>Project Title</th>
-                                    <th>Client</th>
+                                    <th>Client / Company Name</th>
+                                    <th>Client Email</th>
                                     <th>Members Working</th>
                                     <th>Status</th>
                                     <th>Progress</th>
@@ -533,7 +544,7 @@
                                 </tr>
                             </thead>
                             <tbody id="projects-table-body">
-                                <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Loading projects...</td></tr>
+                                <tr><td colspan="9" style="text-align:center; color: var(--text-muted);">Loading projects...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -547,11 +558,15 @@
                     <form id="create-payment-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Client Name / Company</label>
-                                <input type="text" id="pay-client" required placeholder="e.g. Apex Corp">
+                                <label>Payer Name / Person Paying</label>
+                                <input type="text" id="pay-client" required placeholder="e.g. Jeff">
                             </div>
                             <div class="form-group">
-                                <label>Associated Project (Optional)</label>
+                                <label>Associated Project Email (Matches Project)</label>
+                                <input type="email" id="pay-client-email" placeholder="e.g. project1@company.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Associated Project (Optional Select)</label>
                                 <select id="pay-project-id">
                                     <option value="">-- Select Project --</option>
                                 </select>
@@ -592,7 +607,8 @@
                             <thead>
                                 <tr>
                                     <th>Due / Paid Date</th>
-                                    <th>Client</th>
+                                    <th>Payer Name</th>
+                                    <th>Associated Project Email</th>
                                     <th>Milestone</th>
                                     <th>Amount</th>
                                     <th>Overdue Fee</th>
@@ -601,7 +617,7 @@
                                 </tr>
                             </thead>
                             <tbody id="payments-table-body">
-                                <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
+                                <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -657,7 +673,8 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Client Email / Name</th>
+                                    <th>Client / Company Name</th>
+                                    <th>Associated Email</th>
                                     <th>Total Billed</th>
                                     <th>Total Paid</th>
                                     <th>Total Payable</th>
@@ -666,7 +683,7 @@
                                 </tr>
                             </thead>
                             <tbody id="clients-table-body">
-                                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading clients...</td></tr>
+                                <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading clients...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -687,6 +704,14 @@
                     <div class="form-group">
                         <label>Title</label>
                         <input type="text" id="edit-proj-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Name of Person / Company</label>
+                        <input type="text" id="edit-proj-client-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Client Email</label>
+                        <input type="email" id="edit-proj-client-email" required>
                     </div>
                     <div class="form-group">
                         <label>Members Working</label>
@@ -804,6 +829,17 @@
             });
         });
 
+        // Auto-fill payment project details when project dropdown changes
+        document.getElementById('pay-project-id').addEventListener('change', (e) => {
+            const selectedProjId = e.target.value;
+            if (selectedProjId) {
+                const proj = cachedProjects.find(p => p.id === selectedProjId);
+                if (proj && proj.client_email) {
+                    document.getElementById('pay-client-email').value = proj.client_email;
+                }
+            }
+        });
+
         // Modal Helpers
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
@@ -876,7 +912,8 @@
                 const query = e.target.value.toLowerCase();
                 const filtered = cachedProjects.filter(p => 
                     (p.title || p.project_name || '').toLowerCase().includes(query) ||
-                    (p.client_email || p.client_name || '').toLowerCase().includes(query) ||
+                    (p.client_name || '').toLowerCase().includes(query) ||
+                    (p.client_email || '').toLowerCase().includes(query) ||
                     (p.members_working || '').toLowerCase().includes(query)
                 );
                 renderProjectsTable(filtered);
@@ -970,14 +1007,15 @@
         function renderProjectsTable(projects) {
             const tbody = document.getElementById('projects-table-body');
             if (projects.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No matching projects found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; color: var(--text-muted);">No matching projects found.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = projects.map(p => `
                 <tr>
                     <td style="font-weight: 600;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
-                    <td>${escapeHtml(p.client_email || p.client_name || 'N/A')}</td>
+                    <td>${escapeHtml(p.client_name || 'N/A')}</td>
+                    <td>${escapeHtml(p.client_email || 'N/A')}</td>
                     <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
                     <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
                     <td>${p.progress || 0}%</td>
@@ -994,19 +1032,30 @@
         function renderPaymentsTable(payments) {
             const tbody = document.getElementById('payments-table-body');
             if (payments.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No payment records logged.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No payment records logged.</td></tr>';
                 return;
             }
 
             tbody.innerHTML = payments.map(p => {
                 const st = p.status || p.payment_status || 'Pending';
-                const isOverdue = st.toLowerCase() === 'overdue';
                 const overdueAmount = Number(p.overdue_amount || 0);
+
+                // Find associated project by project_id or email match
+                let matchedProj = cachedProjects.find(proj => proj.id === p.project_id);
+                if (!matchedProj && p.client_email) {
+                    matchedProj = cachedProjects.find(proj => (proj.client_email || '').toLowerCase() === p.client_email.toLowerCase());
+                }
+
+                const emailDisplay = p.client_email || (matchedProj ? matchedProj.client_email : 'N/A');
 
                 return `
                     <tr>
                         <td>${p.due_date ? new Date(p.due_date).toLocaleDateString() : new Date(p.created_at || Date.now()).toLocaleDateString()}</td>
-                        <td>${escapeHtml(p.client_name || 'N/A')}</td>
+                        <td style="font-weight: 600;">
+                            ${escapeHtml(p.client_name || 'N/A')}
+                            ${matchedProj ? `<div class="payer-subtext">Proj: ${escapeHtml(matchedProj.title || matchedProj.project_name)}</div>` : ''}
+                        </td>
+                        <td>${escapeHtml(emailDisplay)}</td>
                         <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
                         <td style="font-weight: 600;">৳${Number(p.amount || 0).toLocaleString()}</td>
                         <td>
@@ -1057,31 +1106,64 @@
             
             const clientMap = {};
 
-            // Collect all unique client emails/names from projects & payments
+            // 1. Primary aggregation via registered Projects (by client_email)
             cachedProjects.forEach(p => {
-                const key = (p.client_email || p.client_name || 'Unassigned').toLowerCase();
-                if (!clientMap[key]) {
-                    clientMap[key] = { identifier: p.client_email || p.client_name || 'Unassigned', billed: 0, paid: 0, notes: '' };
+                const emailKey = (p.client_email || '').toLowerCase().trim();
+                if (!emailKey) return;
+
+                if (!clientMap[emailKey]) {
+                    clientMap[emailKey] = { 
+                        email: p.client_email, 
+                        name: p.client_name || p.client_email, 
+                        billed: 0, 
+                        paid: 0, 
+                        notes: '' 
+                    };
+                } else if (!clientMap[emailKey].name && p.client_name) {
+                    clientMap[emailKey].name = p.client_name;
                 }
-                clientMap[key].billed += Number(p.budget || 0);
+                
+                clientMap[emailKey].billed += Number(p.budget || 0);
             });
 
+            // 2. Attribute payments to projects via matching client_email or project_id
             cachedPayments.forEach(p => {
-                const key = (p.client_name || 'Unassigned').toLowerCase();
-                if (!clientMap[key]) {
-                    clientMap[key] = { identifier: p.client_name || 'Unassigned', billed: 0, paid: 0, notes: '' };
+                let targetEmail = (p.client_email || '').toLowerCase().trim();
+
+                // If payment has a project_id but no email, resolve email from associated project
+                if (!targetEmail && p.project_id) {
+                    const matchedProj = cachedProjects.find(proj => proj.id === p.project_id);
+                    if (matchedProj && matchedProj.client_email) {
+                        targetEmail = matchedProj.client_email.toLowerCase().trim();
+                    }
                 }
+
+                // Fallback to payment client_name key if no email match exists
+                if (!targetEmail) {
+                    targetEmail = (p.client_name || 'Unassigned').toLowerCase().trim();
+                }
+
+                if (!clientMap[targetEmail]) {
+                    clientMap[targetEmail] = { 
+                        email: p.client_email || targetEmail, 
+                        name: p.client_name || 'Unassigned Client', 
+                        billed: 0, 
+                        paid: 0, 
+                        notes: '' 
+                    };
+                }
+
                 const amt = Number(p.amount || 0) + Number(p.overdue_amount || 0);
                 const st = (p.status || p.payment_status || '').toLowerCase();
                 if (st === 'paid') {
-                    clientMap[key].paid += amt;
+                    clientMap[targetEmail].paid += amt;
                 }
             });
 
-            // Map saved client notes
+            // 3. Map saved client notes from 'clients' table
             cachedClients.forEach(c => {
-                const key = (c.email || c.name || '').toLowerCase();
-                if (clientMap[key]) {
+                const key = (c.email || '').toLowerCase().trim();
+                if (key && clientMap[key]) {
                     clientMap[key].notes = c.notes || '';
                     clientMap[key].id = c.id;
                 }
@@ -1090,7 +1172,7 @@
             const clientsList = Object.values(clientMap);
 
             if (clientsList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No client records found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No client records found.</td></tr>';
                 return;
             }
 
@@ -1098,7 +1180,8 @@
                 const totalPayable = Math.max(0, c.billed - c.paid);
                 return `
                     <tr>
-                        <td style="font-weight: 600;">${escapeHtml(c.identifier)}</td>
+                        <td style="font-weight: 600;">${escapeHtml(c.name)}</td>
+                        <td>${escapeHtml(c.email)}</td>
                         <td>৳${c.billed.toLocaleString()}</td>
                         <td style="color: var(--accent-green);">৳${c.paid.toLocaleString()}</td>
                         <td style="color: var(--accent-red); font-weight: 600;">৳${totalPayable.toLocaleString()}</td>
@@ -1106,7 +1189,7 @@
                             <input type="text" id="client-note-${i}" value="${escapeHtml(c.notes)}" placeholder="Add note or description..." class="search-bar" style="width: 100%;">
                         </td>
                         <td>
-                            <button class="action-btn" style="padding: 4px 10px; font-size:0.75rem;" onclick="saveClientNote('${escapeHtml(c.identifier)}', 'client-note-${i}')">Save Note</button>
+                            <button class="action-btn" style="padding: 4px 10px; font-size:0.75rem;" onclick="saveClientNote('${escapeHtml(c.email)}', 'client-note-${i}')">Save Note</button>
                         </td>
                     </tr>
                 `;
@@ -1121,6 +1204,7 @@
             const payload = {
                 title: document.getElementById('proj-title').value,
                 project_name: document.getElementById('proj-title').value,
+                client_name: document.getElementById('proj-client-name').value,
                 client_email: document.getElementById('proj-client-email').value,
                 members_working: document.getElementById('proj-members').value,
                 status: document.getElementById('proj-status').value,
@@ -1146,9 +1230,19 @@
             const client = getSupabase();
 
             const projId = document.getElementById('pay-project-id').value;
+            let clientEmail = document.getElementById('pay-client-email').value;
+
+            // Auto-fill project email if project is selected and email field was blank
+            if (!clientEmail && projId) {
+                const matchedProj = cachedProjects.find(p => p.id === projId);
+                if (matchedProj) {
+                    clientEmail = matchedProj.client_email;
+                }
+            }
 
             const payload = {
                 client_name: document.getElementById('pay-client').value,
+                client_email: clientEmail || null,
                 project_id: projId || null,
                 amount: parseFloat(document.getElementById('pay-amount').value),
                 overdue_amount: parseFloat(document.getElementById('pay-overdue-amount').value) || 0,
@@ -1230,12 +1324,12 @@
             }
         }
 
-        async function saveClientNote(clientIdentifier, inputId) {
+        async function saveClientNote(clientEmail, inputId) {
             const noteText = document.getElementById(inputId).value;
             const client = getSupabase();
 
             const { error } = await client.from('clients').upsert({
-                email: clientIdentifier,
+                email: clientEmail,
                 notes: noteText
             }, { onConflict: 'email' });
 
@@ -1254,6 +1348,8 @@
 
             document.getElementById('edit-proj-id').value = proj.id;
             document.getElementById('edit-proj-title').value = proj.title || proj.project_name || '';
+            document.getElementById('edit-proj-client-name').value = proj.client_name || '';
+            document.getElementById('edit-proj-client-email').value = proj.client_email || '';
             document.getElementById('edit-proj-members').value = proj.members_working || '';
             document.getElementById('edit-proj-status').value = proj.status || 'In Progress';
             document.getElementById('edit-proj-progress').value = proj.progress || 0;
@@ -1270,6 +1366,8 @@
             const payload = {
                 title: document.getElementById('edit-proj-title').value,
                 project_name: document.getElementById('edit-proj-title').value,
+                client_name: document.getElementById('edit-proj-client-name').value,
+                client_email: document.getElementById('edit-proj-client-email').value,
                 members_working: document.getElementById('edit-proj-members').value,
                 status: document.getElementById('edit-proj-status').value,
                 progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
@@ -1296,7 +1394,6 @@
         }
 
         async function deletePayment(id) {
-            // Strict role guard: only 'hadmin' can delete payments
             if (currentUserRole !== 'hadmin') {
                 alert('Permission Denied: Deleting payment ledger entries requires "hadmin" role privileges.');
                 return;
