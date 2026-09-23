@@ -640,32 +640,38 @@
                     </form>
                 </div>
 
-                <!-- ADDITION 3: ERROR LOGGING CARD -->
+                <!-- ERROR LOGGING CARD WITH PROJECT DROPDOWN -->
                 <div class="card error-card">
                     <h3 class="section-title" style="color: var(--accent-red);">Log Error / Financial Adjustment</h3>
                     <form id="create-error-log-form">
                         <div class="form-grid">
                             <div class="form-group">
+                                <label>Project (Optional)</label>
+                                <select id="err-project-id">
+                                    <option value="">-- Select Project --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
                                 <label>Amount to be Logged (৳)</label>
-                                <input type="number" id="err-amount" step="0.01" required placeholder="5000.00">
+                                <input type="number" id="err-amount" step="0.01" required placeholder="e.g. 180000.00 (Difference for 200k vs 20k)">
                             </div>
                             <div class="form-group">
                                 <label>Transaction Type</label>
                                 <select id="err-type" required>
-                                    <option value="Trade Payable">Trade Payable (We Owe / Charged)</option>
-                                    <option value="Trade Receivable">Trade Receivable (Owed to Us)</option>
+                                    <option value="Trade Payable">Trade Payable (We Owe / Overcharged Adjustment)</option>
+                                    <option value="Trade Receivable">Trade Receivable (Owed to Us / Undercharged)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Person / Company / Project / Email Charged</label>
-                                <input type="text" id="err-client-detail" required placeholder="e.g. Vendor name or email account">
+                                <label>Person / Company / Email Detail</label>
+                                <input type="text" id="err-client-detail" required placeholder="e.g. Jeff / client@email.com">
                             </div>
-                            <div class="form-group">
+                            <div class="form-group full-width">
                                 <label>Reason / Audit Note</label>
-                                <input type="text" id="err-note" required placeholder="Reason for error log entry...">
+                                <input type="text" id="err-note" required placeholder="e.g. Mistyped payment as 200k instead of 20k. Adjusting balance by 180k.">
                             </div>
                         </div>
-                        <button type="submit" class="warning-btn">Create Error Log</button>
+                        <button type="submit" class="warning-btn">Create Error Log Entry</button>
                     </form>
                 </div>
 
@@ -910,6 +916,17 @@
             }
         });
 
+        // Auto-fill error log detail if a project is selected
+        document.getElementById('err-project-id').addEventListener('change', (e) => {
+            const selectedProjId = e.target.value;
+            if (selectedProjId) {
+                const proj = cachedProjects.find(p => p.id === selectedProjId);
+                if (proj) {
+                    document.getElementById('err-client-detail').value = `${proj.client_name || ''} (${proj.client_email || ''})`.trim();
+                }
+            }
+        });
+
         // Modal Helpers
         function openModal(modalId) {
             document.getElementById(modalId).classList.add('active');
@@ -1044,7 +1061,7 @@
             let pendingRevenue = 0;
 
             cachedPayments.forEach(p => {
-                if (p.is_error_log) return; // Skip error logs in standard revenue
+                if (p.is_error_log) return; // Skip error logs in standard revenue calculation
                 const amt = Number(p.amount || 0) + Number(p.overdue_amount || 0);
                 const st = (p.status || p.payment_status || '').toLowerCase();
                 if (st === 'paid') {
@@ -1065,12 +1082,14 @@
 
         function populateDropdowns() {
             const payDropdown = document.getElementById('pay-project-id');
+            const errDropdown = document.getElementById('err-project-id');
             const logDropdown = document.getElementById('log-project-id');
 
             const optionsHtml = '<option value="">-- Select Project --</option>' + 
                 cachedProjects.map(p => `<option value="${p.id}">${escapeHtml(p.title || p.project_name || 'Untitled Project')}</option>`).join('');
 
             payDropdown.innerHTML = optionsHtml;
+            errDropdown.innerHTML = optionsHtml;
             logDropdown.innerHTML = optionsHtml;
         }
 
@@ -1100,7 +1119,7 @@
             `).join('');
         }
 
-        // ADDITION 1 & 2: RENDER PAYMENTS LEDGER WITH LOCKING AND PAID DATE
+        // Render Payments Ledger
         function renderPaymentsTable(payments) {
             const tbody = document.getElementById('payments-table-body');
             if (payments.length === 0) {
@@ -1121,7 +1140,7 @@
 
                 const emailDisplay = p.client_email || (matchedProj ? matchedProj.client_email : 'N/A');
 
-                // Date formatting logic
+                // Date formatting
                 const dateCreated = new Date(p.created_at || Date.now()).toLocaleDateString();
                 const paidAtDisplay = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : null;
 
@@ -1348,13 +1367,25 @@
             }
         }
 
-        // ADDITION 3: ERROR LOGGING HANDLER
+        // CREATE ERROR LOG WITH OPTIONAL PROJECT ID
         async function handleCreateErrorLog(e) {
             e.preventDefault();
             const client = getSupabase();
 
+            const projId = document.getElementById('err-project-id').value;
+            let clientEmail = null;
+
+            if (projId) {
+                const matchedProj = cachedProjects.find(p => p.id === projId);
+                if (matchedProj) {
+                    clientEmail = matchedProj.client_email;
+                }
+            }
+
             const payload = {
+                project_id: projId || null,
                 client_name: document.getElementById('err-client-detail').value,
+                client_email: clientEmail,
                 amount: parseFloat(document.getElementById('err-amount').value),
                 milestone: 'ERROR LOG: ' + document.getElementById('err-note').value,
                 transaction_type: document.getElementById('err-type').value,
@@ -1369,7 +1400,7 @@
             if (error) {
                 alert('Error submitting error log: ' + error.message);
             } else {
-                alert('Error log recorded successfully under anti-fraud audit trail!');
+                alert('Error log entry created and linked to project audit trail!');
                 document.getElementById('create-error-log-form').reset();
                 await loadAllAdminData();
             }
@@ -1396,7 +1427,7 @@
             }
         }
 
-        // ADDITION 1 & 2: STATUS UPDATE WITH LOCKING AND AUTOMATIC PAID_AT TIMESTAMP
+        // Status update logic
         async function updatePaymentStatus(id, newStatus) {
             const client = getSupabase();
 
