@@ -176,6 +176,11 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
         }
 
+        .card.error-card {
+            border: 1px solid rgba(248, 113, 113, 0.4);
+            background: rgba(248, 113, 113, 0.02);
+        }
+
         .section-title {
             margin-top: 0;
             margin-bottom: 1.25rem;
@@ -250,6 +255,22 @@
 
         .action-btn:hover {
             background: var(--accent-blue-hover);
+        }
+
+        .warning-btn {
+            background: var(--accent-red);
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+        }
+
+        .warning-btn:hover {
+            background: #dc2626;
         }
 
         .danger-btn {
@@ -349,10 +370,10 @@
             border: 1px solid rgba(248, 113, 113, 0.3);
         }
 
-        .status-review {
-            background: rgba(250, 204, 21, 0.15);
-            color: var(--accent-yellow);
-            border: 1px solid rgba(250, 204, 21, 0.3);
+        .status-error-log {
+            background: rgba(192, 132, 252, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(192, 132, 252, 0.3);
         }
 
         .inline-select {
@@ -362,6 +383,12 @@
             border-radius: 4px;
             padding: 4px 8px;
             font-size: 0.8rem;
+        }
+
+        .inline-select:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #1f2937;
         }
 
         /* Modals */
@@ -421,6 +448,19 @@
         .payer-subtext {
             font-size: 0.75rem;
             color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .fraud-audit-tag {
+            font-size: 0.7rem;
+            color: var(--accent-yellow);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .date-subtext {
+            font-size: 0.75rem;
+            color: var(--accent-green);
             margin-top: 2px;
         }
     </style>
@@ -592,11 +632,40 @@
                                 <input type="number" id="pay-overdue-amount" step="0.01" placeholder="0.00" value="0.00">
                             </div>
                             <div class="form-group">
-                                <label>Due Date / Paid Date</label>
+                                <label>Due Date</label>
                                 <input type="date" id="pay-date">
                             </div>
                         </div>
                         <button type="submit" class="action-btn">Record Payment Entry</button>
+                    </form>
+                </div>
+
+                <!-- ADDITION 3: ERROR LOGGING CARD -->
+                <div class="card error-card">
+                    <h3 class="section-title" style="color: var(--accent-red);">Log Error / Financial Adjustment</h3>
+                    <form id="create-error-log-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Amount to be Logged (৳)</label>
+                                <input type="number" id="err-amount" step="0.01" required placeholder="5000.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Transaction Type</label>
+                                <select id="err-type" required>
+                                    <option value="Trade Payable">Trade Payable (We Owe / Charged)</option>
+                                    <option value="Trade Receivable">Trade Receivable (Owed to Us)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Person / Company / Project / Email Charged</label>
+                                <input type="text" id="err-client-detail" required placeholder="e.g. Vendor name or email account">
+                            </div>
+                            <div class="form-group">
+                                <label>Reason / Audit Note</label>
+                                <input type="text" id="err-note" required placeholder="Reason for error log entry...">
+                            </div>
+                        </div>
+                        <button type="submit" class="warning-btn">Create Error Log</button>
                     </form>
                 </div>
 
@@ -606,10 +675,10 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Due / Paid Date</th>
-                                    <th>Payer Name</th>
+                                    <th>Date Created</th>
+                                    <th>Payer / Entity Name</th>
                                     <th>Associated Project Email</th>
-                                    <th>Milestone</th>
+                                    <th>Milestone / Description</th>
                                     <th>Amount</th>
                                     <th>Overdue Fee</th>
                                     <th>Status</th>
@@ -768,6 +837,7 @@
 
         let supabaseClient = null;
         let currentUserRole = null;
+        let currentUserEmail = null;
         let cachedProjects = [];
         let cachedPayments = [];
         let cachedLogs = [];
@@ -873,8 +943,8 @@
             }
 
             currentUserRole = profile.role;
-            const email = (session.user.email || '').toLowerCase();
-            userInfoDisplay.textContent = `Signed in as ${profile.role === 'hadmin' ? 'Head Admin (hadmin)' : 'Admin'} (${email})`;
+            currentUserEmail = (session.user.email || '').toLowerCase();
+            userInfoDisplay.textContent = `Signed in as ${profile.role === 'hadmin' ? 'Head Admin (hadmin)' : 'Admin'} (${currentUserEmail})`;
             logoutBtn.style.display = 'inline-block';
             authLoading.style.display = 'none';
             adminWrapper.style.display = 'block';
@@ -903,6 +973,7 @@
             // Initialize Form Event Handlers
             document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
             document.getElementById('create-payment-form').addEventListener('submit', handleCreatePayment);
+            document.getElementById('create-error-log-form').addEventListener('submit', handleCreateErrorLog);
             document.getElementById('create-log-form').addEventListener('submit', handleCreateLog);
             document.getElementById('edit-project-form').addEventListener('submit', handleUpdateProject);
             document.getElementById('edit-overdue-form').addEventListener('submit', handleUpdateOverdueFee);
@@ -961,7 +1032,6 @@
                     if (dueDate < today) {
                         p.status = 'Overdue';
                         p.payment_status = 'Overdue';
-                        // Silently sync to backend
                         getSupabase().from('payments').update({ status: 'Overdue', payment_status: 'Overdue' }).eq('id', p.id);
                     }
                 }
@@ -974,6 +1044,7 @@
             let pendingRevenue = 0;
 
             cachedPayments.forEach(p => {
+                if (p.is_error_log) return; // Skip error logs in standard revenue
                 const amt = Number(p.amount || 0) + Number(p.overdue_amount || 0);
                 const st = (p.status || p.payment_status || '').toLowerCase();
                 if (st === 'paid') {
@@ -1029,6 +1100,7 @@
             `).join('');
         }
 
+        // ADDITION 1 & 2: RENDER PAYMENTS LEDGER WITH LOCKING AND PAID DATE
         function renderPaymentsTable(payments) {
             const tbody = document.getElementById('payments-table-body');
             if (payments.length === 0) {
@@ -1037,10 +1109,11 @@
             }
 
             tbody.innerHTML = payments.map(p => {
-                const st = p.status || p.payment_status || 'Pending';
+                const st = (p.status || p.payment_status || 'Pending').toLowerCase();
+                const isPaid = st === 'paid';
+                const isErrorLog = p.is_error_log;
                 const overdueAmount = Number(p.overdue_amount || 0);
 
-                // Find associated project by project_id or email match
                 let matchedProj = cachedProjects.find(proj => proj.id === p.project_id);
                 if (!matchedProj && p.client_email) {
                     matchedProj = cachedProjects.find(proj => (proj.client_email || '').toLowerCase() === p.client_email.toLowerCase());
@@ -1048,26 +1121,41 @@
 
                 const emailDisplay = p.client_email || (matchedProj ? matchedProj.client_email : 'N/A');
 
+                // Date formatting logic
+                const dateCreated = new Date(p.created_at || Date.now()).toLocaleDateString();
+                const paidAtDisplay = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : null;
+
                 return `
-                    <tr>
-                        <td>${p.due_date ? new Date(p.due_date).toLocaleDateString() : new Date(p.created_at || Date.now()).toLocaleDateString()}</td>
+                    <tr style="${isErrorLog ? 'background: rgba(248, 113, 113, 0.05);' : ''}">
+                        <td>
+                            ${dateCreated}
+                            ${isPaid && paidAtDisplay ? `<div class="date-subtext">Paid at: ${paidAtDisplay}</div>` : ''}
+                        </td>
                         <td style="font-weight: 600;">
                             ${escapeHtml(p.client_name || 'N/A')}
+                            ${isErrorLog ? `<span class="fraud-audit-tag">Logged by: ${escapeHtml(p.logged_by_email || 'Unknown')}</span>` : ''}
                             ${matchedProj ? `<div class="payer-subtext">Proj: ${escapeHtml(matchedProj.title || matchedProj.project_name)}</div>` : ''}
                         </td>
                         <td>${escapeHtml(emailDisplay)}</td>
-                        <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
-                        <td style="font-weight: 600;">৳${Number(p.amount || 0).toLocaleString()}</td>
+                        <td>
+                            ${isErrorLog ? `<span class="status-badge status-error-log" style="margin-bottom:4px;">${escapeHtml(p.transaction_type)}</span><br>` : ''}
+                            ${escapeHtml(p.milestone || p.notes || '-')}
+                        </td>
+                        <td style="font-weight: 600; ${isErrorLog ? 'color: var(--accent-red);' : ''}">৳${Number(p.amount || 0).toLocaleString()}</td>
                         <td>
                             ৳${overdueAmount.toLocaleString()}
-                            <button class="edit-btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="openEditOverdue('${p.id}')">Edit</button>
+                            ${!isPaid ? `<button class="edit-btn" style="padding:2px 6px; font-size:0.7rem; margin-left:4px;" onclick="openEditOverdue('${p.id}')">Edit</button>` : ''}
                         </td>
                         <td>
-                            <select class="inline-select" onchange="updatePaymentStatus('${p.id}', this.value)">
-                                <option value="Pending" ${st.toLowerCase() === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Paid" ${st.toLowerCase() === 'paid' ? 'selected' : ''}>Paid</option>
-                                <option value="Overdue" ${st.toLowerCase() === 'overdue' ? 'selected' : ''}>Overdue</option>
-                            </select>
+                            ${isPaid ? `
+                                <span class="status-badge status-paid">Paid</span>
+                            ` : `
+                                <select class="inline-select" onchange="updatePaymentStatus('${p.id}', this.value)">
+                                    <option value="Pending" ${st === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Paid" ${st === 'paid' ? 'selected' : ''}>Paid</option>
+                                    <option value="Overdue" ${st === 'overdue' ? 'selected' : ''}>Overdue</option>
+                                </select>
+                            `}
                         </td>
                         <td>
                             <button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>
@@ -1106,7 +1194,6 @@
             
             const clientMap = {};
 
-            // 1. Primary aggregation via registered Projects (by client_email)
             cachedProjects.forEach(p => {
                 const emailKey = (p.client_email || '').toLowerCase().trim();
                 if (!emailKey) return;
@@ -1126,11 +1213,10 @@
                 clientMap[emailKey].billed += Number(p.budget || 0);
             });
 
-            // 2. Attribute payments to projects via matching client_email or project_id
             cachedPayments.forEach(p => {
+                if (p.is_error_log) return;
                 let targetEmail = (p.client_email || '').toLowerCase().trim();
 
-                // If payment has a project_id but no email, resolve email from associated project
                 if (!targetEmail && p.project_id) {
                     const matchedProj = cachedProjects.find(proj => proj.id === p.project_id);
                     if (matchedProj && matchedProj.client_email) {
@@ -1138,7 +1224,6 @@
                     }
                 }
 
-                // Fallback to payment client_name key if no email match exists
                 if (!targetEmail) {
                     targetEmail = (p.client_name || 'Unassigned').toLowerCase().trim();
                 }
@@ -1160,7 +1245,6 @@
                 }
             });
 
-            // 3. Map saved client notes from 'clients' table
             cachedClients.forEach(c => {
                 const key = (c.email || '').toLowerCase().trim();
                 if (key && clientMap[key]) {
@@ -1232,7 +1316,6 @@
             const projId = document.getElementById('pay-project-id').value;
             let clientEmail = document.getElementById('pay-client-email').value;
 
-            // Auto-fill project email if project is selected and email field was blank
             if (!clientEmail && projId) {
                 const matchedProj = cachedProjects.find(p => p.id === projId);
                 if (matchedProj) {
@@ -1240,6 +1323,7 @@
                 }
             }
 
+            const statusVal = document.getElementById('pay-status').value;
             const payload = {
                 client_name: document.getElementById('pay-client').value,
                 client_email: clientEmail || null,
@@ -1247,9 +1331,10 @@
                 amount: parseFloat(document.getElementById('pay-amount').value),
                 overdue_amount: parseFloat(document.getElementById('pay-overdue-amount').value) || 0,
                 milestone: document.getElementById('pay-milestone').value || 'Payment Invoice',
-                status: document.getElementById('pay-status').value,
-                payment_status: document.getElementById('pay-status').value,
-                due_date: document.getElementById('pay-date').value || null
+                status: statusVal,
+                payment_status: statusVal,
+                due_date: document.getElementById('pay-date').value || null,
+                paid_at: statusVal.toLowerCase() === 'paid' ? new Date().toISOString() : null
             };
 
             const { error } = await client.from('payments').insert([payload]);
@@ -1259,6 +1344,33 @@
             } else {
                 alert('Payment invoice saved!');
                 document.getElementById('create-payment-form').reset();
+                await loadAllAdminData();
+            }
+        }
+
+        // ADDITION 3: ERROR LOGGING HANDLER
+        async function handleCreateErrorLog(e) {
+            e.preventDefault();
+            const client = getSupabase();
+
+            const payload = {
+                client_name: document.getElementById('err-client-detail').value,
+                amount: parseFloat(document.getElementById('err-amount').value),
+                milestone: 'ERROR LOG: ' + document.getElementById('err-note').value,
+                transaction_type: document.getElementById('err-type').value,
+                is_error_log: true,
+                logged_by_email: currentUserEmail,
+                status: 'Pending',
+                payment_status: 'Pending'
+            };
+
+            const { error } = await client.from('payments').insert([payload]);
+
+            if (error) {
+                alert('Error submitting error log: ' + error.message);
+            } else {
+                alert('Error log recorded successfully under anti-fraud audit trail!');
+                document.getElementById('create-error-log-form').reset();
                 await loadAllAdminData();
             }
         }
@@ -1284,13 +1396,20 @@
             }
         }
 
-        // Status update for payments directly from table select box
+        // ADDITION 1 & 2: STATUS UPDATE WITH LOCKING AND AUTOMATIC PAID_AT TIMESTAMP
         async function updatePaymentStatus(id, newStatus) {
             const client = getSupabase();
-            const { error } = await client.from('payments').update({
+
+            const updateData = {
                 status: newStatus,
                 payment_status: newStatus
-            }).eq('id', id);
+            };
+
+            if (newStatus.toLowerCase() === 'paid') {
+                updateData.paid_at = new Date().toISOString();
+            }
+
+            const { error } = await client.from('payments').update(updateData).eq('id', id);
 
             if (error) {
                 alert('Failed to update status: ' + error.message);
