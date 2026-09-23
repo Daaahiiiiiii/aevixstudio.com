@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal | Aevix Studio</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -45,6 +46,7 @@
             padding: 2rem 1.5rem;
         }
 
+        /* Header Navigation */
         .admin-header {
             display: flex;
             justify-content: space-between;
@@ -89,6 +91,7 @@
             background: rgba(248, 113, 113, 0.1);
         }
 
+        /* Metric / Analytics Cards */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -124,6 +127,7 @@
             color: var(--accent-green);
         }
 
+        /* Tab Navigation */
         .tab-bar {
             display: flex;
             gap: 0.5rem;
@@ -162,6 +166,7 @@
             display: block;
         }
 
+        /* Main Cards */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -176,12 +181,13 @@
             margin-bottom: 1.25rem;
             font-size: 1.25rem;
             font-weight: 600;
-            color: #ffffff;
+            color: #fff;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
+        /* Forms */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -277,6 +283,7 @@
             background: rgba(59, 130, 246, 0.15);
         }
 
+        /* Tables */
         .table-responsive {
             overflow-x: auto;
         }
@@ -310,6 +317,11 @@
             background: rgba(255, 255, 255, 0.02);
         }
 
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -337,15 +349,19 @@
             border: 1px solid rgba(248, 113, 113, 0.3);
         }
 
-        .status-review, .status-on-hold {
+        .status-review {
             background: rgba(250, 204, 21, 0.15);
             color: var(--accent-yellow);
             border: 1px solid rgba(250, 204, 21, 0.3);
         }
 
+        /* Modals */
         .modal-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0, 0, 0, 0.75);
             display: flex;
             align-items: center;
@@ -397,6 +413,7 @@
 <body>
 
     <div class="portal-container">
+        <!-- Top Navigation Header -->
         <div class="admin-header">
             <div>
                 <h1 class="brand-title">Admin Management Portal</h1>
@@ -408,10 +425,11 @@
         </div>
 
         <div id="auth-loading" style="text-align: center; padding: 4rem 0;">
-            <p style="color: var(--text-muted);">Verifying administrative access rights...</p>
+            <p style="color: var(--text-muted);">Verifying master access rights...</p>
         </div>
 
         <div id="admin-main-wrapper" style="display: none;">
+            <!-- Metrics Summary Bar -->
             <div class="metrics-grid">
                 <div class="metric-card">
                     <span class="metric-title">Total Revenue</span>
@@ -430,6 +448,7 @@
                 </div>
             </div>
 
+            <!-- Main Tab Navigation -->
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="tab-projects">Projects</button>
                 <button class="tab-btn" data-tab="tab-payments">Payments Ledger</button>
@@ -437,21 +456,22 @@
                 <button class="tab-btn" data-tab="tab-clients">Clients</button>
             </div>
 
+            <!-- TAB 1: PROJECTS MANAGEMENT -->
             <div id="tab-projects" class="tab-content active">
                 <div class="card">
                     <h3 class="section-title">Create New Client Project</h3>
                     <form id="create-project-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="proj-title">Project Name / Title</label>
-                                <input type="text" id="proj-title" required placeholder="e.g. Tuff Website Redesign">
+                                <label>Project Name / Title</label>
+                                <input type="text" id="proj-title" required placeholder="e.g. Acme Website Redesign">
                             </div>
                             <div class="form-group">
-                                <label for="proj-client-email">Client Email / Identifier</label>
-                                <input type="email" id="proj-client-email" required placeholder="client@example.com">
+                                <label>Client Email / Identifier</label>
+                                <input type="email" id="proj-client-email" required placeholder="client@acme.com">
                             </div>
                             <div class="form-group">
-                                <label for="proj-status">Status</label>
+                                <label>Status</label>
                                 <select id="proj-status">
                                     <option value="Active">Active</option>
                                     <option value="In Progress">In Progress</option>
@@ -461,20 +481,20 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="proj-progress">Progress (%)</label>
+                                <label>Progress (%)</label>
                                 <input type="number" id="proj-progress" min="0" max="100" value="0">
                             </div>
                             <div class="form-group">
-                                <label for="proj-budget">Total Budget ($)</label>
+                                <label>Total Budget ($)</label>
                                 <input type="number" id="proj-budget" step="0.01" placeholder="3500.00">
                             </div>
                             <div class="form-group">
-                                <label for="proj-deadline">Target Completion Date</label>
+                                <label>Target Completion Date</label>
                                 <input type="date" id="proj-deadline">
                             </div>
                             <div class="form-group full-width">
-                                <label for="proj-desc">Project Overview / Scope</label>
-                                <textarea id="proj-desc" rows="3" placeholder="Briefly describe key project scope..."></textarea>
+                                <label>Project Overview / Scope</label>
+                                <textarea id="proj-desc" rows="3" placeholder="Briefly describe the key project scope and deliverables..."></textarea>
                             </div>
                         </div>
                         <button type="submit" class="action-btn">Create Project Record</button>
@@ -507,31 +527,32 @@
                 </div>
             </div>
 
+            <!-- TAB 2: PAYMENTS LEDGER -->
             <div id="tab-payments" class="tab-content">
                 <div class="card">
                     <h3 class="section-title">Log New Payment Invoice</h3>
                     <form id="create-payment-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="pay-client">Client Name / Company</label>
+                                <label>Client Name / Company</label>
                                 <input type="text" id="pay-client" required placeholder="e.g. Apex Corp">
                             </div>
                             <div class="form-group">
-                                <label for="pay-project-id">Associated Project (Optional)</label>
+                                <label>Associated Project (Optional)</label>
                                 <select id="pay-project-id">
                                     <option value="">-- Select Project --</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="pay-amount">Amount ($)</label>
+                                <label>Amount ($)</label>
                                 <input type="number" id="pay-amount" step="0.01" required placeholder="1250.00">
                             </div>
                             <div class="form-group">
-                                <label for="pay-milestone">Milestone / Note</label>
+                                <label>Milestone / Note</label>
                                 <input type="text" id="pay-milestone" placeholder="e.g. 50% Upfront Deposit">
                             </div>
                             <div class="form-group">
-                                <label for="pay-status">Status</label>
+                                <label>Status</label>
                                 <select id="pay-status">
                                     <option value="Paid">Paid</option>
                                     <option value="Pending">Pending</option>
@@ -539,7 +560,7 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="pay-date">Due Date / Paid Date</label>
+                                <label>Due Date / Paid Date</label>
                                 <input type="date" id="pay-date">
                             </div>
                         </div>
@@ -569,20 +590,21 @@
                 </div>
             </div>
 
+            <!-- TAB 3: ACTIVITY LOGS -->
             <div id="tab-activity" class="tab-content">
                 <div class="card">
                     <h3 class="section-title">Post Timeline Activity Update</h3>
                     <form id="create-log-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="log-project-id">Target Project</label>
+                                <label>Target Project</label>
                                 <select id="log-project-id" required>
                                     <option value="">-- Select Project --</option>
                                 </select>
                             </div>
                             <div class="form-group" style="grid-column: span 2;">
-                                <label for="log-text">Log Update Message</label>
-                                <input type="text" id="log-text" required placeholder="Completed database migration...">
+                                <label>Log Update Message</label>
+                                <input type="text" id="log-text" required placeholder="Completed backend database migration and API setup...">
                             </div>
                         </div>
                         <button type="submit" class="action-btn">Publish Activity Entry</button>
@@ -609,6 +631,7 @@
                 </div>
             </div>
 
+            <!-- TAB 4: CLIENT DIRECTORY -->
             <div id="tab-clients" class="tab-content">
                 <div class="card">
                     <h3 class="section-title">Registered Client Accounts</h3>
@@ -633,6 +656,7 @@
         </div>
     </div>
 
+    <!-- Edit Project Modal -->
     <div id="edit-project-modal" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal('edit-project-modal')">&times;</button>
@@ -641,11 +665,11 @@
                 <input type="hidden" id="edit-proj-id">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="edit-proj-title">Title</label>
+                        <label>Title</label>
                         <input type="text" id="edit-proj-title" required>
                     </div>
                     <div class="form-group">
-                        <label for="edit-proj-status">Status</label>
+                        <label>Status</label>
                         <select id="edit-proj-status">
                             <option value="Active">Active</option>
                             <option value="In Progress">In Progress</option>
@@ -655,11 +679,11 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="edit-proj-progress">Progress (%)</label>
+                        <label>Progress (%)</label>
                         <input type="number" id="edit-proj-progress" min="0" max="100">
                     </div>
                     <div class="form-group">
-                        <label for="edit-proj-budget">Budget ($)</label>
+                        <label>Budget ($)</label>
                         <input type="number" id="edit-proj-budget" step="0.01">
                     </div>
                 </div>
@@ -673,16 +697,15 @@
 
     <script>
         const SUPABASE_URL = 'https://bfabowxtvgknggpqnrpf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmYWJvd3h0dmdrbmdncHFucnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTQwMDQsImV4cCI6MjA1Njg2MTMyOH0.zRuc9gF7qtihFHJJrUDXIwD1l0QJBBVHP_KasxJGMKM';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJmYWJvd3h0dmdrbmdncHFucnBmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMTQwMDQsImV4cCI6MjEwMzU5MDAwNH0.zRuc9gF7qtihFHJJrUDXIwD1l0QJBBVHP_KasxJGMKM';
 
         let supabaseClient = null;
         let cachedProjects = [];
         let cachedPayments = [];
         let cachedLogs = [];
-        let isAuthChecking = false;
 
         function escapeHtml(str) {
-            if (str === null || str === undefined) return '';
+            if (!str) return '';
             return String(str)
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -710,11 +733,13 @@
             return supabaseClient;
         }
 
+        // Global DOM Elements
         const authLoading = document.getElementById('auth-loading');
         const adminWrapper = document.getElementById('admin-main-wrapper');
         const logoutBtn = document.getElementById('admin-logout-btn');
         const userInfoDisplay = document.getElementById('user-info-display');
 
+        // Logout Event Listener
         logoutBtn.addEventListener('click', async () => {
             const client = getSupabase();
             if (client) {
@@ -723,6 +748,7 @@
             window.location.replace('index.html');
         });
 
+        // Tab Switching Logic
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -730,25 +756,21 @@
 
                 btn.classList.add('active');
                 const targetTab = btn.getAttribute('data-tab');
-                const tabEl = document.getElementById(targetTab);
-                if (tabEl) tabEl.classList.add('active');
+                document.getElementById(targetTab).classList.add('active');
             });
         });
 
+        // Modal Helpers
         function openModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.add('active');
+            document.getElementById(modalId).classList.add('active');
         }
 
         function closeModal(modalId) {
-            const modal = document.getElementById(modalId);
-            if (modal) modal.classList.remove('active');
+            document.getElementById(modalId).classList.remove('active');
         }
 
+        // Authentication & Role Verification Logic
         async function verifyAdminAndInit(session) {
-            if (isAuthChecking) return;
-            isAuthChecking = true;
-
             if (!session || !session.user) {
                 window.location.replace('index.html');
                 return;
@@ -756,68 +778,27 @@
 
             const client = getSupabase();
 
-            try {
-                // Fetch profile row safely
-                const { data: profile } = await client
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
+            // Fetch profile to verify admin role
+            const { data: profile, error } = await client
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
 
-                let roles = [];
-                
-                // Collect roles from public database profiles table
-                if (profile && profile.role) {
-                    if (Array.isArray(profile.role)) {
-                        roles.push(...profile.role.map(r => String(r).toLowerCase().trim()));
-                    } else if (typeof profile.role === 'string') {
-                        roles.push(...profile.role.toLowerCase().split(',').map(r => r.trim()));
-                    }
-                }
-
-                // Collect roles from auth metadata
-                const userMetadataRole = session.user.user_metadata?.role || session.user.app_metadata?.role;
-                if (userMetadataRole) {
-                    if (Array.isArray(userMetadataRole)) {
-                        roles.push(...userMetadataRole.map(r => String(r).toLowerCase().trim()));
-                    } else if (typeof userMetadataRole === 'string') {
-                        roles.push(...userMetadataRole.toLowerCase().split(',').map(r => r.trim()));
-                    }
-                }
-
-                const appRoles = session.user.app_metadata?.roles;
-                if (Array.isArray(appRoles)) {
-                    roles.push(...appRoles.map(r => String(r).toLowerCase().trim()));
-                }
-
-                // Authorized roles list - now permits both 'admin' and 'hadmin'
-                const allowedRoles = ['hadmin', 'admin', 'superadmin'];
-                const isAuthorized = roles.some(r => allowedRoles.includes(r));
-
-                if (!isAuthorized) {
-                    alert("Unauthorized access. Admin privileges required.");
-                    await client.auth.signOut();
-                    window.location.replace('index.html');
-                    return;
-                }
-
-                const displayRole = roles.find(r => allowedRoles.includes(r)) || 'admin';
-                const email = (session.user.email || '').toLowerCase();
-                
-                userInfoDisplay.textContent = `Signed in as ${displayRole.toUpperCase()} (${email})`;
-                logoutBtn.style.display = 'inline-block';
-                authLoading.style.display = 'none';
-                adminWrapper.style.display = 'block';
-
-                await loadAllAdminData();
-            } catch (err) {
-                console.error('Error verifying administrative access:', err);
-                alert("An error occurred during authentication verification.");
+            if (error || !profile || (profile.role !== 'admin' && profile.role !== 'hadmin')) {
+                alert('Unauthorized access. Admin privileges required.');
                 await client.auth.signOut();
                 window.location.replace('index.html');
-            } finally {
-                isAuthChecking = false;
+                return;
             }
+
+            const email = (session.user.email || '').toLowerCase();
+            userInfoDisplay.textContent = `Signed in as Admin (${email})`;
+            logoutBtn.style.display = 'inline-block';
+            authLoading.style.display = 'none';
+            adminWrapper.style.display = 'block';
+
+            await loadAllAdminData();
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -828,28 +809,25 @@
             }
 
             const { data: { session } } = await client.auth.getSession();
-            if (session) {
-                await verifyAdminAndInit(session);
-            } else {
-                window.location.replace('index.html');
-                return;
-            }
+            await verifyAdminAndInit(session);
 
-            client.auth.onAuthStateChange(async (event, currentSession) => {
-                if (event === 'SIGNED_IN') {
-                    await verifyAdminAndInit(currentSession);
-                } else if (event === 'SIGNED_OUT' || !currentSession) {
+            client.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                    await verifyAdminAndInit(session);
+                } else if (event === 'SIGNED_OUT' || !session) {
                     window.location.replace('index.html');
                 }
             });
 
+            // Initialize Form Event Handlers
             document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
             document.getElementById('create-payment-form').addEventListener('submit', handleCreatePayment);
             document.getElementById('create-log-form').addEventListener('submit', handleCreateLog);
             document.getElementById('edit-project-form').addEventListener('submit', handleUpdateProject);
 
+            // Search filter listener
             document.getElementById('project-search').addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
+                const query = e.target.value.toLowerCase();
                 const filtered = cachedProjects.filter(p => 
                     (p.title || p.project_name || '').toLowerCase().includes(query) ||
                     (p.client_email || p.client_name || '').toLowerCase().includes(query)
@@ -858,6 +836,7 @@
             });
         });
 
+        // Fetch Data from Supabase
         async function loadAllAdminData() {
             const client = getSupabase();
 
@@ -883,6 +862,7 @@
             }
         }
 
+        // Analytics Calculation
         function calculateMetrics() {
             let totalRevenue = 0;
             let pendingRevenue = 0;
@@ -897,13 +877,12 @@
                 }
             });
 
-            const activeProjectsCount = cachedProjects.filter(p => {
-                const st = (p.status || '').toLowerCase();
-                return st !== 'completed' && st !== 'cancelled';
-            }).length;
+            const activeProjectsCount = cachedProjects.filter(p => 
+                (p.status || '').toLowerCase() !== 'completed' && (p.status || '').toLowerCase() !== 'cancelled'
+            ).length;
 
-            document.getElementById('metric-revenue').textContent = `$${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('metric-pending').textContent = `$${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('metric-revenue').textContent = `$${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('metric-pending').textContent = `$${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
             document.getElementById('metric-projects').textContent = activeProjectsCount;
         }
 
@@ -918,6 +897,7 @@
             logDropdown.innerHTML = optionsHtml;
         }
 
+        // Render Tables
         function renderProjectsTable(projects) {
             const tbody = document.getElementById('projects-table-body');
             if (projects.length === 0) {
@@ -930,8 +910,8 @@
                     <td style="font-weight: 600;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
                     <td>${escapeHtml(p.client_email || p.client_name || 'N/A')}</td>
                     <td><span class="status-badge status-${(p.status || 'active').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'Active')}</span></td>
-                    <td>${Number(p.progress || 0)}%</td>
-                    <td>$${Number(p.budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td>${p.progress || 0}%</td>
+                    <td>$${Number(p.budget || 0).toLocaleString()}</td>
                     <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
                     <td>
                         <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
@@ -953,7 +933,7 @@
                     <td>${new Date(p.created_at || p.due_date || Date.now()).toLocaleDateString()}</td>
                     <td>${escapeHtml(p.client_name || 'N/A')}</td>
                     <td>${escapeHtml(p.milestone || p.notes || '-')}</td>
-                    <td style="font-weight: 600;">$${Number(p.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td style="font-weight: 600;">$${Number(p.amount || 0).toLocaleString()}</td>
                     <td><span class="status-badge status-${(p.status || p.payment_status || 'paid').toLowerCase()}">${escapeHtml(p.status || p.payment_status || 'Paid')}</span></td>
                     <td>
                         <button class="danger-btn" onclick="deletePayment('${p.id}')">Remove</button>
@@ -989,6 +969,7 @@
         function renderClientsTable() {
             const tbody = document.getElementById('clients-table-body');
             
+            // Deduplicate clients by client_email
             const clientMap = {};
             cachedProjects.forEach(p => {
                 const email = p.client_email || 'Unassigned';
@@ -1010,7 +991,7 @@
                 <tr>
                     <td style="font-weight: 600;">${escapeHtml(c.email)}</td>
                     <td>${c.projectsCount} Active Project(s)</td>
-                    <td>$${c.totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}</td>
+                    <td>$${c.totalBilled.toLocaleString()}</td>
                     <td>
                         <a href="mailto:${escapeHtml(c.email)}" class="action-btn" style="text-decoration:none; padding: 4px 10px; font-size:0.75rem;">Contact Client</a>
                     </td>
@@ -1018,6 +999,7 @@
             `).join('');
         }
 
+        // CRUD Form Handlers
         async function handleCreateProject(e) {
             e.preventDefault();
             const client = getSupabase();
@@ -1027,7 +1009,7 @@
                 project_name: document.getElementById('proj-title').value,
                 client_email: document.getElementById('proj-client-email').value,
                 status: document.getElementById('proj-status').value,
-                progress: parseInt(document.getElementById('proj-progress').value, 10) || 0,
+                progress: parseInt(document.getElementById('proj-progress').value) || 0,
                 budget: parseFloat(document.getElementById('proj-budget').value) || 0,
                 deadline: document.getElementById('proj-deadline').value || null,
                 description: document.getElementById('proj-desc').value
@@ -1053,7 +1035,7 @@
             const payload = {
                 client_name: document.getElementById('pay-client').value,
                 project_id: projId || null,
-                amount: parseFloat(document.getElementById('pay-amount').value) || 0,
+                amount: parseFloat(document.getElementById('pay-amount').value),
                 milestone: document.getElementById('pay-milestone').value || 'Payment Invoice',
                 status: document.getElementById('pay-status').value,
                 payment_status: document.getElementById('pay-status').value,
@@ -1092,6 +1074,7 @@
             }
         }
 
+        // Edit & Delete Operations
         function openEditProject(id) {
             const proj = cachedProjects.find(p => p.id === id);
             if (!proj) return;
@@ -1114,7 +1097,7 @@
                 title: document.getElementById('edit-proj-title').value,
                 project_name: document.getElementById('edit-proj-title').value,
                 status: document.getElementById('edit-proj-status').value,
-                progress: parseInt(document.getElementById('edit-proj-progress').value, 10) || 0,
+                progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
                 budget: parseFloat(document.getElementById('edit-proj-budget').value) || 0
             };
 
