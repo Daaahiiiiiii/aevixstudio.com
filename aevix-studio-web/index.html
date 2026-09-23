@@ -207,7 +207,7 @@
                     .eq('id', session.user.id)
                     .maybeSingle();
 
-                if (profile && (profile.role === 'admin' || profile.role === 'team')) {
+                if (profile && (profile.role === 'admin' || profile.role === 'hadmin' || profile.role === 'team')) {
                     window.location.replace('admin-portal.html');
                 } else {
                     window.location.replace('client-portal.html');
