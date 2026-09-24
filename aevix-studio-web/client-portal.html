@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Portal | Aevix Studio</title>
+    <title>Viewing Deck | Aevix Studio</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -20,11 +20,7 @@
             --accent-purple: #a855f7;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg-dark);
@@ -40,7 +36,6 @@
             padding: 2rem 1.5rem;
         }
 
-        /* Header */
         .portal-header {
             display: flex;
             justify-content: space-between;
@@ -50,17 +45,8 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .brand-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .user-info {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
+        .brand-title { font-size: 1.5rem; font-weight: 700; color: #ffffff; }
+        .user-info { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
 
         .logout-btn {
             background: transparent;
@@ -71,31 +57,13 @@
             cursor: pointer;
             font-weight: 500;
             font-size: 0.875rem;
-            transition: all 0.2s ease;
-        }
-
-        .logout-btn:hover {
-            background: rgba(248, 113, 113, 0.1);
-        }
-
-        /* Project Selector Grid/Tabs */
-        .project-selector-wrapper {
-            margin-bottom: 2rem;
-        }
-
-        .selector-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            margin-bottom: 0.75rem;
-            font-weight: 600;
         }
 
         .project-cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 1rem;
+            margin-bottom: 2rem;
         }
 
         .project-card-btn {
@@ -105,12 +73,7 @@
             padding: 1rem 1.25rem;
             text-align: left;
             cursor: pointer;
-            transition: all 0.2s ease;
             color: var(--text-main);
-        }
-
-        .project-card-btn:hover {
-            border-color: var(--accent-blue);
         }
 
         .project-card-btn.active {
@@ -118,420 +81,125 @@
             background: rgba(59, 130, 246, 0.08);
         }
 
-        .p-btn-title {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #fff;
-            margin-bottom: 0.35rem;
-        }
-
-        .p-btn-code {
-            font-family: monospace;
-            font-size: 0.75rem;
-            color: var(--accent-blue);
-            background: rgba(59, 130, 246, 0.1);
-            padding: 2px 6px;
-            border-radius: 4px;
-            display: inline-block;
-            margin-bottom: 0.35rem;
-        }
-
-        .p-btn-status {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Main Dashboard Cards */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.75rem;
             margin-bottom: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
 
-        .project-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .project-display-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #ffffff;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .project-code-tag {
-            font-family: monospace;
-            font-size: 0.85rem;
-            color: #ffffff;
-            background: var(--border-color);
-            padding: 2px 8px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: capitalize;
-        }
-
-        .status-active, .status-completed {
-            background: rgba(74, 222, 128, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(74, 222, 128, 0.3);
-        }
-
-        .status-in-progress, .status-working {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-
-        .status-review, .status-on-hold {
-            background: rgba(250, 204, 21, 0.15);
-            color: var(--accent-yellow);
-            border: 1px solid rgba(250, 204, 21, 0.3);
-        }
-
-        /* Progress Bar */
-        .progress-wrapper {
-            margin-bottom: 1.5rem;
-        }
-
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-track {
-            width: 100%;
-            height: 8px;
-            background: var(--border-color);
-            border-radius: 999px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--accent-blue);
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        /* Financial Metrics Grid */
         .project-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 1.25rem;
             padding-top: 1.25rem;
             border-top: 1px solid var(--border-color);
         }
 
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .detail-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.05em;
-            font-weight: 600;
-        }
-
-        .detail-val {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #ffffff;
-        }
+        .detail-item { display: flex; flex-direction: column; gap: 0.25rem; }
+        .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; font-weight: 600; }
+        .detail-val { font-size: 1.2rem; font-weight: 700; color: #ffffff; }
 
         .text-green { color: var(--accent-green) !important; }
         .text-yellow { color: var(--accent-yellow) !important; }
         .text-red { color: var(--accent-red) !important; }
-        .text-purple { color: var(--accent-purple) !important; }
         .text-blue { color: var(--accent-blue) !important; }
 
-        /* Team Members List */
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
+        .ledger-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left; }
+        .ledger-table th { color: var(--text-muted); padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border-color); }
+        .ledger-table td { padding: 0.85rem 0.5rem; border-bottom: 1px solid var(--border-color); }
 
-        .team-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.85rem 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .team-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-        }
-
-        .team-info-name {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .team-info-role {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Payment Ledger Table */
-        .ledger-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
-            text-align: left;
-        }
-
-        .ledger-table th {
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            padding: 0.75rem 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .ledger-table td {
-            padding: 0.85rem 0.5rem;
-            border-bottom: 1px solid var(--border-color);
-            color: #e5e7eb;
-        }
-
-        /* Error Log Deductions */
-        .error-log-card {
-            background: rgba(248, 113, 113, 0.05);
-            border: 1px solid rgba(248, 113, 113, 0.2);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .error-log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .error-log-title {
-            font-weight: 600;
-            color: var(--accent-red);
-            font-size: 0.9rem;
-        }
-
-        .error-log-date {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Activity Timeline */
-        .section-heading {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 1.25rem;
-        }
-
-        .timeline-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            position: relative;
-            padding-left: 1rem;
-            border-left: 2px solid var(--border-color);
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-left: 1rem;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -1.35rem;
-            top: 0.35rem;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-        }
-
-        .timeline-date {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
-        }
-
-        .timeline-text {
-            font-size: 0.9rem;
-            color: #e5e7eb;
-            line-height: 1.4;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-muted);
-        }
+        .timeline-list { display: flex; flex-direction: column; gap: 1rem; border-left: 2px solid var(--border-color); padding-left: 1rem; }
+        .timeline-item { position: relative; }
+        .timeline-item::before { content: ''; position: absolute; left: -1.35rem; top: 0.35rem; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-blue); }
     </style>
 </head>
 <body>
 
     <div class="portal-container">
-        <!-- Header Navigation -->
         <div class="portal-header">
             <div>
-                <h1 class="brand-title">Client Workspace</h1>
-                <div id="user-info-display" class="user-info">Authenticating portal access...</div>
+                <h1 class="brand-title">Viewing Deck</h1>
+                <div id="user-info-display" class="user-info">Authenticating access...</div>
             </div>
             <button id="logout-btn" class="logout-btn" style="display: none;">Sign Out</button>
         </div>
 
-        <div id="auth-loading" class="empty-state">
-            <p>Loading your project dashboard...</p>
-        </div>
-
-        <div id="no-projects-view" class="empty-state" style="display: none;">
-            <h3>No Projects Found</h3>
-            <p style="margin-top: 0.5rem;">There are currently no active projects linked to your account email.</p>
+        <div id="auth-loading" style="text-align: center; padding: 3rem;">
+            <p style="color: var(--text-muted);">Loading workspace content...</p>
         </div>
 
         <div id="portal-main-view" style="display: none;">
-            <!-- Multi-project Switcher -->
-            <div id="project-selector-wrapper" class="project-selector-wrapper">
-                <div class="selector-label">Your Projects</div>
-                <div id="project-cards-grid" class="project-cards-grid"></div>
-            </div>
+            <div id="project-cards-grid" class="project-cards-grid"></div>
 
-            <!-- Active Project Overview Card -->
             <div class="card">
-                <div class="project-header-row">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
                     <div>
-                        <div class="project-display-title">
-                            <span id="active-proj-title">Project Title</span>
-                            <span id="active-proj-code" class="project-code-tag">#000000</span>
-                        </div>
-                        <p id="active-proj-desc" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">-</p>
+                        <h2 id="active-proj-title" style="font-size: 1.5rem; color:#fff;">Project Title</h2>
+                        <span id="active-proj-code" style="font-family: monospace; color: var(--accent-blue); font-size: 0.85rem;">#000000</span>
                     </div>
-                    <div>
-                        <span id="active-proj-status" class="status-badge status-active">Active</span>
-                    </div>
+                    <span id="active-proj-status" style="padding:4px 12px; border-radius:999px; background:rgba(59,130,246,0.15); color:var(--accent-blue); font-weight:600; font-size:0.8rem;">Active</span>
                 </div>
 
-                <div class="progress-wrapper">
-                    <div class="progress-info">
-                        <span>Overall Project Progress</span>
-                        <span id="active-proj-progress-num">0%</span>
-                    </div>
-                    <div class="progress-track">
-                        <div id="active-proj-progress-bar" class="progress-fill"></div>
-                    </div>
-                </div>
-
-                <!-- Complete 10-point Financial Metrics Bar -->
+                <!-- Financial Deck Metrics -->
                 <div class="project-details-grid">
                     <div class="detail-item">
                         <span class="detail-label">Project Budget</span>
-                        <span id="active-proj-budget" class="detail-val">$0.00</span>
+                        <span id="active-proj-budget" class="detail-val">৳0.00</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Total Billed</span>
-                        <span id="active-proj-billed" class="detail-val text-blue">$0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Budget Extension</span>
-                        <span id="active-proj-extension" class="detail-val text-purple">$0.00</span>
+                        <span id="active-proj-billed" class="detail-val text-blue">৳0.00</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Current Paid</span>
-                        <span id="active-proj-paid" class="detail-val text-green">$0.00</span>
+                        <span id="active-proj-paid" class="detail-val text-green">৳0.00</span>
                     </div>
                     <div class="detail-item">
                         <span class="detail-label">Current Due</span>
-                        <span id="active-proj-due" class="detail-val text-yellow">$0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Overdue Fees</span>
-                        <span id="active-proj-overdue" class="detail-val text-red">$0.00</span>
+                        <span id="active-proj-due" class="detail-val text-yellow">৳0.00</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Error Log Deductions / Adjustments Section -->
-            <div id="error-logs-section" class="card" style="display: none;">
-                <h3 class="section-heading" style="color: var(--accent-red);">Error Log Deductions & Adjustments</h3>
-                <div id="error-logs-container"></div>
+            <!-- Billed Breakdown Section -->
+            <div class="card">
+                <h3 style="color:#fff; margin-bottom:1rem;">Issued Bills Breakdown</h3>
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount Billed</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billing-tbody"></tbody>
+                </table>
             </div>
 
-            <!-- Detailed Payment Transactions (Who paid at what time & how much) -->
+            <!-- Payment Ledger Section -->
             <div class="card">
-                <h3 class="section-heading">Payment Ledger & History</h3>
-                <div id="ledger-container" style="overflow-x: auto;">
-                    <table class="ledger-table">
-                        <thead>
-                            <tr>
-                                <th>Date & Time</th>
-                                <th>Paid By</th>
-                                <th>Reference / Notes</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ledger-tbody"></tbody>
-                    </table>
-                </div>
+                <h3 style="color:#fff; margin-bottom:1rem;">Payments & Transactions Ledger</h3>
+                <table class="ledger-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Payer</th>
+                            <th>Milestone / Description</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ledger-tbody"></tbody>
+                </table>
             </div>
 
-            <!-- Team Members Working on Project -->
+            <!-- Timeline Updates -->
             <div class="card">
-                <h3 class="section-heading">Assigned Team Members</h3>
-                <div id="team-container">
-                    <div id="team-grid" class="team-grid"></div>
-                </div>
-            </div>
-
-            <!-- Activity Logs Section for Selected Project -->
-            <div class="card">
-                <h3 class="section-heading">Project Updates & Activity Log</h3>
-                <div id="timeline-container">
-                    <div id="timeline-list" class="timeline-list"></div>
-                </div>
+                <h3 style="color:#fff; margin-bottom:1rem;">Project Timeline Updates</h3>
+                <div id="timeline-list" class="timeline-list"></div>
             </div>
         </div>
     </div>
@@ -546,329 +214,133 @@
 
         function escapeHtml(str) {
             if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         function getSupabase() {
-            if (!supabaseClient) {
-                const config = {
-                    auth: {
-                        flowType: 'pkce',
-                        autoRefreshToken: true,
-                        persistSession: true,
-                        detectSessionInUrl: true
-                    }
-                };
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
-                } else if (typeof createClient === 'function') {
-                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
-                }
-            }
+            if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             return supabaseClient;
         }
 
-        // DOM Elements
-        const authLoading = document.getElementById('auth-loading');
-        const portalMainView = document.getElementById('portal-main-view');
-        const noProjectsView = document.getElementById('no-projects-view');
-        const logoutBtn = document.getElementById('logout-btn');
-        const userInfoDisplay = document.getElementById('user-info-display');
-
-        logoutBtn.addEventListener('click', async () => {
-            const client = getSupabase();
-            if (client) await client.auth.signOut();
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await getSupabase().auth.signOut();
             window.location.replace('index.html');
         });
 
-        async function initClientPortal(session) {
+        document.addEventListener('DOMContentLoaded', async () => {
+            const client = getSupabase();
+            const { data: { session } } = await client.auth.getSession();
+
             if (!session || !session.user) {
                 window.location.replace('index.html');
                 return;
             }
 
-            const client = getSupabase();
-            const email = (session.user.email || '').toLowerCase();
+            const email = session.user.email.toLowerCase();
+            document.getElementById('user-info-display').textContent = `Logged in as ${email}`;
+            document.getElementById('logout-btn').style.display = 'inline-block';
 
-            userInfoDisplay.textContent = `Logged in as ${email}`;
-            logoutBtn.style.display = 'inline-block';
+            const { data: projects } = await client.from('projects').select('*').ilike('client_email', email);
 
-            // Fetch projects corresponding to this client's email
-            const { data: projects, error } = await client
-                .from('projects')
-                .select('*')
-                .ilike('client_email', email)
-                .order('created_at', { ascending: false });
+            document.getElementById('auth-loading').style.display = 'none';
 
-            authLoading.style.display = 'none';
-
-            if (error || !projects || projects.length === 0) {
-                noProjectsView.style.display = 'block';
-                return;
+            if (projects && projects.length > 0) {
+                userProjects = projects;
+                document.getElementById('portal-main-view').style.display = 'block';
+                renderProjectSelector();
+                selectProject(userProjects[0].id);
             }
-
-            userProjects = projects;
-            portalMainView.style.display = 'block';
-
-            renderProjectSelector();
-            selectProject(userProjects[0].id);
-        }
+        });
 
         function renderProjectSelector() {
             const grid = document.getElementById('project-cards-grid');
-            
-            grid.innerHTML = userProjects.map(p => {
-                const hexCode = p.project_code || p.hex_code || p.id.substring(0, 8);
-                return `
-                    <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" id="p-btn-${p.id}" onclick="selectProject('${p.id}')">
-                        <div class="p-btn-title">${escapeHtml(p.title || p.project_name || 'Untitled')}</div>
-                        <div class="p-btn-code">#${escapeHtml(hexCode)}</div>
-                        <div class="p-btn-status">Status: ${escapeHtml(p.status || 'Active')}</div>
-                    </button>
-                `;
-            }).join('');
+            grid.innerHTML = userProjects.map(p => `
+                <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" onclick="selectProject('${p.id}')">
+                    <div style="font-weight:600; color:#fff;">${escapeHtml(p.title || p.project_name)}</div>
+                    <div style="font-family:monospace; font-size:0.75rem; color:var(--accent-blue);">#${escapeHtml(p.hex_code || 'N/A')}</div>
+                </button>
+            `).join('');
         }
 
         async function selectProject(projectId) {
             selectedProjectId = projectId;
-            const project = userProjects.find(p => p.id === projectId);
-            if (!project) return;
+            renderProjectSelector();
 
-            // Update Active State in Switcher Grid
-            document.querySelectorAll('.project-card-btn').forEach(btn => btn.classList.remove('active'));
-            const activeBtn = document.getElementById(`p-btn-${projectId}`);
-            if (activeBtn) activeBtn.classList.add('active');
+            const p = userProjects.find(item => item.id === projectId);
+            document.getElementById('active-proj-title').textContent = p.title || p.project_name;
+            document.getElementById('active-proj-code').textContent = `#${p.hex_code || 'N/A'}`;
+            document.getElementById('active-proj-status').textContent = p.status || 'Active';
+            document.getElementById('active-proj-budget').textContent = `৳${Number(p.budget || 0).toLocaleString()}`;
 
-            // 1. Display Project Code (Hex / Short ID)
-            const projectHex = project.project_code || project.hex_code || project.id.substring(0, 8);
-            document.getElementById('active-proj-code').textContent = `#${projectHex}`;
+            const client = getSupabase();
 
-            // Render Active Project Card Base Information
-            document.getElementById('active-proj-title').textContent = project.title || project.project_name || 'Untitled Project';
-            document.getElementById('active-proj-desc').textContent = project.description || 'No detailed scope description provided.';
-            
-            const statusBadge = document.getElementById('active-proj-status');
-            const statusStr = project.status || 'Active';
-            statusBadge.textContent = statusStr;
-            statusBadge.className = `status-badge status-${statusStr.toLowerCase().replace(/\s+/g, '-')}`;
-
-            const progress = project.progress || 0;
-            document.getElementById('active-proj-progress-num').textContent = `${progress}%`;
-            document.getElementById('active-proj-progress-bar').style.width = `${progress}%`;
-
-            // Fetch financials, ledger, error logs, team members & activity logs concurrently
-            await Promise.all([
-                loadFinancialsAndLedger(project),
-                loadErrorLogs(projectId),
-                loadTeamMembers(projectId, project),
-                loadProjectLogs(projectId)
+            // Fetch Project Billing, Payments, and Activity Logs
+            const [billRes, payRes, logRes] = await Promise.all([
+                client.from('billing').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+                client.from('payments').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
+                client.from('activity_logs').select('*').eq('project_id', projectId).order('created_at', { ascending: false })
             ]);
-        }
 
-        async function loadFinancialsAndLedger(project) {
-            const client = getSupabase();
+            const bills = billRes.data || [];
+            const payments = payRes.data || [];
+            const logs = logRes.data || [];
 
-            // 6. Budget
-            const budget = Number(project.budget || 0);
+            // 1. Total Billed (sum of bills in 'Billing' tab)
+            const totalBilled = bills.reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
-            // Fetch payment ledger records for this project
-            const { data: payments } = await client
-                .from('payments')
-                .select('*')
-                .eq('project_id', project.id)
-                .order('created_at', { ascending: false });
-
-            // Fetch error log financial adjustments related to this project
-            const { data: errorLogs } = await client
-                .from('error_logs')
-                .select('*')
-                .eq('project_id', project.id);
-
-            let calculatedPaid = 0;
-            let calculatedOverdue = Number(project.overdue_fees || project.late_fees || project.late_fee || 0);
-            let totalBilled = Number(project.total_billed || budget);
-
-            const ledgerTbody = document.getElementById('ledger-tbody');
-
-            if (payments && payments.length > 0) {
-                payments.forEach(p => {
-                    const amt = Number(p.amount || 0);
-                    if (p.type === 'overdue' || p.type === 'late_fee' || p.is_late_fee) {
-                        calculatedOverdue += amt;
-                    } else {
-                        calculatedPaid += amt;
-                    }
-                });
-
-                // 7. Who paid at what time and how much
-                ledgerTbody.innerHTML = payments.map(p => `
-                    <tr>
-                        <td>${new Date(p.created_at || p.payment_date).toLocaleString()}</td>
-                        <td><strong>${escapeHtml(p.paid_by || p.payer_name || p.payer_email || 'Client')}</strong></td>
-                        <td>${escapeHtml(p.description || p.reference || 'Payment Transaction')}</td>
-                        <td><span style="text-transform: capitalize; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.06);">${escapeHtml(p.type || 'Payment')}</span></td>
-                        <td class="${p.type === 'late_fee' || p.type === 'overdue' ? 'text-red' : 'text-green'}" style="font-weight: 600;">
-                            $${Number(p.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}
-                        </td>
-                    </tr>
-                `).join('');
-            } else {
-                ledgerTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No payment transactions recorded for this project yet.</td></tr>';
-            }
-
-            // 10. Process Error Log Deductions / Adjustments
-            let netDeduction = 0;
-            if (errorLogs && errorLogs.length > 0) {
-                errorLogs.forEach(log => {
-                    const deduction = Number(log.deduction_amount || log.amount_deducted || log.adjustment || 0);
-                    netDeduction += deduction;
-                });
-            }
-
-            // 3. Current Paid
-            const currentPaid = calculatedPaid;
-
-            // 5. Overdue Fees
-            const overdueFees = calculatedOverdue;
-
-            // 2. Total Billed (adjusted if deductions occurred)
-            const finalBilled = Math.max(0, totalBilled - netDeduction);
-
-            // 4. Current Due = (Total Billed + Overdue Fees) - Current Paid
-            const currentDue = Math.max(0, (finalBilled + overdueFees) - currentPaid);
-
-            // 9. Budget Extension: If Total Billed > Budget, show difference, else 0
-            const budgetExtension = finalBilled > budget ? (finalBilled - budget) : 0;
-
-            // Update UI Financial Displays
-            document.getElementById('active-proj-budget').textContent = `$${budget.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-billed').textContent = `$${finalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-extension').textContent = `$${budgetExtension.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-paid').textContent = `$${currentPaid.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-due').textContent = `$${currentDue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-overdue').textContent = `$${overdueFees.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-        }
-
-        async function loadErrorLogs(projectId) {
-            const client = getSupabase();
-            const container = document.getElementById('error-logs-container');
-            const section = document.getElementById('error-logs-section');
-
-            const { data: logs, error } = await client
-                .from('error_logs')
-                .select('*')
-                .eq('project_id', projectId)
-                .order('created_at', { ascending: false });
-
-            if (error || !logs || logs.length === 0) {
-                section.style.display = 'none';
-                return;
-            }
-
-            section.style.display = 'block';
-            container.innerHTML = logs.map(log => {
-                const deduction = Number(log.deduction_amount || log.amount_deducted || log.adjustment || 0);
-                const isDeduction = deduction > 0;
-
-                return `
-                    <div class="error-log-card">
-                        <div class="error-log-header">
-                            <span class="error-log-title">${escapeHtml(log.title || log.issue_summary || 'Deduction / Adjustment Log')}</span>
-                            <span class="error-log-date">${new Date(log.created_at).toLocaleString()}</span>
-                        </div>
-                        <p style="font-size: 0.85rem; color: #e5e7eb; margin-bottom: 0.5rem;">${escapeHtml(log.description || log.reason || 'Deduction processed due to error/adjustment log.')}</p>
-                        <div style="font-size: 0.85rem; font-weight: 600;" class="${isDeduction ? 'text-red' : 'text-green'}">
-                            ${isDeduction ? '-' : '+'}$${Math.abs(deduction).toLocaleString(undefined, {minimumFractionDigits: 2})} Adjustment
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function loadTeamMembers(projectId, project) {
-            const client = getSupabase();
-            const teamGrid = document.getElementById('team-grid');
-            
-            const { data: members } = await client
-                .from('project_members')
-                .select('*')
-                .eq('project_id', projectId);
-
-            let teamList = members || [];
-
-            if (teamList.length === 0 && project.team) {
-                teamList = Array.isArray(project.team) ? project.team : [project.team];
-            }
-
-            if (!teamList || teamList.length === 0) {
-                teamGrid.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; grid-column: 1/-1;">No team members currently assigned to this project.</p>';
-                return;
-            }
-
-            teamGrid.innerHTML = teamList.map(m => {
-                const name = m.name || m.full_name || m.email || (typeof m === 'string' ? m : 'Team Member');
-                const role = m.role || m.title || 'Project Contributor';
-                const initial = name.charAt(0).toUpperCase();
-
-                return `
-                    <div class="team-card">
-                        <div class="team-avatar">${initial}</div>
-                        <div>
-                            <div class="team-info-name">${escapeHtml(name)}</div>
-                            <div class="team-info-role">${escapeHtml(role)}</div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        async function loadProjectLogs(projectId) {
-            const client = getSupabase();
-            const listEl = document.getElementById('timeline-list');
-            listEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">Loading updates...</p>';
-
-            const { data: logs, error } = await client
-                .from('activity_logs')
-                .select('*')
-                .eq('project_id', projectId)
-                .order('created_at', { ascending: false });
-
-            if (error || !logs || logs.length === 0) {
-                listEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem;">No updates logged for this project yet.</p>';
-                return;
-            }
-
-            listEl.innerHTML = logs.map(l => `
-                <div class="timeline-item">
-                    <div class="timeline-date">${new Date(l.created_at).toLocaleString()}</div>
-                    <div class="timeline-text">${escapeHtml(l.log_text || l.message || '-')}</div>
-                </div>
-            `).join('');
-        }
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const client = getSupabase();
-            if (!client) {
-                authLoading.innerHTML = '<p style="color: var(--accent-red);">Failed to connect to backend service.</p>';
-                return;
-            }
-
-            const { data: { session } } = await client.auth.getSession();
-            await initClientPortal(session);
-
-            client.auth.onAuthStateChange(async (event, session) => {
-                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-                    await initClientPortal(session);
-                } else if (event === 'SIGNED_OUT' || !session) {
-                    window.location.replace('index.html');
+            // 2. Current Paid with Error Log additions/deductions
+            let totalPaid = 0;
+            payments.forEach(pay => {
+                const amt = Number(pay.amount || 0);
+                if (pay.is_error_log) {
+                    if ((pay.transaction_type || '').includes('Undercharged')) totalPaid += amt;
+                    else if ((pay.transaction_type || '').includes('Overcharged')) totalPaid -= amt;
+                } else if ((pay.status || pay.payment_status || '').toLowerCase() === 'paid') {
+                    totalPaid += amt;
                 }
             });
-        });
+
+            // 3. Current Due (Billed - Paid)
+            const currentDue = Math.max(0, totalBilled - totalPaid);
+
+            document.getElementById('active-proj-billed').textContent = `৳${totalBilled.toLocaleString()}`;
+            document.getElementById('active-proj-paid').textContent = `৳${totalPaid.toLocaleString()}`;
+            document.getElementById('active-proj-due').textContent = `৳${currentDue.toLocaleString()}`;
+
+            // Render Billing Breakdown Table
+            document.getElementById('billing-tbody').innerHTML = bills.length === 0 ? 
+                '<tr><td colspan="3" style="color:var(--text-muted);">No bills issued yet.</td></tr>' :
+                bills.map(b => `
+                    <tr>
+                        <td>${new Date(b.created_at).toLocaleDateString()}</td>
+                        <td>${escapeHtml(b.description)}</td>
+                        <td style="color:var(--accent-blue); font-weight:600;">৳${Number(b.amount).toLocaleString()}</td>
+                    </tr>
+                `).join('');
+
+            // Render Payment Ledger Table
+            document.getElementById('ledger-tbody').innerHTML = payments.length === 0 ? 
+                '<tr><td colspan="5" style="color:var(--text-muted);">No payments recorded.</td></tr>' :
+                payments.map(pay => `
+                    <tr>
+                        <td>${new Date(pay.created_at).toLocaleDateString()}</td>
+                        <td>${escapeHtml(pay.client_name || 'N/A')}</td>
+                        <td>${escapeHtml(pay.milestone || '-')}</td>
+                        <td style="font-weight:600;">৳${Number(pay.amount).toLocaleString()}</td>
+                        <td>${escapeHtml(pay.status || pay.payment_status)}</td>
+                    </tr>
+                `).join('');
+
+            // Render Activity Logs
+            document.getElementById('timeline-list').innerHTML = logs.length === 0 ? 
+                '<p style="color:var(--text-muted);">No activity updates posted yet.</p>' :
+                logs.map(l => `
+                    <div class="timeline-item">
+                        <div style="font-size:0.75rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString()}</div>
+                        <div style="color:#e5e7eb; margin-top:0.25rem;">${escapeHtml(l.log_text || l.message)}</div>
+                    </div>
+                `).join('');
+        }
     </script>
 </body>
 </html>
