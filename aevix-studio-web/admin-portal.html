@@ -26,7 +26,11 @@
             --input-border: #243044;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             background-color: var(--bg-dark);
@@ -45,6 +49,7 @@
             padding: 2rem 1.5rem;
         }
 
+        /* Header Navigation */
         .admin-header {
             display: flex;
             justify-content: space-between;
@@ -54,9 +59,24 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .brand-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: #ffffff; }
-        .user-info { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
-        .header-actions { display: flex; align-items: center; gap: 1rem; }
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .user-info {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
         .logout-btn {
             background: rgba(248, 113, 113, 0.08);
@@ -69,8 +89,13 @@
             font-size: 0.85rem;
             transition: all 0.2s ease;
         }
-        .logout-btn:hover { background: rgba(248, 113, 113, 0.2); border-color: var(--accent-red); }
 
+        .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.2);
+            border-color: var(--accent-red);
+        }
+
+        /* Metric / Analytics Cards */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -89,10 +114,27 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
 
-        .metric-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-        .metric-value { font-size: 1.75rem; font-weight: 700; color: #ffffff; letter-spacing: -0.02em; }
-        .metric-subtext { font-size: 0.75rem; color: var(--accent-green); }
+        .metric-title {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+        }
 
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        .metric-subtext {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+        }
+
+        /* Tab Navigation */
         .tab-bar {
             display: flex;
             gap: 0.5rem;
@@ -114,11 +156,24 @@
             white-space: nowrap;
         }
 
-        .tab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
-        .tab-btn:hover:not(.active) { color: var(--text-main); }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
 
+        .tab-btn:hover:not(.active) {
+            color: var(--text-main);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Main Cards */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -144,6 +199,7 @@
             align-items: center;
         }
 
+        /* Note Box inside Error Log Form */
         .error-note-box {
             background: rgba(248, 113, 113, 0.08);
             border-left: 3px solid var(--accent-red);
@@ -155,6 +211,22 @@
             line-height: 1.5;
         }
 
+        .error-note-box strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .error-note-box ul {
+            margin-left: 1.25rem;
+            margin-top: 0.35rem;
+        }
+
+        .error-note-box li {
+            margin-bottom: 0.2rem;
+        }
+
+        /* Forms Layout */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -163,8 +235,15 @@
             align-items: end;
         }
 
-        .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
 
         .form-group label {
             font-size: 0.75rem;
@@ -174,7 +253,9 @@
             font-weight: 600;
         }
 
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input, 
+        .form-group select, 
+        .form-group textarea {
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--text-main);
@@ -185,6 +266,18 @@
             transition: all 0.2s ease;
             width: 100%;
             min-height: 42px;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus, 
+        .form-group textarea:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
         }
 
         .action-btn {
@@ -204,7 +297,28 @@
             min-height: 42px;
         }
 
-        .action-btn:hover { background: #7dd3fc; box-shadow: 0 0 12px rgba(56, 189, 248, 0.3); }
+        .action-btn:hover {
+            background: #7dd3fc;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+        }
+
+        .warning-btn {
+            background: var(--accent-red);
+            color: #090d16;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            min-height: 42px;
+        }
+
+        .warning-btn:hover {
+            background: #fca5a5;
+            box-shadow: 0 0 12px rgba(248, 113, 113, 0.3);
+        }
 
         .danger-btn {
             background: transparent;
@@ -215,8 +329,13 @@
             cursor: pointer;
             font-size: 0.8rem;
             font-weight: 500;
+            transition: all 0.2s;
         }
-        .danger-btn:hover { background: rgba(248, 113, 113, 0.15); border-color: var(--accent-red); }
+
+        .danger-btn:hover {
+            background: rgba(248, 113, 113, 0.15);
+            border-color: var(--accent-red);
+        }
 
         .edit-btn {
             background: transparent;
@@ -226,14 +345,89 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
             margin-right: 0.35rem;
         }
-        .edit-btn:hover { background: rgba(56, 189, 248, 0.15); }
 
-        .table-responsive { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border-color); }
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.875rem; }
-        th { background: #0d121c; color: var(--text-muted); padding: 12px 16px; font-weight: 600; border-bottom: 1px solid var(--border-color); font-size: 0.725rem; text-transform: uppercase; }
-        td { padding: 12px 16px; border-bottom: 1px solid var(--border-color); color: #e2e8f0; vertical-align: middle; }
+        .edit-btn:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent-blue);
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        th {
+            background: #0d121c;
+            color: var(--text-muted);
+            padding: 12px 16px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.725rem;
+            letter-spacing: 0.06em;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: #e2e8f0;
+            vertical-align: middle;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.025);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+        }
+
+        .status-paid, .status-completed {
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .status-pending, .status-working, .status-in-progress {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .status-overdue, .status-delayed, .status-cancelled {
+            background: rgba(248, 113, 113, 0.12);
+            color: var(--accent-red);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+
+        .status-error-log, .status-error-fix {
+            background: rgba(192, 132, 252, 0.12);
+            color: var(--accent-purple);
+            border: 1px solid rgba(192, 132, 252, 0.3);
+        }
 
         .hex-code-badge {
             font-family: monospace;
@@ -245,24 +439,120 @@
             font-size: 0.8rem;
         }
 
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
-            display: flex; align-items: center; justify-content: center; z-index: 1000;
-            opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+        .gmail-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-box { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; width: 100%; max-width: 620px; padding: 2rem; position: relative; }
-        .modal-close { position: absolute; top: 1.25rem; right: 1.25rem; background: none; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; }
+
+        .gmail-link:hover {
+            text-decoration: underline;
+            color: #7dd3fc;
+        }
+
+        .inline-select {
+            background: var(--input-bg);
+            color: var(--text-main);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 620px;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            color: var(--text-main);
+            width: 250px;
+            font-size: 0.85rem;
+        }
+        
+        .payer-subtext {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .fraud-audit-tag {
+            font-size: 0.7rem;
+            color: var(--accent-yellow);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .date-subtext {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-top: 2px;
+        }
+
+        .extended-budget-tag {
+            font-size: 0.725rem;
+            color: var(--accent-yellow);
+            display: block;
+            margin-top: 2px;
+        }
     </style>
 </head>
 <body>
 
     <div class="portal-container">
+        <!-- Top Navigation Header -->
         <div class="admin-header">
             <div>
                 <h1 class="brand-title">Admin Management Portal</h1>
-                <div id="user-info-display" class="user-info">Authenticating...</div>
+                <div id="user-info-display" class="user-info">Authenticating administrative session...</div>
             </div>
             <div class="header-actions">
                 <button id="admin-logout-btn" class="logout-btn" style="display: none;">Sign Out</button>
@@ -270,10 +560,11 @@
         </div>
 
         <div id="auth-loading" style="text-align: center; padding: 4rem 0;">
-            <p style="color: var(--text-muted);">Verifying administrative privileges...</p>
+            <p style="color: var(--text-muted);">Verifying master access rights...</p>
         </div>
 
         <div id="admin-main-wrapper" style="display: none;">
+            <!-- Metrics Summary Bar -->
             <div class="metrics-grid">
                 <div class="metric-card">
                     <span class="metric-title">Total Revenue</span>
@@ -290,9 +581,14 @@
                     <span id="metric-billed" class="metric-value">৳0.00</span>
                     <span class="metric-subtext">Sum of all bills</span>
                 </div>
+                <div class="metric-card">
+                    <span class="metric-title">Pending Invoices</span>
+                    <span id="metric-pending" class="metric-value">৳0.00</span>
+                    <span class="metric-subtext">Outstanding balance</span>
+                </div>
             </div>
 
-            <!-- Tab Navigation with Billing Section -->
+            <!-- Main Tab Navigation -->
             <div class="tab-bar">
                 <button class="tab-btn active" data-tab="tab-projects">Projects</button>
                 <button class="tab-btn" data-tab="tab-billing">Billing</button>
@@ -307,10 +603,22 @@
                     <h3 class="section-title">Create New Client Project</h3>
                     <form id="create-project-form">
                         <div class="form-grid">
-                            <div class="form-group"><label>Project Title *</label><input type="text" id="proj-title" required placeholder="e.g. Website Redesign"></div>
-                            <div class="form-group"><label>Client Name / Company *</label><input type="text" id="proj-client-name" required placeholder="e.g. Acme Corp"></div>
-                            <div class="form-group"><label>Client Email *</label><input type="email" id="proj-client-email" required placeholder="client@acme.com"></div>
-                            <div class="form-group"><label>Members Working *</label><input type="text" id="proj-members" required placeholder="e.g. Alex, Sam"></div>
+                            <div class="form-group">
+                                <label>Project Name / Title <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="proj-title" required placeholder="e.g. Tuff Website Redesign">
+                            </div>
+                            <div class="form-group">
+                                <label>Name of Person / Company <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="proj-client-name" required placeholder="e.g. Jeff Bezos / Amazon">
+                            </div>
+                            <div class="form-group">
+                                <label>Client Email <span style="color: var(--accent-red);">*</span></label>
+                                <input type="email" id="proj-client-email" required placeholder="client@email.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Members Working <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="proj-members" required placeholder="e.g. Ettihad, Munkadeer, Dahiyat">
+                            </div>
                             <div class="form-group">
                                 <label>Status</label>
                                 <select id="proj-status">
@@ -320,29 +628,41 @@
                                     <option value="On Hold">On Hold</option>
                                 </select>
                             </div>
-                            <div class="form-group"><label>Progress (%)</label><input type="number" id="proj-progress" min="0" max="100" value="0"></div>
-                            <div class="form-group"><label>Base Budget (৳) *</label><input type="number" id="proj-budget" step="0.01" required placeholder="50000.00"></div>
-                            <div class="form-group"><label>Target Completion Date *</label><input type="date" id="proj-deadline" required></div>
-                            <div class="form-group full-width"><label>Scope / Description</label><textarea id="proj-desc" rows="3"></textarea></div>
+                            <div class="form-group">
+                                <label>Progress (%)</label>
+                                <input type="number" id="proj-progress" min="0" max="100" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Base Budget (৳) <span style="color: var(--accent-red);">*</span></label>
+                                <input type="number" id="proj-budget" step="0.01" required placeholder="350000.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Target Completion Date <span style="color: var(--accent-red);">*</span></label>
+                                <input type="date" id="proj-deadline" required>
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Project Overview / Scope</label>
+                                <textarea id="proj-desc" rows="3" placeholder="Briefly describe the key project scope and deliverables..."></textarea>
+                            </div>
                         </div>
-                        <button type="submit" class="action-btn">Create Project</button>
+                        <button type="submit" class="action-btn">Create Project Record</button>
                     </form>
                 </div>
 
                 <div class="card">
                     <div class="section-title">
-                        <span>All Projects</span>
-                        <input type="text" id="project-search" placeholder="Search projects..." style="padding:6px 12px; background:var(--input-bg); border:1px solid var(--input-border); color:#fff; border-radius:6px; font-size:0.85rem;">
+                        <span>All Client Projects</span>
+                        <input type="text" id="project-search" class="search-bar" placeholder="Search projects, hex, or clients...">
                     </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
                                     <th>Hex Code</th>
-                                    <th>Title</th>
-                                    <th>Client</th>
-                                    <th>Email</th>
-                                    <th>Members</th>
+                                    <th>Project Title</th>
+                                    <th>Client / Company Name</th>
+                                    <th>Client Email</th>
+                                    <th>Members Working</th>
                                     <th>Status</th>
                                     <th>Progress</th>
                                     <th>Budget</th>
@@ -350,28 +670,30 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="projects-table-body"></tbody>
+                            <tbody id="projects-table-body">
+                                <tr><td colspan="10" style="text-align:center; color: var(--text-muted);">Loading projects...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB 2: NEW BILLING SECTION -->
+            <!-- TAB 2: BILLING SECTION -->
             <div id="tab-billing" class="tab-content">
                 <div class="card">
                     <h3 class="section-title">Issue New Bill</h3>
                     <form id="create-bill-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Target Project *</label>
+                                <label>Target Project <span style="color: var(--accent-red);">*</span></label>
                                 <select id="bill-project-id" required><option value="">-- Select Project --</option></select>
                             </div>
                             <div class="form-group">
-                                <label>Short Description / Items *</label>
+                                <label>Short Description / Items <span style="color: var(--accent-red);">*</span></label>
                                 <input type="text" id="bill-desc" required placeholder="e.g. Phase 1 Milestone + Server Setup">
                             </div>
                             <div class="form-group">
-                                <label>Amount Billed (৳) *</label>
+                                <label>Amount Billed (৳) <span style="color: var(--accent-red);">*</span></label>
                                 <input type="number" id="bill-amount" step="0.01" required placeholder="15000.00">
                             </div>
                         </div>
@@ -380,7 +702,10 @@
                 </div>
 
                 <div class="card">
-                    <h3 class="section-title">Billing Ledger History</h3>
+                    <div class="section-title">
+                        <span>Billing Ledger History</span>
+                        <input type="text" id="billing-search" class="search-bar" placeholder="Search billing entries...">
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
@@ -394,7 +719,9 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="billing-table-body"></tbody>
+                            <tbody id="billing-table-body">
+                                <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading billing ledger...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -403,14 +730,31 @@
             <!-- TAB 3: PAYMENTS LEDGER -->
             <div id="tab-payments" class="tab-content">
                 <div class="card">
-                    <h3 class="section-title">Log Payment Invoice</h3>
+                    <h3 class="section-title">Log New Payment Invoice</h3>
                     <form id="create-payment-form">
                         <div class="form-grid">
-                            <div class="form-group"><label>Payer Name *</label><input type="text" id="pay-client" required placeholder="e.g. John"></div>
-                            <div class="form-group"><label>Client Email</label><input type="email" id="pay-client-email"></div>
-                            <div class="form-group"><label>Associated Project</label><select id="pay-project-id"><option value="">-- Select Project --</option></select></div>
-                            <div class="form-group"><label>Amount (৳) *</label><input type="number" id="pay-amount" step="0.01" required placeholder="10000.00"></div>
-                            <div class="form-group"><label>Milestone Note</label><input type="text" id="pay-milestone" placeholder="e.g. Initial Deposit"></div>
+                            <div class="form-group">
+                                <label>Payer Name / Person Paying <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="pay-client" required placeholder="e.g. Jeff">
+                            </div>
+                            <div class="form-group">
+                                <label>Associated Project Email</label>
+                                <input type="email" id="pay-client-email" placeholder="e.g. project1@company.com">
+                            </div>
+                            <div class="form-group">
+                                <label>Associated Project (Optional Select)</label>
+                                <select id="pay-project-id">
+                                    <option value="">-- Select Project --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount (৳) <span style="color: var(--accent-red);">*</span></label>
+                                <input type="number" id="pay-amount" step="0.01" required placeholder="125000.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Milestone / Note</label>
+                                <input type="text" id="pay-milestone" placeholder="e.g. 35% Advance Deposit">
+                            </div>
                             <div class="form-group">
                                 <label>Status</label>
                                 <select id="pay-status">
@@ -419,27 +763,81 @@
                                     <option value="Overdue">Overdue</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label>Overdue Fee / Penalty (৳)</label>
+                                <input type="number" id="pay-overdue-amount" step="0.01" placeholder="0.00" value="0.00">
+                            </div>
                         </div>
                         <button type="submit" class="action-btn">Record Payment Entry</button>
                     </form>
                 </div>
 
+                <!-- ERROR LOGGING CARD WITH GUIDANCE NOTE -->
+                <div class="card error-card">
+                    <h3 class="section-title" style="color: var(--accent-red);">Log Error / Financial Adjustment</h3>
+                    
+                    <div class="error-note-box">
+                        <strong>📌 Internal Financial Adjustment Guide:</strong>
+                        <ul>
+                            <li><strong>If you have overcharged:</strong> Select <em>Overcharged</em> and enter the excess amount that was charged. This will be deducted from total revenue.</li>
+                            <li><strong>If you have undercharged:</strong> Select <em>Undercharged</em> and enter the missing amount owed to us. This will be added to total revenue.</li>
+                        </ul>
+                    </div>
+
+                    <form id="create-error-log-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Project (Optional)</label>
+                                <select id="err-project-id">
+                                    <option value="">-- Select Project --</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Amount to be added or deducted (৳) <span style="color: var(--accent-red);">*</span></label>
+                                <input type="number" id="err-amount" step="0.01" required placeholder="e.g. 5000.00">
+                            </div>
+                            <div class="form-group">
+                                <label>Transaction Type <span style="color: var(--accent-red);">*</span></label>
+                                <select id="err-type" required>
+                                    <option value="Overcharged">Overcharged (We Owe / Deduct from Revenue)</option>
+                                    <option value="Undercharged">Undercharged (Owed to Us / Add to Revenue)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Person / Company / Email Detail <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="err-client-detail" required placeholder="e.g. Jeff / client@email.com">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Reason / Audit Note <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="err-note" required placeholder="e.g. Mistyped payment as 200k instead of 20k. Adjusting balance.">
+                            </div>
+                        </div>
+                        <button type="submit" class="warning-btn">Create Error Log Entry</button>
+                    </form>
+                </div>
+
                 <div class="card">
-                    <h3 class="section-title">Financial Transactions History</h3>
+                    <div class="section-title">
+                        <span>Financial Transactions History</span>
+                        <input type="text" id="payments-search" class="search-bar" placeholder="Search payments & adjustments...">
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Payer</th>
-                                    <th>Client Email</th>
-                                    <th>Milestone</th>
+                                    <th>Date Created</th>
+                                    <th>Payer / Entity Name</th>
+                                    <th>Associated Project Email</th>
+                                    <th>Milestone / Description</th>
                                     <th>Amount</th>
+                                    <th>Overdue Fee</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="payments-table-body"></tbody>
+                            <tbody id="payments-table-body">
+                                <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">Loading payments...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -448,28 +846,33 @@
             <!-- TAB 4: ACTIVITY LOGS -->
             <div id="tab-activity" class="tab-content">
                 <div class="card">
-                    <h3 class="section-title">Post Timeline Update</h3>
+                    <h3 class="section-title">Post Timeline Activity Update</h3>
                     <form id="create-log-form">
                         <div class="form-grid">
                             <div class="form-group">
-                                <label>Target Project *</label>
-                                <select id="log-project-id" required><option value="">-- Select Project --</option></select>
+                                <label>Target Project <span style="color: var(--accent-red);">*</span></label>
+                                <select id="log-project-id" required>
+                                    <option value="">-- Select Project --</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label>Project Hex Code</label>
                                 <select id="log-hex-code"><option value="">-- Auto-filled Hex --</option></select>
                             </div>
                             <div class="form-group full-width">
-                                <label>Log Message *</label>
-                                <input type="text" id="log-text" required placeholder="Completed core module integration...">
+                                <label>Log Update Message <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="log-text" required placeholder="Completed backend database migration and frontend designing...">
                             </div>
                         </div>
-                        <button type="submit" class="action-btn">Publish Activity Update</button>
+                        <button type="submit" class="action-btn">Publish Activity Entry</button>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h3 class="section-title">Recent Updates Across Projects</h3>
+                    <div class="section-title">
+                        <span>Recent Timeline Updates Across All Projects</span>
+                        <input type="text" id="activity-search" class="search-bar" placeholder="Search activity logs...">
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
@@ -481,7 +884,9 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="logs-table-body"></tbody>
+                            <tbody id="logs-table-body">
+                                <tr><td colspan="5" style="text-align:center; color: var(--text-muted);">Loading activity logs...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -490,20 +895,25 @@
             <!-- TAB 5: CLIENT DIRECTORY -->
             <div id="tab-clients" class="tab-content">
                 <div class="card">
-                    <h3 class="section-title">Registered Accounts Overview</h3>
+                    <div class="section-title">
+                        <span>Registered Client Accounts</span>
+                        <input type="text" id="clients-search" class="search-bar" placeholder="Search client directory...">
+                    </div>
                     <div class="table-responsive">
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Client / Company</th>
-                                    <th>Email</th>
+                                    <th>Client / Company Name</th>
+                                    <th>Associated Email</th>
                                     <th>Total Billed</th>
                                     <th>Total Paid</th>
                                     <th>Current Due</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="clients-table-body"></tbody>
+                            <tbody id="clients-table-body">
+                                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading clients...</td></tr>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -512,7 +922,7 @@
         </div>
     </div>
 
-    <!-- Modal for Editing Projects -->
+    <!-- Edit Project Modal -->
     <div id="edit-project-modal" class="modal-overlay">
         <div class="modal-box">
             <button class="modal-close" onclick="closeModal('edit-project-modal')">&times;</button>
@@ -520,10 +930,22 @@
             <form id="edit-project-form">
                 <input type="hidden" id="edit-proj-id">
                 <div class="form-grid">
-                    <div class="form-group"><label>Title</label><input type="text" id="edit-proj-title" required></div>
-                    <div class="form-group"><label>Client Name</label><input type="text" id="edit-proj-client-name" required></div>
-                    <div class="form-group"><label>Client Email</label><input type="email" id="edit-proj-client-email" required></div>
-                    <div class="form-group"><label>Members Working</label><input type="text" id="edit-proj-members" required></div>
+                    <div class="form-group">
+                        <label>Title</label>
+                        <input type="text" id="edit-proj-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Name of Person / Company</label>
+                        <input type="text" id="edit-proj-client-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Client Email</label>
+                        <input type="email" id="edit-proj-client-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Members Working</label>
+                        <input type="text" id="edit-proj-members" required>
+                    </div>
                     <div class="form-group">
                         <label>Status</label>
                         <select id="edit-proj-status">
@@ -533,13 +955,48 @@
                             <option value="On Hold">On Hold</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Progress (%)</label><input type="number" id="edit-proj-progress" min="0" max="100"></div>
-                    <div class="form-group"><label>Base Budget (৳)</label><input type="number" id="edit-proj-budget" step="0.01"></div>
-                    <div class="form-group"><label>Deadline</label><input type="date" id="edit-proj-deadline" required></div>
+                    <div class="form-group">
+                        <label>Progress (%)</label>
+                        <input type="number" id="edit-proj-progress" min="0" max="100">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>New Budget (৳) <span style="font-size:0.7rem; color: var(--accent-blue);">(Client sees as "Budget")</span></label>
+                        <input type="number" id="edit-proj-new-budget" step="0.01" placeholder="Enter new base budget">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Budget Extended By (৳) <span style="font-size:0.7rem; color: var(--accent-yellow);">(Out-of-budget extension)</span></label>
+                        <input type="number" id="edit-proj-extended-by" step="0.01" placeholder="Enter extra out-of-budget amount">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Target Completion Date</label>
+                        <input type="date" id="edit-proj-deadline" required>
+                    </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
                     <button type="button" class="danger-btn" onclick="closeModal('edit-project-modal')">Cancel</button>
                     <button type="submit" class="action-btn">Update Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Overdue Fee Modal -->
+    <div id="edit-overdue-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('edit-overdue-modal')">&times;</button>
+            <h3 style="margin-bottom: 1.25rem; color: #fff;">Set Overdue Fee / Penalty</h3>
+            <form id="edit-overdue-form">
+                <input type="hidden" id="edit-pay-id">
+                <div class="form-group">
+                    <label>Overdue Fee (৳)</label>
+                    <input type="number" id="edit-pay-overdue-amount" step="0.01" required>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button type="button" class="danger-btn" onclick="closeModal('edit-overdue-modal')">Cancel</button>
+                    <button type="submit" class="action-btn">Save Overdue Fee</button>
                 </div>
             </form>
         </div>
@@ -559,12 +1016,38 @@
 
         function escapeHtml(str) {
             if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function generateHexCode() {
+            const characters = '0123456789ABCDEF';
+            let hex = '';
+            for (let i = 0; i < 9; i++) {
+                hex += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            return hex;
         }
 
         function getSupabase() {
             if (!supabaseClient) {
-                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                const config = {
+                    auth: {
+                        flowType: 'pkce',
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                };
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                } else if (typeof createClient === 'function') {
+                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                }
             }
             return supabaseClient;
         }
@@ -572,9 +1055,13 @@
         const authLoading = document.getElementById('auth-loading');
         const adminWrapper = document.getElementById('admin-main-wrapper');
         const logoutBtn = document.getElementById('admin-logout-btn');
+        const userInfoDisplay = document.getElementById('user-info-display');
 
         logoutBtn.addEventListener('click', async () => {
-            await getSupabase().auth.signOut();
+            const client = getSupabase();
+            if (client) {
+                await client.auth.signOut();
+            }
             window.location.replace('index.html');
         });
 
@@ -582,13 +1069,15 @@
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
                 btn.classList.add('active');
-                document.getElementById(btn.getAttribute('data-tab')).classList.add('active');
+                const targetTab = btn.getAttribute('data-tab');
+                document.getElementById(targetTab).classList.add('active');
             });
         });
 
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
 
         async function verifyAdminAndInit(session) {
             if (!session || !session.user) {
@@ -597,18 +1086,23 @@
             }
 
             const client = getSupabase();
-            const { data: profile } = await client.from('profiles').select('role').eq('id', session.user.id).single();
 
-            if (!profile || (profile.role !== 'admin' && profile.role !== 'hadmin')) {
-                alert('Unauthorized access.');
+            const { data: profile, error } = await client
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+
+            if (error || !profile || (profile.role !== 'admin' && profile.role !== 'hadmin')) {
+                alert('Unauthorized access. Admin privileges required.');
                 await client.auth.signOut();
                 window.location.replace('index.html');
                 return;
             }
 
             currentUserRole = profile.role;
-            currentUserEmail = session.user.email;
-            document.getElementById('user-info-display').textContent = `Logged in as ${profile.role} (${currentUserEmail})`;
+            currentUserEmail = (session.user.email || '').toLowerCase();
+            userInfoDisplay.textContent = `Signed in as ${profile.role === 'hadmin' ? 'Head Admin (hadmin)' : 'Admin'} (${currentUserEmail})`;
             logoutBtn.style.display = 'inline-block';
             authLoading.style.display = 'none';
             adminWrapper.style.display = 'block';
@@ -618,16 +1112,52 @@
 
         document.addEventListener('DOMContentLoaded', async () => {
             const client = getSupabase();
+            if (!client) {
+                authLoading.innerHTML = `<p style="color: var(--accent-red);">Failed to initialize Supabase connection.</p>`;
+                return;
+            }
+
             const { data: { session } } = await client.auth.getSession();
             await verifyAdminAndInit(session);
 
+            client.auth.onAuthStateChange(async (event, session) => {
+                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                    await verifyAdminAndInit(session);
+                } else if (event === 'SIGNED_OUT' || !session) {
+                    window.location.replace('index.html');
+                }
+            });
+
+            // Form Event Listeners
             document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
             document.getElementById('create-bill-form').addEventListener('submit', handleCreateBill);
             document.getElementById('create-payment-form').addEventListener('submit', handleCreatePayment);
+            document.getElementById('create-error-log-form').addEventListener('submit', handleCreateErrorLog);
             document.getElementById('create-log-form').addEventListener('submit', handleCreateLog);
             document.getElementById('edit-project-form').addEventListener('submit', handleUpdateProject);
+            document.getElementById('edit-overdue-form').addEventListener('submit', handleUpdateOverdueFee);
 
-            // Synchronize Project Select and Hex Select in Activity Logs Tab
+            // Auto fill listeners
+            document.getElementById('pay-project-id').addEventListener('change', (e) => {
+                const selectedProjId = e.target.value;
+                if (selectedProjId) {
+                    const proj = cachedProjects.find(p => p.id === selectedProjId);
+                    if (proj && proj.client_email) {
+                        document.getElementById('pay-client-email').value = proj.client_email;
+                    }
+                }
+            });
+
+            document.getElementById('err-project-id').addEventListener('change', (e) => {
+                const selectedProjId = e.target.value;
+                if (selectedProjId) {
+                    const proj = cachedProjects.find(p => p.id === selectedProjId);
+                    if (proj) {
+                        document.getElementById('err-client-detail').value = `${proj.client_name || ''} (${proj.client_email || ''})`.trim();
+                    }
+                }
+            });
+
             document.getElementById('log-project-id').addEventListener('change', (e) => {
                 const selectedId = e.target.value;
                 const proj = cachedProjects.find(p => p.id === selectedId);
@@ -643,94 +1173,202 @@
                     document.getElementById('log-project-id').value = proj.id;
                 }
             });
+
+            // Active Search Listeners across options
+            document.getElementById('project-search').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = cachedProjects.filter(p => 
+                    (p.hex_code || '').toLowerCase().includes(query) ||
+                    (p.title || p.project_name || '').toLowerCase().includes(query) ||
+                    (p.client_name || '').toLowerCase().includes(query) ||
+                    (p.client_email || '').toLowerCase().includes(query) ||
+                    (p.members_working || '').toLowerCase().includes(query)
+                );
+                renderProjectsTable(filtered);
+            });
+
+            document.getElementById('billing-search').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = cachedBilling.filter(b => {
+                    const proj = cachedProjects.find(p => p.id === b.project_id);
+                    return (
+                        (b.description || '').toLowerCase().includes(query) ||
+                        (b.client_email || '').toLowerCase().includes(query) ||
+                        (proj && (proj.title || proj.project_name || '').toLowerCase().includes(query)) ||
+                        (proj && (proj.hex_code || '').toLowerCase().includes(query))
+                    );
+                });
+                renderBillingTable(filtered);
+            });
+
+            document.getElementById('payments-search').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = cachedPayments.filter(p => 
+                    (p.client_name || '').toLowerCase().includes(query) ||
+                    (p.client_email || '').toLowerCase().includes(query) ||
+                    (p.milestone || '').toLowerCase().includes(query) ||
+                    (p.transaction_type || '').toLowerCase().includes(query)
+                );
+                renderPaymentsTable(filtered);
+            });
+
+            document.getElementById('activity-search').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                const filtered = cachedLogs.filter(l => {
+                    const proj = cachedProjects.find(p => p.id === l.project_id);
+                    return (
+                        (l.log_text || l.message || '').toLowerCase().includes(query) ||
+                        (l.hex_code || '').toLowerCase().includes(query) ||
+                        (proj && (proj.title || proj.project_name || '').toLowerCase().includes(query))
+                    );
+                });
+                renderLogsTable(filtered);
+            });
+
+            document.getElementById('clients-search').addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                renderClientsTable(query);
+            });
         });
 
         async function loadAllAdminData() {
             const client = getSupabase();
-            const [projRes, billRes, payRes, logRes] = await Promise.all([
-                client.from('projects').select('*').order('created_at', { ascending: false }),
-                client.from('billing').select('*').order('created_at', { ascending: false }),
-                client.from('payments').select('*').order('created_at', { ascending: false }),
-                client.from('activity_logs').select('*').order('created_at', { ascending: false })
-            ]);
 
-            cachedProjects = projRes.data || [];
-            cachedBilling = billRes.data || [];
-            cachedPayments = payRes.data || [];
-            cachedLogs = logRes.data || [];
+            try {
+                const [projRes, billRes, payRes, logRes] = await Promise.all([
+                    client.from('projects').select('*').order('created_at', { ascending: false }),
+                    client.from('billing').select('*').order('created_at', { ascending: false }),
+                    client.from('payments').select('*').order('created_at', { ascending: false }),
+                    client.from('activity_logs').select('*').order('created_at', { ascending: false })
+                ]);
 
-            calculateMetrics();
-            populateDropdowns();
-            renderProjectsTable(cachedProjects);
-            renderBillingTable(cachedBilling);
-            renderPaymentsTable(cachedPayments);
-            renderLogsTable(cachedLogs);
-            renderClientsTable();
+                cachedProjects = projRes.data || [];
+                cachedBilling = billRes.data || [];
+                cachedPayments = payRes.data || [];
+                cachedLogs = logRes.data || [];
+
+                calculateMetrics();
+                populateDropdowns();
+                renderProjectsTable(cachedProjects);
+                renderBillingTable(cachedBilling);
+                renderPaymentsTable(cachedPayments);
+                renderLogsTable(cachedLogs);
+                renderClientsTable();
+            } catch (err) {
+                console.error('Error fetching admin data:', err);
+            }
         }
 
         function calculateMetrics() {
-            let totalRev = 0;
+            let totalRevenue = 0;
+            let pendingRevenue = 0;
+
             cachedPayments.forEach(p => {
                 const amt = Number(p.amount || 0);
+                const overdueAmt = Number(p.overdue_amount || 0);
+                const st = (p.status || p.payment_status || '').toLowerCase();
+
                 if (p.is_error_log) {
-                    if ((p.transaction_type || '').includes('Undercharged')) totalRev += amt;
-                    else if ((p.transaction_type || '').includes('Overcharged')) totalRev -= amt;
-                } else if ((p.status || p.payment_status || '').toLowerCase() === 'paid') {
-                    totalRev += amt;
+                    const type = (p.transaction_type || '').toLowerCase();
+                    if (type.includes('undercharged') || type.includes('receivable')) {
+                        totalRevenue += amt;
+                    } else if (type.includes('overcharged') || type.includes('payable')) {
+                        totalRevenue -= amt;
+                    }
+                    return;
+                }
+
+                if (st === 'paid') {
+                    totalRevenue += (amt + overdueAmt);
+                } else if (st === 'pending' || st === 'overdue') {
+                    pendingRevenue += (amt + overdueAmt);
                 }
             });
 
             const totalBilled = cachedBilling.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+            const activeProjectsCount = cachedProjects.filter(p => 
+                (p.status || '').toLowerCase() !== 'completed' && (p.status || '').toLowerCase() !== 'cancelled'
+            ).length;
 
-            document.getElementById('metric-revenue').textContent = `৳${totalRev.toLocaleString()}`;
-            document.getElementById('metric-billed').textContent = `৳${totalBilled.toLocaleString()}`;
-            document.getElementById('metric-projects').textContent = cachedProjects.length;
+            document.getElementById('metric-revenue').textContent = `৳${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('metric-billed').textContent = `৳${totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('metric-pending').textContent = `৳${pendingRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('metric-projects').textContent = activeProjectsCount;
         }
 
         function populateDropdowns() {
-            const options = '<option value="">-- Select Project --</option>' + 
-                cachedProjects.map(p => `<option value="${p.id}">${escapeHtml(p.title || p.project_name)} [${p.hex_code || 'No Hex'}]</option>`).join('');
+            const payDropdown = document.getElementById('pay-project-id');
+            const errDropdown = document.getElementById('err-project-id');
+            const logDropdown = document.getElementById('log-project-id');
+            const billDropdown = document.getElementById('bill-project-id');
+
+            const optionsHtml = '<option value="">-- Select Project --</option>' + 
+                cachedProjects.map(p => `<option value="${p.id}">${escapeHtml(p.hex_code ? `[${p.hex_code}] ` : '')}${escapeHtml(p.title || p.project_name || 'Untitled Project')}</option>`).join('');
 
             const hexOptions = '<option value="">-- Select Hex --</option>' + 
-                cachedProjects.map(p => `<option value="${p.hex_code || ''}">${p.hex_code || 'N/A'} (${escapeHtml(p.title)})</option>`).join('');
+                cachedProjects.map(p => `<option value="${p.hex_code || ''}">${p.hex_code || 'N/A'} (${escapeHtml(p.title || p.project_name)})</option>`).join('');
 
-            document.getElementById('bill-project-id').innerHTML = options;
-            document.getElementById('pay-project-id').innerHTML = options;
-            document.getElementById('log-project-id').innerHTML = options;
+            payDropdown.innerHTML = optionsHtml;
+            errDropdown.innerHTML = optionsHtml;
+            logDropdown.innerHTML = optionsHtml;
+            billDropdown.innerHTML = optionsHtml;
             document.getElementById('log-hex-code').innerHTML = hexOptions;
         }
 
         function renderProjectsTable(projects) {
             const tbody = document.getElementById('projects-table-body');
-            tbody.innerHTML = projects.map(p => `
-                <tr>
-                    <td><span class="hex-code-badge">${escapeHtml(p.hex_code || 'N/A')}</span></td>
-                    <td style="font-weight:600; color:#fff;">${escapeHtml(p.title || p.project_name)}</td>
-                    <td>${escapeHtml(p.client_name)}</td>
-                    <td>${escapeHtml(p.client_email)}</td>
-                    <td>${escapeHtml(p.members_working)}</td>
-                    <td>${escapeHtml(p.status)}</td>
-                    <td>${p.progress}%</td>
-                    <td>৳${Number(p.budget).toLocaleString()}</td>
-                    <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                        <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
-                        ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
+            if (projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; color: var(--text-muted);">No matching projects found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = projects.map(p => {
+                const baseBudget = Number(p.budget || 0);
+                const extendedBy = Number(p.budget_extended_by || 0);
+
+                return `
+                    <tr>
+                        <td><span class="hex-code-badge">${escapeHtml(p.hex_code || 'N/A')}</span></td>
+                        <td style="font-weight: 600; color: #fff;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
+                        <td>${escapeHtml(p.client_name || 'N/A')}</td>
+                        <td>
+                            ${p.client_email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.client_email)}" target="_blank" class="gmail-link">${escapeHtml(p.client_email)} ✉️</a>` : 'N/A'}
+                        </td>
+                        <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
+                        <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
+                        <td>${p.progress || 0}%</td>
+                        <td>
+                            ৳${baseBudget.toLocaleString()}
+                            ${extendedBy > 0 ? `<span class="extended-budget-tag">+৳${extendedBy.toLocaleString()} Extended</span>` : ''}
+                        </td>
+                        <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
+                            ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderBillingTable(billing) {
             const tbody = document.getElementById('billing-table-body');
+            if (billing.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No billing logs available.</td></tr>';
+                return;
+            }
+
             tbody.innerHTML = billing.map(b => {
                 const proj = cachedProjects.find(p => p.id === b.project_id);
+                const email = b.client_email || (proj ? proj.client_email : null);
                 return `
                     <tr>
                         <td>${new Date(b.created_at).toLocaleDateString()}</td>
-                        <td style="font-weight:600; color:#fff;">${escapeHtml(proj ? proj.title : 'N/A')}</td>
+                        <td style="font-weight:600; color:#fff;">${escapeHtml(proj ? (proj.title || proj.project_name) : 'N/A')}</td>
                         <td><span class="hex-code-badge">${escapeHtml(proj ? proj.hex_code : 'N/A')}</span></td>
-                        <td>${escapeHtml(b.client_email || (proj ? proj.client_email : 'N/A'))}</td>
+                        <td>
+                            ${email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}" target="_blank" class="gmail-link">${escapeHtml(email)} ✉️</a>` : 'N/A'}
+                        </td>
                         <td>${escapeHtml(b.description)}</td>
                         <td style="font-weight:600; color:var(--accent-blue);">৳${Number(b.amount).toLocaleString()}</td>
                         <td>
@@ -743,30 +1381,86 @@
 
         function renderPaymentsTable(payments) {
             const tbody = document.getElementById('payments-table-body');
-            tbody.innerHTML = payments.map(p => `
-                <tr>
-                    <td>${new Date(p.created_at).toLocaleDateString()}</td>
-                    <td>${escapeHtml(p.client_name)}</td>
-                    <td>${escapeHtml(p.client_email)}</td>
-                    <td>${escapeHtml(p.milestone)}</td>
-                    <td style="font-weight:600;">৳${Number(p.amount).toLocaleString()}</td>
-                    <td>${escapeHtml(p.status || p.payment_status)}</td>
-                    <td>
-                        ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
+            if (payments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color: var(--text-muted);">No transaction logs available.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = payments.map(p => {
+                if (p.is_error_log) {
+                    return `
+                        <tr style="background: rgba(248, 113, 113, 0.03);">
+                            <td>${new Date(p.created_at).toLocaleDateString()}</td>
+                            <td>
+                                <strong>${escapeHtml(p.client_name)}</strong>
+                                <span class="fraud-audit-tag">⚠ Internal Adjustment</span>
+                            </td>
+                            <td>
+                                ${p.client_email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.client_email)}" target="_blank" class="gmail-link">${escapeHtml(p.client_email)} ✉️</a>` : 'N/A'}
+                            </td>
+                            <td style="color: #fca5a5;">${escapeHtml(p.milestone)}</td>
+                            <td style="font-weight: 700; color: var(--accent-purple);">
+                                ৳${Number(p.amount).toLocaleString()} (${escapeHtml(p.transaction_type)})
+                            </td>
+                            <td>-</td>
+                            <td><span class="status-badge status-error-log">Adjustment</span></td>
+                            <td>
+                                ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}
+                            </td>
+                        </tr>
+                    `;
+                }
+
+                const currentStatus = (p.status || p.payment_status || 'Pending').toLowerCase();
+                const overdueFee = Number(p.overdue_amount || 0);
+
+                return `
+                    <tr>
+                        <td>
+                            ${new Date(p.created_at).toLocaleDateString()}
+                            ${p.paid_at ? `<div class="date-subtext">Paid: ${new Date(p.paid_at).toLocaleDateString()}</div>` : ''}
+                        </td>
+                        <td>
+                            <strong>${escapeHtml(p.client_name || 'N/A')}</strong>
+                        </td>
+                        <td>
+                            ${p.client_email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.client_email)}" target="_blank" class="gmail-link">${escapeHtml(p.client_email)} ✉️</a>` : 'N/A'}
+                        </td>
+                        <td>${escapeHtml(p.milestone || 'N/A')}</td>
+                        <td style="font-weight: 600;">৳${Number(p.amount || 0).toLocaleString()}</td>
+                        <td style="color: var(--accent-red); font-weight: 600;">
+                            ${overdueFee > 0 ? `+৳${overdueFee.toLocaleString()}` : '৳0.00'}
+                            <button class="edit-btn" style="margin-left:6px; padding:2px 6px; font-size:0.7rem;" onclick="openEditOverdue('${p.id}', ${overdueFee})">Set</button>
+                        </td>
+                        <td>
+                            <select class="inline-select" onchange="updatePaymentStatus('${p.id}', this.value)">
+                                <option value="Pending" ${currentStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Paid" ${currentStatus === 'paid' ? 'selected' : ''}>Paid</option>
+                                <option value="Overdue" ${currentStatus === 'overdue' ? 'selected' : ''}>Overdue</option>
+                            </select>
+                        </td>
+                        <td>
+                            ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         function renderLogsTable(logs) {
             const tbody = document.getElementById('logs-table-body');
+            if (logs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: var(--text-muted);">No activity logs found.</td></tr>';
+                return;
+            }
+
             tbody.innerHTML = logs.map(l => {
                 const proj = cachedProjects.find(p => p.id === l.project_id);
                 return `
                     <tr>
                         <td>${new Date(l.created_at).toLocaleString()}</td>
                         <td><span class="hex-code-badge">${escapeHtml(l.hex_code || (proj ? proj.hex_code : 'N/A'))}</span></td>
-                        <td style="color:#fff;">${escapeHtml(proj ? proj.title : 'N/A')}</td>
+                        <td style="color: #fff; font-weight: 600;">${escapeHtml(proj ? (proj.title || proj.project_name) : 'N/A')}</td>
                         <td>${escapeHtml(l.log_text || l.message)}</td>
                         <td>
                             ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteLog('${l.id}')">Delete</button>` : ''}
@@ -776,7 +1470,7 @@
             }).join('');
         }
 
-        function renderClientsTable() {
+        function renderClientsTable(filterQuery = '') {
             const tbody = document.getElementById('clients-table-body');
             const clientMap = {};
 
@@ -792,14 +1486,40 @@
                 if (!email) return;
                 if (!clientMap[email]) clientMap[email] = { email, name: p.client_name || email, billed: 0, paid: 0 };
                 if ((p.status || p.payment_status || '').toLowerCase() === 'paid') {
-                    clientMap[email].paid += Number(p.amount || 0);
+                    clientMap[email].paid += (Number(p.amount || 0) + Number(p.overdue_amount || 0));
                 }
             });
 
-            tbody.innerHTML = Object.values(clientMap).map(c => `
+            cachedProjects.forEach(p => {
+                const email = (p.client_email || '').toLowerCase().trim();
+                if (!email) return;
+                if (!clientMap[email]) {
+                    clientMap[email] = { email, name: p.client_name || email, billed: Number(p.budget || 0), paid: 0 };
+                } else if (clientMap[email].billed === 0) {
+                    clientMap[email].billed = Number(p.budget || 0);
+                }
+            });
+
+            let clientList = Object.values(clientMap);
+
+            if (filterQuery) {
+                clientList = clientList.filter(c => 
+                    c.email.toLowerCase().includes(filterQuery) || 
+                    c.name.toLowerCase().includes(filterQuery)
+                );
+            }
+
+            if (clientList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No client records found.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = clientList.map(c => `
                 <tr>
                     <td style="font-weight:600; color:#fff;">${escapeHtml(c.name)}</td>
-                    <td>${escapeHtml(c.email)}</td>
+                    <td>
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}" target="_blank" class="gmail-link">${escapeHtml(c.email)} ✉️</a>
+                    </td>
                     <td style="color:var(--accent-blue);">৳${c.billed.toLocaleString()}</td>
                     <td style="color:var(--accent-green);">৳${c.paid.toLocaleString()}</td>
                     <td style="color:var(--accent-yellow); font-weight:600;">৳${Math.max(0, c.billed - c.paid).toLocaleString()}</td>
@@ -810,7 +1530,7 @@
 
         async function handleCreateProject(e) {
             e.preventDefault();
-            const hex = 'HEX' + Math.floor(100000 + Math.random() * 900000);
+            const hex = generateHexCode();
             const payload = {
                 hex_code: hex,
                 title: document.getElementById('proj-title').value,
@@ -827,7 +1547,11 @@
 
             const { error } = await getSupabase().from('projects').insert([payload]);
             if (error) alert(error.message);
-            else { alert('Project created!'); await loadAllAdminData(); }
+            else {
+                alert('Project successfully created!');
+                document.getElementById('create-project-form').reset();
+                await loadAllAdminData();
+            }
         }
 
         async function handleCreateBill(e) {
@@ -844,7 +1568,11 @@
 
             const { error } = await getSupabase().from('billing').insert([payload]);
             if (error) alert(error.message);
-            else { alert('Bill logged!'); await loadAllAdminData(); }
+            else {
+                alert('Bill entry successfully logged!');
+                document.getElementById('create-bill-form').reset();
+                await loadAllAdminData();
+            }
         }
 
         async function handleCreatePayment(e) {
@@ -856,12 +1584,41 @@
                 amount: parseFloat(document.getElementById('pay-amount').value) || 0,
                 milestone: document.getElementById('pay-milestone').value,
                 status: document.getElementById('pay-status').value,
-                payment_status: document.getElementById('pay-status').value
+                payment_status: document.getElementById('pay-status').value,
+                overdue_amount: parseFloat(document.getElementById('pay-overdue-amount').value) || 0
             };
 
             const { error } = await getSupabase().from('payments').insert([payload]);
             if (error) alert(error.message);
-            else { alert('Payment logged!'); await loadAllAdminData(); }
+            else {
+                alert('Payment record successfully added!');
+                document.getElementById('create-payment-form').reset();
+                await loadAllAdminData();
+            }
+        }
+
+        async function handleCreateErrorLog(e) {
+            e.preventDefault();
+            const projId = document.getElementById('err-project-id').value;
+            const payload = {
+                project_id: projId || null,
+                amount: parseFloat(document.getElementById('err-amount').value) || 0,
+                transaction_type: document.getElementById('err-type').value,
+                client_name: document.getElementById('err-client-detail').value,
+                client_email: document.getElementById('err-client-detail').value,
+                milestone: document.getElementById('err-note').value,
+                is_error_log: true,
+                status: 'Paid',
+                payment_status: 'Paid'
+            };
+
+            const { error } = await getSupabase().from('payments').insert([payload]);
+            if (error) alert(error.message);
+            else {
+                alert('Financial adjustment log created!');
+                document.getElementById('create-error-log-form').reset();
+                await loadAllAdminData();
+            }
         }
 
         async function handleCreateLog(e) {
@@ -878,7 +1635,11 @@
 
             const { error } = await getSupabase().from('activity_logs').insert([payload]);
             if (error) alert(error.message);
-            else { alert('Log posted!'); await loadAllAdminData(); }
+            else {
+                alert('Timeline update published!');
+                document.getElementById('create-log-form').reset();
+                await loadAllAdminData();
+            }
         }
 
         function openEditProject(id) {
@@ -892,7 +1653,8 @@
             document.getElementById('edit-proj-members').value = p.members_working || '';
             document.getElementById('edit-proj-status').value = p.status || 'In Progress';
             document.getElementById('edit-proj-progress').value = p.progress || 0;
-            document.getElementById('edit-proj-budget').value = p.budget || 0;
+            document.getElementById('edit-proj-new-budget').value = p.budget || '';
+            document.getElementById('edit-proj-extended-by').value = p.budget_extended_by || '';
             document.getElementById('edit-proj-deadline').value = p.deadline || '';
 
             openModal('edit-project-modal');
@@ -909,18 +1671,52 @@
                 members_working: document.getElementById('edit-proj-members').value,
                 status: document.getElementById('edit-proj-status').value,
                 progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
-                budget: parseFloat(document.getElementById('edit-proj-budget').value) || 0,
+                budget: parseFloat(document.getElementById('edit-proj-new-budget').value) || 0,
+                budget_extended_by: parseFloat(document.getElementById('edit-proj-extended-by').value) || 0,
                 deadline: document.getElementById('edit-proj-deadline').value
             };
 
             const { error } = await getSupabase().from('projects').update(payload).eq('id', id);
             if (error) alert(error.message);
-            else { closeModal('edit-project-modal'); await loadAllAdminData(); }
+            else {
+                closeModal('edit-project-modal');
+                await loadAllAdminData();
+            }
+        }
+
+        function openEditOverdue(id, currentFee) {
+            document.getElementById('edit-pay-id').value = id;
+            document.getElementById('edit-pay-overdue-amount').value = currentFee || 0;
+            openModal('edit-overdue-modal');
+        }
+
+        async function handleUpdateOverdueFee(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-pay-id').value;
+            const overdueAmt = parseFloat(document.getElementById('edit-pay-overdue-amount').value) || 0;
+
+            const { error } = await getSupabase().from('payments').update({ overdue_amount: overdueAmt }).eq('id', id);
+            if (error) alert(error.message);
+            else {
+                closeModal('edit-overdue-modal');
+                await loadAllAdminData();
+            }
+        }
+
+        async function updatePaymentStatus(id, newStatus) {
+            const payload = { status: newStatus, payment_status: newStatus };
+            if (newStatus.toLowerCase() === 'paid') {
+                payload.paid_at = new Date().toISOString();
+            }
+
+            const { error } = await getSupabase().from('payments').update(payload).eq('id', id);
+            if (error) alert(error.message);
+            else await loadAllAdminData();
         }
 
         async function deleteProject(id) {
             if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
-            if (confirm('Delete project?')) {
+            if (confirm('Delete project entry?')) {
                 await getSupabase().from('projects').delete().eq('id', id);
                 await loadAllAdminData();
             }
@@ -936,7 +1732,7 @@
 
         async function deletePayment(id) {
             if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
-            if (confirm('Delete payment?')) {
+            if (confirm('Delete payment record?')) {
                 await getSupabase().from('payments').delete().eq('id', id);
                 await loadAllAdminData();
             }
@@ -944,7 +1740,7 @@
 
         async function deleteLog(id) {
             if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
-            if (confirm('Delete log entry?')) {
+            if (confirm('Delete activity log?')) {
                 await getSupabase().from('activity_logs').delete().eq('id', id);
                 await loadAllAdminData();
             }
