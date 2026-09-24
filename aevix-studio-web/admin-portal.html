@@ -434,6 +434,21 @@
             border: 1px solid rgba(192, 132, 252, 0.3);
         }
 
+        /* Pill Card Design for Paid (Locked) */
+        .badge-paid-locked {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(52, 211, 153, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(52, 211, 153, 0.35);
+            padding: 5px 16px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+        }
+
         .hex-code-badge {
             font-family: monospace;
             background: rgba(56, 189, 248, 0.1);
@@ -466,6 +481,43 @@
             padding: 4px 8px;
             font-size: 0.8rem;
             outline: none;
+        }
+
+        /* Client Notes Styling */
+        .client-note-textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            width: 100%;
+            min-width: 180px;
+            resize: vertical;
+            min-height: 38px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .client-note-textarea:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .save-note-btn {
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.725rem;
+            font-weight: 600;
+            margin-top: 4px;
+            transition: all 0.2s;
+        }
+
+        .save-note-btn:hover {
+            background: rgba(56, 189, 248, 0.25);
         }
 
         /* Modals */
@@ -521,12 +573,6 @@
             color: var(--text-main);
             width: 250px;
             font-size: 0.85rem;
-        }
-        
-        .payer-subtext {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 2px;
         }
 
         .fraud-audit-tag {
@@ -907,12 +953,13 @@
                                     <th>Associated Email</th>
                                     <th>Total Billed</th>
                                     <th>Total Paid</th>
+                                    <th>Extra Paid</th>
                                     <th>Current Due</th>
-                                    <th>Actions</th>
+                                    <th>Admin Notes (Private)</th>
                                 </tr>
                             </thead>
                             <tbody id="clients-table-body">
-                                <tr><td colspan="6" style="text-align:center; color: var(--text-muted);">Loading clients...</td></tr>
+                                <tr><td colspan="7" style="text-align:center; color: var(--text-muted);">Loading clients...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1013,6 +1060,7 @@
         let cachedBilling = [];
         let cachedPayments = [];
         let cachedLogs = [];
+        let cachedProfiles = [];
 
         function escapeHtml(str) {
             if (!str) return '';
@@ -1235,17 +1283,19 @@
             const client = getSupabase();
 
             try {
-                const [projRes, billRes, payRes, logRes] = await Promise.all([
+                const [projRes, billRes, payRes, logRes, profRes] = await Promise.all([
                     client.from('projects').select('*').order('created_at', { ascending: false }),
                     client.from('billing').select('*').order('created_at', { ascending: false }),
                     client.from('payments').select('*').order('created_at', { ascending: false }),
-                    client.from('activity_logs').select('*').order('created_at', { ascending: false })
+                    client.from('activity_logs').select('*').order('created_at', { ascending: false }),
+                    client.from('profiles').select('*')
                 ]);
 
                 cachedProjects = projRes.data || [];
                 cachedBilling = billRes.data || [];
                 cachedPayments = payRes.data || [];
                 cachedLogs = logRes.data || [];
+                cachedProfiles = profRes.data || [];
 
                 calculateMetrics();
                 populateDropdowns();
@@ -1430,11 +1480,15 @@
                             <button class="edit-btn" style="margin-left:6px; padding:2px 6px; font-size:0.7rem;" onclick="openEditOverdue('${p.id}', ${overdueFee})" ${isPaid ? 'disabled title="Locked - Already Paid"' : ''}>Set</button>
                         </td>
                         <td>
-                            <select class="inline-select" onchange="updatePaymentStatus('${p.id}', this.value)" ${isPaid ? 'disabled title="Locked - Paid accounts cannot be changed"' : ''}>
-                                <option value="Pending" ${currentStatus === 'pending' ? 'selected' : ''}>Pending</option>
-                                <option value="Paid" ${isPaid ? 'selected' : ''}>Paid (Locked)</option>
-                                <option value="Overdue" ${currentStatus === 'overdue' ? 'selected' : ''}>Overdue</option>
-                            </select>
+                            ${isPaid ? `
+                                <span class="badge-paid-locked">Paid (Locked)</span>
+                            ` : `
+                                <select class="inline-select" onchange="updatePaymentStatus('${p.id}', this.value)">
+                                    <option value="Pending" ${currentStatus === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Overdue" ${currentStatus === 'overdue' ? 'selected' : ''}>Overdue</option>
+                                </select>
+                            `}
                         </td>
                         <td>
                             ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}
@@ -1474,16 +1528,19 @@
             cachedBilling.forEach(b => {
                 const email = (b.client_email || '').toLowerCase().trim();
                 if (!email) return;
-                if (!clientMap[email]) clientMap[email] = { email, name: email, billed: 0, paid: 0 };
+                if (!clientMap[email]) clientMap[email] = { email, name: email, billed: 0, paid: 0, extraPaid: 0, note: '' };
                 clientMap[email].billed += Number(b.amount || 0);
             });
 
             cachedPayments.forEach(p => {
                 const email = (p.client_email || '').toLowerCase().trim();
                 if (!email) return;
-                if (!clientMap[email]) clientMap[email] = { email, name: p.client_name || email, billed: 0, paid: 0 };
+                if (!clientMap[email]) clientMap[email] = { email, name: p.client_name || email, billed: 0, paid: 0, extraPaid: 0, note: '' };
+                
+                const overdue = Number(p.overdue_amount || 0);
                 if ((p.status || p.payment_status || '').toLowerCase() === 'paid') {
-                    clientMap[email].paid += (Number(p.amount || 0) + Number(p.overdue_amount || 0));
+                    clientMap[email].paid += Number(p.amount || 0);
+                    if (overdue > 0) clientMap[email].extraPaid += overdue;
                 }
             });
 
@@ -1491,9 +1548,19 @@
                 const email = (p.client_email || '').toLowerCase().trim();
                 if (!email) return;
                 if (!clientMap[email]) {
-                    clientMap[email] = { email, name: p.client_name || email, billed: Number(p.budget || 0), paid: 0 };
+                    clientMap[email] = { email, name: p.client_name || email, billed: Number(p.budget || 0), paid: 0, extraPaid: 0, note: '' };
                 } else if (clientMap[email].billed === 0) {
                     clientMap[email].billed = Number(p.budget || 0);
+                }
+            });
+
+            // Map profile details (notes & id)
+            cachedProfiles.forEach(prof => {
+                const email = (prof.email || '').toLowerCase().trim();
+                if (email && clientMap[email]) {
+                    clientMap[email].profileId = prof.id;
+                    clientMap[email].note = prof.notes || '';
+                    if (prof.full_name) clientMap[email].name = prof.full_name;
                 }
             });
 
@@ -1507,22 +1574,54 @@
             }
 
             if (clientList.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color: var(--text-muted);">No client records found.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color: var(--text-muted);">No client records found.</td></tr>';
                 return;
             }
 
-            tbody.innerHTML = clientList.map(c => `
-                <tr>
-                    <td style="font-weight:600; color:#fff;">${escapeHtml(c.name)}</td>
-                    <td>
-                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}" target="_blank" class="gmail-link">${escapeHtml(c.email)}</a>
-                    </td>
-                    <td style="color:var(--accent-blue);">৳${c.billed.toLocaleString()}</td>
-                    <td style="color:var(--accent-green);">৳${c.paid.toLocaleString()}</td>
-                    <td style="color:var(--accent-yellow); font-weight:600;">৳${Math.max(0, c.billed - c.paid).toLocaleString()}</td>
-                    <td>-</td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = clientList.map(c => {
+                const extraPaidCalc = c.extraPaid + Math.max(0, c.paid - c.billed);
+                const netDue = Math.max(0, c.billed - c.paid);
+
+                return `
+                    <tr>
+                        <td style="font-weight:600; color:#fff;">${escapeHtml(c.name)}</td>
+                        <td>
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}" target="_blank" class="gmail-link">${escapeHtml(c.email)}</a>
+                        </td>
+                        <td style="color:var(--accent-blue);">৳${c.billed.toLocaleString()}</td>
+                        <td style="color:var(--accent-green);">৳${c.paid.toLocaleString()}</td>
+                        <td style="color:var(--accent-purple); font-weight:600;">৳${extraPaidCalc.toLocaleString()}</td>
+                        <td style="color:var(--accent-yellow); font-weight:600;">৳${netDue.toLocaleString()}</td>
+                        <td>
+                            <textarea id="note-${c.profileId || c.email.replace(/[^a-zA-Z0-9]/g, '_')}" class="client-note-textarea" placeholder="Add internal note...">${escapeHtml(c.note)}</textarea>
+                            <button class="save-note-btn" onclick="saveClientNote('${c.profileId || ''}', '${escapeHtml(c.email)}')">Save Note</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function saveClientNote(profileId, email) {
+            const sanitizedKey = profileId || email.replace(/[^a-zA-Z0-9]/g, '_');
+            const noteText = document.getElementById(`note-${sanitizedKey}`).value;
+
+            const client = getSupabase();
+            let error = null;
+
+            if (profileId) {
+                const res = await client.from('profiles').update({ notes: noteText }).eq('id', profileId);
+                error = res.error;
+            } else {
+                const res = await client.from('profiles').update({ notes: noteText }).eq('email', email);
+                error = res.error;
+            }
+
+            if (error) {
+                alert('Could not save note: ' + error.message);
+            } else {
+                alert('Client note saved successfully!');
+                await loadAllAdminData();
+            }
         }
 
         async function handleCreateProject(e) {
