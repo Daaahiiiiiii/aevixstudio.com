@@ -210,7 +210,7 @@
 
         .project-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
             padding-top: 1rem;
             border-top: 1px solid var(--border-color);
@@ -230,9 +230,77 @@
         }
 
         .detail-val {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
             color: #ffffff;
+        }
+
+        .text-green { color: var(--accent-green) !important; }
+        .text-yellow { color: var(--accent-yellow) !important; }
+        .text-red { color: var(--accent-red) !important; }
+
+        /* Team Members List */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .team-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.85rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .team-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .team-info-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .team-info-role {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Payment Ledger Table */
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+        }
+
+        .ledger-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .ledger-table td {
+            padding: 0.85rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: #e5e7eb;
         }
 
         /* Activity Timeline */
@@ -309,13 +377,13 @@
         </div>
 
         <div id="portal-main-view" style="display: none;">
-            <!-- Multi-project Switcher (Shows if client has 1 or more projects) -->
+            <!-- Multi-project Switcher -->
             <div id="project-selector-wrapper" class="project-selector-wrapper">
                 <div class="selector-label">Your Projects</div>
                 <div id="project-cards-grid" class="project-cards-grid"></div>
             </div>
 
-            <!-- Active Project Details Card -->
+            <!-- Active Project Overview Card -->
             <div class="card">
                 <div class="project-header-row">
                     <div>
@@ -343,9 +411,47 @@
                         <span id="active-proj-deadline" class="detail-val">N/A</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Project Budget</span>
+                        <span class="detail-label">Total Budget</span>
                         <span id="active-proj-budget" class="detail-val">$0.00</span>
                     </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Amount Paid</span>
+                        <span id="active-proj-paid" class="detail-val text-green">$0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Late Fees</span>
+                        <span id="active-proj-late-fees" class="detail-val text-red">$0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Amount Due</span>
+                        <span id="active-proj-due" class="detail-val text-yellow">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Members Working on Project -->
+            <div class="card">
+                <h3 class="section-heading">Assigned Team Members</h3>
+                <div id="team-container">
+                    <div id="team-grid" class="team-grid"></div>
+                </div>
+            </div>
+
+            <!-- Payment Ledger Logs Section -->
+            <div class="card">
+                <h3 class="section-heading">Payment Ledger & History</h3>
+                <div id="ledger-container" style="overflow-x: auto;">
+                    <table class="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description / Reference</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-tbody"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -463,7 +569,7 @@
             const activeBtn = document.getElementById(`p-btn-${projectId}`);
             if (activeBtn) activeBtn.classList.add('active');
 
-            // Render Active Project Card Information
+            // Render Active Project Card Base Information
             document.getElementById('active-proj-title').textContent = project.title || project.project_name || 'Untitled Project';
             document.getElementById('active-proj-desc').textContent = project.description || 'No detailed scope description provided.';
             
@@ -477,10 +583,107 @@
             document.getElementById('active-proj-progress-bar').style.width = `${progress}%`;
 
             document.getElementById('active-proj-deadline').textContent = project.deadline ? new Date(project.deadline).toLocaleDateString() : 'TBD';
-            document.getElementById('active-proj-budget').textContent = `$${Number(project.budget || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}`;
 
-            // Fetch and render logs for this specific project
-            await loadProjectLogs(projectId);
+            // Fetch financials, team members, payment ledgers & logs concurrently
+            await Promise.all([
+                loadFinancialsAndLedger(project),
+                loadTeamMembers(projectId, project),
+                loadProjectLogs(projectId)
+            ]);
+        }
+
+        async function loadFinancialsAndLedger(project) {
+            const client = getSupabase();
+            const budget = Number(project.budget || 0);
+            let lateFees = Number(project.late_fees || project.late_fee || 0);
+            let amountPaid = Number(project.amount_paid || 0);
+
+            // Fetch payment ledger records for this project
+            const { data: payments } = await client
+                .from('payments')
+                .select('*')
+                .eq('project_id', project.id)
+                .order('created_at', { ascending: false });
+
+            const ledgerTbody = document.getElementById('ledger-tbody');
+
+            if (payments && payments.length > 0) {
+                // Recalculate amount paid & late fees if present in ledger
+                let calculatedPaid = 0;
+                let calculatedLateFees = 0;
+
+                payments.forEach(p => {
+                    const amt = Number(p.amount || 0);
+                    if (p.type === 'late_fee' || p.is_late_fee) {
+                        calculatedLateFees += amt;
+                    } else {
+                        calculatedPaid += amt;
+                    }
+                });
+
+                if (calculatedPaid > 0) amountPaid = calculatedPaid;
+                if (calculatedLateFees > 0) lateFees = calculatedLateFees;
+
+                ledgerTbody.innerHTML = payments.map(p => `
+                    <tr>
+                        <td>${new Date(p.created_at || p.payment_date).toLocaleDateString()}</td>
+                        <td>${escapeHtml(p.description || p.reference || 'Payment Record')}</td>
+                        <td><span style="text-transform: capitalize; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.06);">${escapeHtml(p.type || 'Payment')}</span></td>
+                        <td class="${p.type === 'late_fee' ? 'text-red' : 'text-green'}" style="font-weight: 600;">
+                            $${Number(p.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                ledgerTbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No payment transactions recorded for this project yet.</td></tr>';
+            }
+
+            const amountDue = Math.max(0, (budget + lateFees) - amountPaid);
+
+            // Update UI elements
+            document.getElementById('active-proj-budget').textContent = `$${budget.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-paid').textContent = `$${amountPaid.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-late-fees').textContent = `$${lateFees.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-due').textContent = `$${amountDue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        }
+
+        async function loadTeamMembers(projectId, project) {
+            const client = getSupabase();
+            const teamGrid = document.getElementById('team-grid');
+            
+            // Try fetching from project_members table
+            const { data: members } = await client
+                .from('project_members')
+                .select('*')
+                .eq('project_id', projectId);
+
+            let teamList = members || [];
+
+            // Fallback: check if team members are stored directly on the project JSON/array
+            if (teamList.length === 0 && project.team) {
+                teamList = Array.isArray(project.team) ? project.team : [project.team];
+            }
+
+            if (!teamList || teamList.length === 0) {
+                teamGrid.innerHTML = '<p style="color: var(--text-muted); font-size: 0.85rem; grid-column: 1/-1;">No team members currently assigned to this project.</p>';
+                return;
+            }
+
+            teamGrid.innerHTML = teamList.map(m => {
+                const name = m.name || m.full_name || m.email || (typeof m === 'string' ? m : 'Team Member');
+                const role = m.role || m.title || 'Project Contributor';
+                const initial = name.charAt(0).toUpperCase();
+
+                return `
+                    <div class="team-card">
+                        <div class="team-avatar">${initial}</div>
+                        <div>
+                            <div class="team-info-name">${escapeHtml(name)}</div>
+                            <div class="team-info-role">${escapeHtml(role)}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function loadProjectLogs(projectId) {
