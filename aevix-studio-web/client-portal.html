@@ -17,6 +17,7 @@
             --accent-green: #4ade80;
             --accent-yellow: #facc15;
             --accent-red: #f87171;
+            --accent-purple: #a855f7;
         }
 
         * {
@@ -124,6 +125,17 @@
             margin-bottom: 0.35rem;
         }
 
+        .p-btn-code {
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 0.35rem;
+        }
+
         .p-btn-status {
             font-size: 0.75rem;
             color: var(--text-muted);
@@ -151,6 +163,19 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .project-code-tag {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #ffffff;
+            background: var(--border-color);
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .status-badge {
@@ -208,11 +233,12 @@
             transition: width 0.4s ease;
         }
 
+        /* Financial Metrics Grid */
         .project-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-            padding-top: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.25rem;
+            padding-top: 1.25rem;
             border-top: 1px solid var(--border-color);
         }
 
@@ -223,21 +249,24 @@
         }
 
         .detail-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-transform: uppercase;
             color: var(--text-muted);
             letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         .detail-val {
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 700;
             color: #ffffff;
         }
 
         .text-green { color: var(--accent-green) !important; }
         .text-yellow { color: var(--accent-yellow) !important; }
         .text-red { color: var(--accent-red) !important; }
+        .text-purple { color: var(--accent-purple) !important; }
+        .text-blue { color: var(--accent-blue) !important; }
 
         /* Team Members List */
         .team-grid {
@@ -301,6 +330,33 @@
             padding: 0.85rem 0.5rem;
             border-bottom: 1px solid var(--border-color);
             color: #e5e7eb;
+        }
+
+        /* Error Log Deductions */
+        .error-log-card {
+            background: rgba(248, 113, 113, 0.05);
+            border: 1px solid rgba(248, 113, 113, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .error-log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-log-title {
+            font-weight: 600;
+            color: var(--accent-red);
+            font-size: 0.9rem;
+        }
+
+        .error-log-date {
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
 
         /* Activity Timeline */
@@ -387,7 +443,10 @@
             <div class="card">
                 <div class="project-header-row">
                     <div>
-                        <h2 id="active-proj-title" class="project-display-title">Project Title</h2>
+                        <div class="project-display-title">
+                            <span id="active-proj-title">Project Title</span>
+                            <span id="active-proj-code" class="project-code-tag">#000000</span>
+                        </div>
                         <p id="active-proj-desc" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">-</p>
                     </div>
                     <div>
@@ -405,27 +464,57 @@
                     </div>
                 </div>
 
+                <!-- Complete 10-point Financial Metrics Bar -->
                 <div class="project-details-grid">
                     <div class="detail-item">
-                        <span class="detail-label">Target Completion</span>
-                        <span id="active-proj-deadline" class="detail-val">N/A</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Total Budget</span>
+                        <span class="detail-label">Project Budget</span>
                         <span id="active-proj-budget" class="detail-val">$0.00</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Amount Paid</span>
+                        <span class="detail-label">Total Billed</span>
+                        <span id="active-proj-billed" class="detail-val text-blue">$0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Budget Extension</span>
+                        <span id="active-proj-extension" class="detail-val text-purple">$0.00</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Current Paid</span>
                         <span id="active-proj-paid" class="detail-val text-green">$0.00</span>
                     </div>
                     <div class="detail-item">
-                        <span class="detail-label">Late Fees</span>
-                        <span id="active-proj-late-fees" class="detail-val text-red">$0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Amount Due</span>
+                        <span class="detail-label">Current Due</span>
                         <span id="active-proj-due" class="detail-val text-yellow">$0.00</span>
                     </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Overdue Fees</span>
+                        <span id="active-proj-overdue" class="detail-val text-red">$0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Log Deductions / Adjustments Section -->
+            <div id="error-logs-section" class="card" style="display: none;">
+                <h3 class="section-heading" style="color: var(--accent-red);">Error Log Deductions & Adjustments</h3>
+                <div id="error-logs-container"></div>
+            </div>
+
+            <!-- Detailed Payment Transactions (Who paid at what time & how much) -->
+            <div class="card">
+                <h3 class="section-heading">Payment Ledger & History</h3>
+                <div id="ledger-container" style="overflow-x: auto;">
+                    <table class="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Paid By</th>
+                                <th>Reference / Notes</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-tbody"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -434,24 +523,6 @@
                 <h3 class="section-heading">Assigned Team Members</h3>
                 <div id="team-container">
                     <div id="team-grid" class="team-grid"></div>
-                </div>
-            </div>
-
-            <!-- Payment Ledger Logs Section -->
-            <div class="card">
-                <h3 class="section-heading">Payment Ledger & History</h3>
-                <div id="ledger-container" style="overflow-x: auto;">
-                    <table class="ledger-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description / Reference</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ledger-tbody"></tbody>
-                    </table>
                 </div>
             </div>
 
@@ -551,12 +622,16 @@
         function renderProjectSelector() {
             const grid = document.getElementById('project-cards-grid');
             
-            grid.innerHTML = userProjects.map(p => `
-                <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" id="p-btn-${p.id}" onclick="selectProject('${p.id}')">
-                    <div class="p-btn-title">${escapeHtml(p.title || p.project_name || 'Untitled')}</div>
-                    <div class="p-btn-status">Status: ${escapeHtml(p.status || 'Active')}</div>
-                </button>
-            `).join('');
+            grid.innerHTML = userProjects.map(p => {
+                const hexCode = p.project_code || p.hex_code || p.id.substring(0, 8);
+                return `
+                    <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" id="p-btn-${p.id}" onclick="selectProject('${p.id}')">
+                        <div class="p-btn-title">${escapeHtml(p.title || p.project_name || 'Untitled')}</div>
+                        <div class="p-btn-code">#${escapeHtml(hexCode)}</div>
+                        <div class="p-btn-status">Status: ${escapeHtml(p.status || 'Active')}</div>
+                    </button>
+                `;
+            }).join('');
         }
 
         async function selectProject(projectId) {
@@ -568,6 +643,10 @@
             document.querySelectorAll('.project-card-btn').forEach(btn => btn.classList.remove('active'));
             const activeBtn = document.getElementById(`p-btn-${projectId}`);
             if (activeBtn) activeBtn.classList.add('active');
+
+            // 1. Display Project Code (Hex / Short ID)
+            const projectHex = project.project_code || project.hex_code || project.id.substring(0, 8);
+            document.getElementById('active-proj-code').textContent = `#${projectHex}`;
 
             // Render Active Project Card Base Information
             document.getElementById('active-proj-title').textContent = project.title || project.project_name || 'Untitled Project';
@@ -582,11 +661,10 @@
             document.getElementById('active-proj-progress-num').textContent = `${progress}%`;
             document.getElementById('active-proj-progress-bar').style.width = `${progress}%`;
 
-            document.getElementById('active-proj-deadline').textContent = project.deadline ? new Date(project.deadline).toLocaleDateString() : 'TBD';
-
-            // Fetch financials, team members, payment ledgers & logs concurrently
+            // Fetch financials, ledger, error logs, team members & activity logs concurrently
             await Promise.all([
                 loadFinancialsAndLedger(project),
+                loadErrorLogs(projectId),
                 loadTeamMembers(projectId, project),
                 loadProjectLogs(projectId)
             ]);
@@ -594,9 +672,9 @@
 
         async function loadFinancialsAndLedger(project) {
             const client = getSupabase();
+
+            // 6. Budget
             const budget = Number(project.budget || 0);
-            let lateFees = Number(project.late_fees || project.late_fee || 0);
-            let amountPaid = Number(project.amount_paid || 0);
 
             // Fetch payment ledger records for this project
             const { data: payments } = await client
@@ -605,53 +683,117 @@
                 .eq('project_id', project.id)
                 .order('created_at', { ascending: false });
 
+            // Fetch error log financial adjustments related to this project
+            const { data: errorLogs } = await client
+                .from('error_logs')
+                .select('*')
+                .eq('project_id', project.id);
+
+            let calculatedPaid = 0;
+            let calculatedOverdue = Number(project.overdue_fees || project.late_fees || project.late_fee || 0);
+            let totalBilled = Number(project.total_billed || budget);
+
             const ledgerTbody = document.getElementById('ledger-tbody');
 
             if (payments && payments.length > 0) {
-                // Recalculate amount paid & late fees if present in ledger
-                let calculatedPaid = 0;
-                let calculatedLateFees = 0;
-
                 payments.forEach(p => {
                     const amt = Number(p.amount || 0);
-                    if (p.type === 'late_fee' || p.is_late_fee) {
-                        calculatedLateFees += amt;
+                    if (p.type === 'overdue' || p.type === 'late_fee' || p.is_late_fee) {
+                        calculatedOverdue += amt;
                     } else {
                         calculatedPaid += amt;
                     }
                 });
 
-                if (calculatedPaid > 0) amountPaid = calculatedPaid;
-                if (calculatedLateFees > 0) lateFees = calculatedLateFees;
-
+                // 7. Who paid at what time and how much
                 ledgerTbody.innerHTML = payments.map(p => `
                     <tr>
-                        <td>${new Date(p.created_at || p.payment_date).toLocaleDateString()}</td>
-                        <td>${escapeHtml(p.description || p.reference || 'Payment Record')}</td>
+                        <td>${new Date(p.created_at || p.payment_date).toLocaleString()}</td>
+                        <td><strong>${escapeHtml(p.paid_by || p.payer_name || p.payer_email || 'Client')}</strong></td>
+                        <td>${escapeHtml(p.description || p.reference || 'Payment Transaction')}</td>
                         <td><span style="text-transform: capitalize; font-size: 0.8rem; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.06);">${escapeHtml(p.type || 'Payment')}</span></td>
-                        <td class="${p.type === 'late_fee' ? 'text-red' : 'text-green'}" style="font-weight: 600;">
+                        <td class="${p.type === 'late_fee' || p.type === 'overdue' ? 'text-red' : 'text-green'}" style="font-weight: 600;">
                             $${Number(p.amount || 0).toLocaleString(undefined, {minimumFractionDigits: 2})}
                         </td>
                     </tr>
                 `).join('');
             } else {
-                ledgerTbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No payment transactions recorded for this project yet.</td></tr>';
+                ledgerTbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No payment transactions recorded for this project yet.</td></tr>';
             }
 
-            const amountDue = Math.max(0, (budget + lateFees) - amountPaid);
+            // 10. Process Error Log Deductions / Adjustments
+            let netDeduction = 0;
+            if (errorLogs && errorLogs.length > 0) {
+                errorLogs.forEach(log => {
+                    const deduction = Number(log.deduction_amount || log.amount_deducted || log.adjustment || 0);
+                    netDeduction += deduction;
+                });
+            }
 
-            // Update UI elements
+            // 3. Current Paid
+            const currentPaid = calculatedPaid;
+
+            // 5. Overdue Fees
+            const overdueFees = calculatedOverdue;
+
+            // 2. Total Billed (adjusted if deductions occurred)
+            const finalBilled = Math.max(0, totalBilled - netDeduction);
+
+            // 4. Current Due = (Total Billed + Overdue Fees) - Current Paid
+            const currentDue = Math.max(0, (finalBilled + overdueFees) - currentPaid);
+
+            // 9. Budget Extension: If Total Billed > Budget, show difference, else 0
+            const budgetExtension = finalBilled > budget ? (finalBilled - budget) : 0;
+
+            // Update UI Financial Displays
             document.getElementById('active-proj-budget').textContent = `$${budget.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-paid').textContent = `$${amountPaid.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-late-fees').textContent = `$${lateFees.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('active-proj-due').textContent = `$${amountDue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-billed').textContent = `$${finalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-extension').textContent = `$${budgetExtension.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-paid').textContent = `$${currentPaid.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-due').textContent = `$${currentDue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            document.getElementById('active-proj-overdue').textContent = `$${overdueFees.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+        }
+
+        async function loadErrorLogs(projectId) {
+            const client = getSupabase();
+            const container = document.getElementById('error-logs-container');
+            const section = document.getElementById('error-logs-section');
+
+            const { data: logs, error } = await client
+                .from('error_logs')
+                .select('*')
+                .eq('project_id', projectId)
+                .order('created_at', { ascending: false });
+
+            if (error || !logs || logs.length === 0) {
+                section.style.display = 'none';
+                return;
+            }
+
+            section.style.display = 'block';
+            container.innerHTML = logs.map(log => {
+                const deduction = Number(log.deduction_amount || log.amount_deducted || log.adjustment || 0);
+                const isDeduction = deduction > 0;
+
+                return `
+                    <div class="error-log-card">
+                        <div class="error-log-header">
+                            <span class="error-log-title">${escapeHtml(log.title || log.issue_summary || 'Deduction / Adjustment Log')}</span>
+                            <span class="error-log-date">${new Date(log.created_at).toLocaleString()}</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: #e5e7eb; margin-bottom: 0.5rem;">${escapeHtml(log.description || log.reason || 'Deduction processed due to error/adjustment log.')}</p>
+                        <div style="font-size: 0.85rem; font-weight: 600;" class="${isDeduction ? 'text-red' : 'text-green'}">
+                            ${isDeduction ? '-' : '+'}$${Math.abs(deduction).toLocaleString(undefined, {minimumFractionDigits: 2})} Adjustment
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         async function loadTeamMembers(projectId, project) {
             const client = getSupabase();
             const teamGrid = document.getElementById('team-grid');
             
-            // Try fetching from project_members table
             const { data: members } = await client
                 .from('project_members')
                 .select('*')
@@ -659,7 +801,6 @@
 
             let teamList = members || [];
 
-            // Fallback: check if team members are stored directly on the project JSON/array
             if (teamList.length === 0 && project.team) {
                 teamList = Array.isArray(project.team) ? project.team : [project.team];
             }
