@@ -491,7 +491,7 @@
             border: 1px solid var(--border-color);
             border-radius: 14px;
             width: 100%;
-            max-width: 600px;
+            max-width: 620px;
             padding: 2rem;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
             position: relative;
@@ -534,6 +534,13 @@
         .date-subtext {
             font-size: 0.75rem;
             color: var(--accent-green);
+            margin-top: 2px;
+        }
+
+        .extended-budget-tag {
+            font-size: 0.725rem;
+            color: var(--accent-yellow);
+            display: block;
             margin-top: 2px;
         }
     </style>
@@ -620,7 +627,7 @@
                                 <input type="number" id="proj-progress" min="0" max="100" value="0">
                             </div>
                             <div class="form-group">
-                                <label>Total Budget (৳) <span style="color: var(--accent-red);">*</span></label>
+                                <label>Base Budget (৳) <span style="color: var(--accent-red);">*</span></label>
                                 <input type="number" id="proj-budget" step="0.01" required placeholder="350000.00">
                             </div>
                             <div class="form-group">
@@ -855,7 +862,6 @@
             <h3 style="margin-bottom: 1.25rem; color: #fff;">Edit Project Details</h3>
             <form id="edit-project-form">
                 <input type="hidden" id="edit-proj-id">
-                <input type="hidden" id="edit-proj-old-budget">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Title</label>
@@ -886,10 +892,19 @@
                         <label>Progress (%)</label>
                         <input type="number" id="edit-proj-progress" min="0" max="100">
                     </div>
+                    
+                    <!-- NEW BUDGET FIELD (Replaces Budget entirely; Client sees this as "Budget") -->
                     <div class="form-group">
-                        <label>New Budget (৳) <span style="font-size:0.7rem; color: var(--text-muted);">(Leave empty to keep current budget)</span></label>
-                        <input type="number" id="edit-proj-new-budget" step="0.01" placeholder="Enter new budget amount">
+                        <label>New Budget (৳) <span style="font-size:0.7rem; color: var(--accent-blue);">(Client sees as "Budget")</span></label>
+                        <input type="number" id="edit-proj-new-budget" step="0.01" placeholder="Enter new base budget">
                     </div>
+
+                    <!-- BUDGET EXTENDED BY FIELD (Tracks out-of-budget amount for clients) -->
+                    <div class="form-group">
+                        <label>Budget Extended By (৳) <span style="font-size:0.7rem; color: var(--accent-yellow);">(Out-of-budget extension)</span></label>
+                        <input type="number" id="edit-proj-extended-by" step="0.01" placeholder="Enter extra out-of-budget amount">
+                    </div>
+
                     <div class="form-group">
                         <label>Target Completion Date</label>
                         <input type="date" id="edit-proj-deadline" required>
@@ -1192,23 +1207,31 @@
                 return;
             }
 
-            tbody.innerHTML = projects.map(p => `
-                <tr>
-                    <td><span class="hex-code-badge">${escapeHtml(p.hex_code || 'N/A')}</span></td>
-                    <td style="font-weight: 600; color: #fff;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
-                    <td>${escapeHtml(p.client_name || 'N/A')}</td>
-                    <td>${escapeHtml(p.client_email || 'N/A')}</td>
-                    <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
-                    <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
-                    <td>${p.progress || 0}%</td>
-                    <td>৳${Number(p.budget || 0).toLocaleString()}</td>
-                    <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                        <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
-                        ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>` : ''}
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = projects.map(p => {
+                const baseBudget = Number(p.budget || 0);
+                const extendedBy = Number(p.budget_extended_by || 0);
+
+                return `
+                    <tr>
+                        <td><span class="hex-code-badge">${escapeHtml(p.hex_code || 'N/A')}</span></td>
+                        <td style="font-weight: 600; color: #fff;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
+                        <td>${escapeHtml(p.client_name || 'N/A')}</td>
+                        <td>${escapeHtml(p.client_email || 'N/A')}</td>
+                        <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
+                        <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
+                        <td>${p.progress || 0}%</td>
+                        <td>
+                            ৳${baseBudget.toLocaleString()}
+                            ${extendedBy > 0 ? `<span class="extended-budget-tag">+৳${extendedBy.toLocaleString()} Extended</span>` : ''}
+                        </td>
+                        <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
+                        <td>
+                            <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
+                            ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // Render Payments Ledger
@@ -1301,7 +1324,6 @@
             }).join('');
         }
 
-        // Render Clients Table (Emoji removed from email link)
         function renderClientsTable() {
             const tbody = document.getElementById('clients-table-body');
             const clientMap = {};
@@ -1322,7 +1344,7 @@
                     clientMap[emailKey].name = p.client_name;
                 }
                 
-                clientMap[emailKey].billed += Number(p.budget || 0);
+                clientMap[emailKey].billed += (Number(p.budget || 0) + Number(p.budget_extended_by || 0));
             });
 
             cachedPayments.forEach(p => {
@@ -1411,7 +1433,7 @@
             const deadlineVal = document.getElementById('proj-deadline').value;
 
             if (!title || !clientName || !clientEmail || !budgetVal || !deadlineVal) {
-                alert('Please fill out all mandatory fields: Project Name, Client Name, Client Email, Total Budget, and Target Completion Date.');
+                alert('Please fill out all mandatory fields: Project Name, Client Name, Client Email, Base Budget, and Target Completion Date.');
                 return;
             }
 
@@ -1427,6 +1449,7 @@
                 status: document.getElementById('proj-status').value,
                 progress: parseInt(document.getElementById('proj-progress').value) || 0,
                 budget: parseFloat(budgetVal) || 0,
+                budget_extended_by: 0,
                 deadline: deadlineVal,
                 description: document.getElementById('proj-desc').value
             };
@@ -1607,31 +1630,30 @@
             if (!proj) return;
 
             document.getElementById('edit-proj-id').value = proj.id;
-            document.getElementById('edit-proj-old-budget').value = proj.budget || 0;
             document.getElementById('edit-proj-title').value = proj.title || proj.project_name || '';
             document.getElementById('edit-proj-client-name').value = proj.client_name || '';
             document.getElementById('edit-proj-client-email').value = proj.client_email || '';
             document.getElementById('edit-proj-members').value = proj.members_working || '';
             document.getElementById('edit-proj-status').value = proj.status || 'In Progress';
             document.getElementById('edit-proj-progress').value = proj.progress || 0;
-            document.getElementById('edit-proj-new-budget').value = '';
+            
+            // Populate current budget values
+            document.getElementById('edit-proj-new-budget').value = proj.budget || '';
+            document.getElementById('edit-proj-extended-by').value = proj.budget_extended_by || 0;
+            
             document.getElementById('edit-proj-deadline').value = proj.deadline || '';
 
             openModal('edit-project-modal');
         }
 
+        // Updated Update Handler
         async function handleUpdateProject(e) {
             e.preventDefault();
             const client = getSupabase();
             const id = document.getElementById('edit-proj-id').value;
             
-            const oldBudget = parseFloat(document.getElementById('edit-proj-old-budget').value) || 0;
-            const newBudgetInput = document.getElementById('edit-proj-new-budget').value;
-            
-            let finalBudget = oldBudget;
-            if (newBudgetInput !== '' && !isNaN(parseFloat(newBudgetInput))) {
-                finalBudget = oldBudget + parseFloat(newBudgetInput);
-            }
+            const newBudgetVal = document.getElementById('edit-proj-new-budget').value;
+            const extendedByVal = document.getElementById('edit-proj-extended-by').value;
 
             const payload = {
                 title: document.getElementById('edit-proj-title').value,
@@ -1641,9 +1663,18 @@
                 members_working: document.getElementById('edit-proj-members').value,
                 status: document.getElementById('edit-proj-status').value,
                 progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
-                budget: finalBudget,
                 deadline: document.getElementById('edit-proj-deadline').value
             };
+
+            // If new budget is entered, replace base budget
+            if (newBudgetVal !== '' && !isNaN(parseFloat(newBudgetVal))) {
+                payload.budget = parseFloat(newBudgetVal);
+            }
+
+            // Always update extended by amount
+            if (extendedByVal !== '' && !isNaN(parseFloat(extendedByVal))) {
+                payload.budget_extended_by = parseFloat(extendedByVal);
+            }
 
             const { error } = await client.from('projects').update(payload).eq('id', id);
 
