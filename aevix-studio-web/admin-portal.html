@@ -855,6 +855,7 @@
             <h3 style="margin-bottom: 1.25rem; color: #fff;">Edit Project Details</h3>
             <form id="edit-project-form">
                 <input type="hidden" id="edit-proj-id">
+                <input type="hidden" id="edit-proj-old-budget">
                 <div class="form-grid">
                     <div class="form-group">
                         <label>Title</label>
@@ -886,8 +887,8 @@
                         <input type="number" id="edit-proj-progress" min="0" max="100">
                     </div>
                     <div class="form-group">
-                        <label>Budget (৳)</label>
-                        <input type="number" id="edit-proj-budget" step="0.01" required>
+                        <label>New Budget (৳) <span style="font-size:0.7rem; color: var(--text-muted);">(Leave empty to keep current budget)</span></label>
+                        <input type="number" id="edit-proj-new-budget" step="0.01" placeholder="Enter new budget amount">
                     </div>
                     <div class="form-group">
                         <label>Target Completion Date</label>
@@ -1204,13 +1205,13 @@
                     <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
                     <td>
                         <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
-                        <button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>
+                        ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteProject('${p.id}')">Delete</button>` : ''}
                     </td>
                 </tr>
             `).join('');
         }
 
-        // Render Payments Ledger (Feature 2: Uses created_at date)
+        // Render Payments Ledger
         function renderPaymentsTable(payments) {
             const tbody = document.getElementById('payments-table-body');
             if (payments.length === 0) {
@@ -1269,7 +1270,7 @@
                             `}
                         </td>
                         <td>
-                            <button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>
+                            ${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}
                         </td>
                     </tr>
                 `;
@@ -1300,7 +1301,7 @@
             }).join('');
         }
 
-        // Feature 3 & 4: Render Clients Table with Gmail Link, Due & Extra Paid columns
+        // Render Clients Table (Emoji removed from email link)
         function renderClientsTable() {
             const tbody = document.getElementById('clients-table-body');
             const clientMap = {};
@@ -1381,7 +1382,7 @@
                         <td style="font-weight: 600; color: #fff;">${escapeHtml(c.name)}</td>
                         <td>
                             <a href="${gmailComposeUrl}" target="_blank" rel="noopener noreferrer" class="gmail-link" title="Compose Gmail to ${escapeHtml(c.email)}">
-                                ✉️ ${escapeHtml(c.email)}
+                                ${escapeHtml(c.email)}
                             </a>
                         </td>
                         <td>৳${c.billed.toLocaleString()}</td>
@@ -1399,7 +1400,6 @@
             }).join('');
         }
 
-        // Feature 1 & 5: Auto hex generation and Mandatory Project validations
         async function handleCreateProject(e) {
             e.preventDefault();
             const client = getSupabase();
@@ -1442,7 +1442,6 @@
             }
         }
 
-        // Feature 2: Payments recorded without manual due date input
         async function handleCreatePayment(e) {
             e.preventDefault();
             const client = getSupabase();
@@ -1608,13 +1607,14 @@
             if (!proj) return;
 
             document.getElementById('edit-proj-id').value = proj.id;
+            document.getElementById('edit-proj-old-budget').value = proj.budget || 0;
             document.getElementById('edit-proj-title').value = proj.title || proj.project_name || '';
             document.getElementById('edit-proj-client-name').value = proj.client_name || '';
             document.getElementById('edit-proj-client-email').value = proj.client_email || '';
             document.getElementById('edit-proj-members').value = proj.members_working || '';
             document.getElementById('edit-proj-status').value = proj.status || 'In Progress';
             document.getElementById('edit-proj-progress').value = proj.progress || 0;
-            document.getElementById('edit-proj-budget').value = proj.budget || 0;
+            document.getElementById('edit-proj-new-budget').value = '';
             document.getElementById('edit-proj-deadline').value = proj.deadline || '';
 
             openModal('edit-project-modal');
@@ -1624,6 +1624,14 @@
             e.preventDefault();
             const client = getSupabase();
             const id = document.getElementById('edit-proj-id').value;
+            
+            const oldBudget = parseFloat(document.getElementById('edit-proj-old-budget').value) || 0;
+            const newBudgetInput = document.getElementById('edit-proj-new-budget').value;
+            
+            let finalBudget = oldBudget;
+            if (newBudgetInput !== '' && !isNaN(parseFloat(newBudgetInput))) {
+                finalBudget = oldBudget + parseFloat(newBudgetInput);
+            }
 
             const payload = {
                 title: document.getElementById('edit-proj-title').value,
@@ -1633,7 +1641,7 @@
                 members_working: document.getElementById('edit-proj-members').value,
                 status: document.getElementById('edit-proj-status').value,
                 progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
-                budget: parseFloat(document.getElementById('edit-proj-budget').value) || 0,
+                budget: finalBudget,
                 deadline: document.getElementById('edit-proj-deadline').value
             };
 
