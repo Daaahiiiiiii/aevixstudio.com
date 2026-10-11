@@ -1581,6 +1581,7 @@
             tbody.innerHTML = clientList.map(c => {
                 const extraPaidCalc = c.extraPaid + Math.max(0, c.paid - c.billed);
                 const netDue = Math.max(0, c.billed - c.paid);
+                const hasExistingNote = c.note && c.note.trim().length > 0;
 
                 return `
                     <tr>
@@ -1594,7 +1595,7 @@
                         <td style="color:var(--accent-yellow); font-weight:600;">৳${netDue.toLocaleString()}</td>
                         <td>
                             <textarea id="note-${c.profileId || c.email.replace(/[^a-zA-Z0-9]/g, '_')}" class="client-note-textarea" placeholder="Add internal note...">${escapeHtml(c.note)}</textarea>
-                            <button class="save-note-btn" onclick="saveClientNote('${c.profileId || ''}', '${escapeHtml(c.email)}')">Save Note</button>
+                            <button class="save-note-btn" onclick="saveClientNote('${c.profileId || ''}', '${escapeHtml(c.email)}')">${hasExistingNote ? 'Update Note' : 'Save Note'}</button>
                         </td>
                     </tr>
                 `;
@@ -1612,7 +1613,11 @@
                 const res = await client.from('profiles').update({ notes: noteText }).eq('id', profileId);
                 error = res.error;
             } else {
-                const res = await client.from('profiles').update({ notes: noteText }).eq('email', email);
+                // Upsert to ensure missing profiles records are automatically created
+                const res = await client.from('profiles').upsert(
+                    { email: email.toLowerCase(), notes: noteText, role: 'client' }, 
+                    { onConflict: 'email' }
+                );
                 error = res.error;
             }
 
