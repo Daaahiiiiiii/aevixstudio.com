@@ -850,8 +850,8 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Person / Company / Email Detail <span style="color: var(--accent-red);">*</span></label>
-                                <input type="text" id="err-client-detail" required placeholder="e.g. Jeff / client@email.com">
+                                <label>Client Email / Person Detail <span style="color: var(--accent-red);">*</span></label>
+                                <input type="text" id="err-client-detail" required placeholder="e.g. client@email.com">
                             </div>
                             <div class="form-group full-width">
                                 <label>Reason / Audit Note <span style="color: var(--accent-red);">*</span></label>
@@ -1072,6 +1072,13 @@
                 .replace(/'/g, '&#039;');
         }
 
+        // Helper to extract a clean email string if messy formatting was stored
+        function extractCleanEmail(raw) {
+            if (!raw) return '';
+            const match = String(raw).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            return match ? match[0].toLowerCase().trim() : String(raw).toLowerCase().trim();
+        }
+
         function generateHexCode() {
             const characters = '0123456789ABCDEF';
             let hex = '';
@@ -1149,7 +1156,7 @@
             }
 
             currentUserRole = profile.role;
-            currentUserEmail = (session.user.email || '').toLowerCase();
+            currentUserEmail = extractCleanEmail(session.user.email);
             userInfoDisplay.textContent = `Signed in as ${profile.role === 'hadmin' ? 'Head Admin (hadmin)' : 'Admin'} (${currentUserEmail})`;
             logoutBtn.style.display = 'inline-block';
             authLoading.style.display = 'none';
@@ -1191,7 +1198,7 @@
                 if (selectedProjId) {
                     const proj = cachedProjects.find(p => p.id === selectedProjId);
                     if (proj && proj.client_email) {
-                        document.getElementById('pay-client-email').value = proj.client_email;
+                        document.getElementById('pay-client-email').value = extractCleanEmail(proj.client_email);
                     }
                 }
             });
@@ -1200,8 +1207,8 @@
                 const selectedProjId = e.target.value;
                 if (selectedProjId) {
                     const proj = cachedProjects.find(p => p.id === selectedProjId);
-                    if (proj) {
-                        document.getElementById('err-client-detail').value = `${proj.client_name || ''} (${proj.client_email || ''})`.trim();
+                    if (proj && proj.client_email) {
+                        document.getElementById('err-client-detail').value = extractCleanEmail(proj.client_email);
                     }
                 }
             });
@@ -1371,6 +1378,7 @@
             tbody.innerHTML = projects.map(p => {
                 const baseBudget = Number(p.budget || 0);
                 const extendedBy = Number(p.budget_extended_by || 0);
+                const cleanEmail = extractCleanEmail(p.client_email);
 
                 return `
                     <tr>
@@ -1378,7 +1386,7 @@
                         <td style="font-weight: 600; color: #fff;">${escapeHtml(p.title || p.project_name || 'Untitled')}</td>
                         <td>${escapeHtml(p.client_name || 'N/A')}</td>
                         <td>
-                            ${p.client_email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.client_email)}" target="_blank" class="gmail-link">${escapeHtml(p.client_email)}</a>` : 'N/A'}
+                            ${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}
                         </td>
                         <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
                         <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
@@ -1406,14 +1414,14 @@
 
             tbody.innerHTML = billing.map(b => {
                 const proj = cachedProjects.find(p => p.id === b.project_id);
-                const email = b.client_email || (proj ? proj.client_email : null);
+                const cleanEmail = extractCleanEmail(b.client_email || (proj ? proj.client_email : ''));
                 return `
                     <tr>
                         <td>${new Date(b.created_at).toLocaleDateString()}</td>
                         <td style="font-weight:600; color:#fff;">${escapeHtml(proj ? (proj.title || proj.project_name) : 'N/A')}</td>
                         <td><span class="hex-code-badge">${escapeHtml(proj ? proj.hex_code : 'N/A')}</span></td>
                         <td>
-                            ${email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}" target="_blank" class="gmail-link">${escapeHtml(email)}</a>` : 'N/A'}
+                            ${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}
                         </td>
                         <td>${escapeHtml(b.description)}</td>
                         <td style="font-weight:600; color:var(--accent-blue);">৳${Number(b.amount).toLocaleString()}</td>
@@ -1433,6 +1441,8 @@
             }
 
             tbody.innerHTML = payments.map(p => {
+                const cleanEmail = extractCleanEmail(p.client_email);
+
                 if (p.is_error_log) {
                     return `
                         <tr style="background: rgba(248, 113, 113, 0.03);">
@@ -1442,7 +1452,7 @@
                                 <span class="fraud-audit-tag">⚠ Internal Adjustment</span>
                             </td>
                             <td>
-                                ${p.client_email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.client_email)}" target="_blank" class="gmail-link">${escapeHtml(p.client_email)}</a>` : 'N/A'}
+                                ${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}
                             </td>
                             <td style="color: #fca5a5;">${escapeHtml(p.milestone)}</td>
                             <td style="font-weight: 700; color: var(--accent-purple);">
@@ -1471,7 +1481,7 @@
                             <strong>${escapeHtml(p.client_name || 'N/A')}</strong>
                         </td>
                         <td>
-                            ${p.client_email ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(p.client_email)}" target="_blank" class="gmail-link">${escapeHtml(p.client_email)}</a>` : 'N/A'}
+                            ${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}
                         </td>
                         <td>${escapeHtml(p.milestone || 'N/A')}</td>
                         <td style="font-weight: 600;">৳${Number(p.amount || 0).toLocaleString()}</td>
@@ -1526,17 +1536,22 @@
             const clientMap = {};
 
             cachedBilling.forEach(b => {
-                const email = (b.client_email || '').toLowerCase().trim();
+                const email = extractCleanEmail(b.client_email);
                 if (!email) return;
                 if (!clientMap[email]) clientMap[email] = { email, name: email, billed: 0, paid: 0, extraPaid: 0, note: '' };
                 clientMap[email].billed += Number(b.amount || 0);
             });
 
             cachedPayments.forEach(p => {
-                const email = (p.client_email || '').toLowerCase().trim();
+                const email = extractCleanEmail(p.client_email);
                 if (!email) return;
                 if (!clientMap[email]) clientMap[email] = { email, name: p.client_name || email, billed: 0, paid: 0, extraPaid: 0, note: '' };
                 
+                // Keep the actual client name if available
+                if (p.client_name && clientMap[email].name === email) {
+                    clientMap[email].name = p.client_name;
+                }
+
                 const overdue = Number(p.overdue_amount || 0);
                 if ((p.status || p.payment_status || '').toLowerCase() === 'paid') {
                     clientMap[email].paid += Number(p.amount || 0);
@@ -1545,18 +1560,19 @@
             });
 
             cachedProjects.forEach(p => {
-                const email = (p.client_email || '').toLowerCase().trim();
+                const email = extractCleanEmail(p.client_email);
                 if (!email) return;
                 if (!clientMap[email]) {
                     clientMap[email] = { email, name: p.client_name || email, billed: Number(p.budget || 0), paid: 0, extraPaid: 0, note: '' };
-                } else if (clientMap[email].billed === 0) {
-                    clientMap[email].billed = Number(p.budget || 0);
+                } else {
+                    if (p.client_name && clientMap[email].name === email) clientMap[email].name = p.client_name;
+                    if (clientMap[email].billed === 0) clientMap[email].billed = Number(p.budget || 0);
                 }
             });
 
-            // Map profile details (notes & id)
+            // Map profile details (notes & id) by clean email
             cachedProfiles.forEach(prof => {
-                const email = (prof.email || '').toLowerCase().trim();
+                const email = extractCleanEmail(prof.email);
                 if (email && clientMap[email]) {
                     clientMap[email].profileId = prof.id;
                     clientMap[email].note = prof.notes || '';
@@ -1603,7 +1619,8 @@
         }
 
         async function saveClientNote(profileId, email) {
-            const sanitizedKey = profileId || email.replace(/[^a-zA-Z0-9]/g, '_');
+            const cleanEmail = extractCleanEmail(email);
+            const sanitizedKey = profileId || cleanEmail.replace(/[^a-zA-Z0-9]/g, '_');
             const noteText = document.getElementById(`note-${sanitizedKey}`).value;
 
             const client = getSupabase();
@@ -1613,9 +1630,8 @@
                 const res = await client.from('profiles').update({ notes: noteText }).eq('id', profileId);
                 error = res.error;
             } else {
-                // Upsert to ensure missing profiles records are automatically created
                 const res = await client.from('profiles').upsert(
-                    { email: email.toLowerCase(), notes: noteText, role: 'client' }, 
+                    { email: cleanEmail, notes: noteText, role: 'client' }, 
                     { onConflict: 'email' }
                 );
                 error = res.error;
@@ -1637,7 +1653,7 @@
                 title: document.getElementById('proj-title').value,
                 project_name: document.getElementById('proj-title').value,
                 client_name: document.getElementById('proj-client-name').value,
-                client_email: document.getElementById('proj-client-email').value,
+                client_email: extractCleanEmail(document.getElementById('proj-client-email').value),
                 members_working: document.getElementById('proj-members').value,
                 status: document.getElementById('proj-status').value,
                 progress: parseInt(document.getElementById('proj-progress').value) || 0,
@@ -1662,7 +1678,7 @@
 
             const payload = {
                 project_id: projId,
-                client_email: proj ? proj.client_email : null,
+                client_email: proj ? extractCleanEmail(proj.client_email) : null,
                 description: document.getElementById('bill-desc').value,
                 amount: parseFloat(document.getElementById('bill-amount').value) || 0
             };
@@ -1680,7 +1696,7 @@
             e.preventDefault();
             const payload = {
                 client_name: document.getElementById('pay-client').value,
-                client_email: document.getElementById('pay-client-email').value,
+                client_email: extractCleanEmail(document.getElementById('pay-client-email').value),
                 project_id: document.getElementById('pay-project-id').value || null,
                 amount: parseFloat(document.getElementById('pay-amount').value) || 0,
                 milestone: document.getElementById('pay-milestone').value,
@@ -1701,12 +1717,15 @@
         async function handleCreateErrorLog(e) {
             e.preventDefault();
             const projId = document.getElementById('err-project-id').value;
+            const detailInput = document.getElementById('err-client-detail').value;
+            const cleanEmail = extractCleanEmail(detailInput);
+
             const payload = {
                 project_id: projId || null,
                 amount: parseFloat(document.getElementById('err-amount').value) || 0,
                 transaction_type: document.getElementById('err-type').value,
-                client_name: document.getElementById('err-client-detail').value,
-                client_email: document.getElementById('err-client-detail').value,
+                client_name: detailInput,
+                client_email: cleanEmail,
                 milestone: document.getElementById('err-note').value,
                 is_error_log: true,
                 status: 'Paid',
@@ -1750,7 +1769,7 @@
             document.getElementById('edit-proj-id').value = p.id;
             document.getElementById('edit-proj-title').value = p.title || p.project_name || '';
             document.getElementById('edit-proj-client-name').value = p.client_name || '';
-            document.getElementById('edit-proj-client-email').value = p.client_email || '';
+            document.getElementById('edit-proj-client-email').value = extractCleanEmail(p.client_email);
             document.getElementById('edit-proj-members').value = p.members_working || '';
             document.getElementById('edit-proj-status').value = p.status || 'In Progress';
             document.getElementById('edit-proj-progress').value = p.progress || 0;
@@ -1768,7 +1787,7 @@
                 title: document.getElementById('edit-proj-title').value,
                 project_name: document.getElementById('edit-proj-title').value,
                 client_name: document.getElementById('edit-proj-client-name').value,
-                client_email: document.getElementById('edit-proj-client-email').value,
+                client_email: extractCleanEmail(document.getElementById('edit-proj-client-email').value),
                 members_working: document.getElementById('edit-proj-members').value,
                 status: document.getElementById('edit-proj-status').value,
                 progress: parseInt(document.getElementById('edit-proj-progress').value) || 0,
