@@ -4,24 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aevix Studio | Digital Media & Development Agency</title>
-    <link rel="stylesheet" href="style.css">
-    
-    <!-- Supabase JS CDN Integration -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <style>
-        /* Center the bottom two cards in the Services section */
+        :root {
+            --bg-dark: #030712;
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-bg-hover: rgba(22, 32, 51, 0.85);
+            --card-border: rgba(192, 132, 252, 0.15);
+            --card-border-hover: rgba(192, 132, 252, 0.4);
+            --border-color: #1f293d;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            
+            /* Viral Neon Palette */
+            --neon-purple: #c084fc;
+            --neon-purple-glow: rgba(192, 132, 252, 0.35);
+            --neon-teal: #2dd4bf;
+            --neon-teal-glow: rgba(45, 212, 191, 0.35);
+            --neon-lime: #a3e635;
+            --accent-red: #fb7185;
+            
+            --input-bg: #0b0f19;
+            --input-border: #26334d;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-card: 0 12px 40px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(192, 132, 252, 0.05) inset;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 3D Interactive Background Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Main Wrapper to stay above canvas */
+        header, section, footer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Navigation */
+        header {
+            max-width: 1320px;
+            margin: 1.5rem auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
+            width: calc(100% - 2rem);
+        }
+
+        .brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 20%, var(--neon-purple) 60%, var(--neon-teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px var(--neon-purple-glow);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        nav a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+        }
+
+        nav a:hover {
+            color: var(--neon-teal);
+            text-shadow: 0 0 10px var(--neon-teal-glow);
+        }
+
+        .google-btn {
+            background: rgba(45, 212, 191, 0.1);
+            border: 1px solid rgba(45, 212, 191, 0.35);
+            color: var(--neon-teal);
+            padding: 0.6rem 1.15rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .google-btn:hover {
+            background: rgba(45, 212, 191, 0.22);
+            box-shadow: 0 0 20px var(--neon-teal-glow);
+            transform: translateY(-2px);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #9333ea 100%);
+            color: #ffffff !important;
+            padding: 0.6rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            box-shadow: 0 4px 20px var(--neon-purple-glow);
+            transition: var(--transition-smooth);
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(192, 132, 252, 0.6);
+            color: #fff !important;
+        }
+
+        /* Hero Section */
+        .hero {
+            max-width: 1000px;
+            margin: 6rem auto 4rem auto;
+            text-align: center;
+            padding: 0 1.5rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(192, 132, 252, 0.1);
+            border: 1px solid rgba(192, 132, 252, 0.3);
+            color: var(--neon-purple);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0 20px var(--neon-purple-glow);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 20%, #d8b4fe 60%, var(--neon-teal) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 50px rgba(192, 132, 252, 0.2);
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.7;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--neon-teal) 0%, #0d9488 100%);
+            color: #030712;
+            padding: 0.9rem 2.25rem;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            text-decoration: none;
+            box-shadow: 0 6px 25px var(--neon-teal-glow);
+            transition: var(--transition-smooth);
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 35px rgba(45, 212, 191, 0.6);
+        }
+
+        /* Sections Container */
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto 6rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-container h2 {
+            font-size: clamp(2rem, 3vw, 2.75rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            color: #fff;
+        }
+
+        .section-lead {
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 3rem auto;
+            font-size: 1rem;
+        }
+
+        /* Services Cards Grid */
         .services-container {
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         .services-top-row {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 1.5rem;
         }
 
@@ -32,34 +257,196 @@
             flex-wrap: wrap;
         }
 
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 2.25rem 2rem;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition-smooth);
+            position: relative;
+            overflow: hidden;
+        }
+
         .services-bottom-row .card {
-            flex: 1 1 300px;
-            max-width: 380px;
+            flex: 1 1 340px;
+            max-width: 400px;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-teal));
+            opacity: 0.6;
+            transition: var(--transition-smooth);
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--card-border-hover);
+            box-shadow: 0 25px 50px -12px var(--neon-purple-glow);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.85rem;
+            letter-spacing: -0.01em;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 0.925rem;
+            line-height: 1.6;
+        }
+
+        /* Contact Form Card */
+        .contact-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-card);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            outline: none;
+            width: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: var(--transition-smooth);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.4);
+        }
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px var(--neon-purple-glow), inset 0 2px 5px rgba(0, 0, 0, 0.4);
+            background: #0d1222;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #9333ea 100%);
+            color: #ffffff;
+            border: none;
+            padding: 15px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 6px 20px var(--neon-purple-glow);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(192, 132, 252, 0.6);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--neon-teal);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+            text-shadow: 0 0 8px var(--neon-teal-glow);
+        }
+
+        .copyright {
+            margin-top: 0.75rem;
+            font-size: 0.825rem;
+            color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.85rem;
+            }
+            .contact-card {
+                padding: 1.75rem 1.25rem;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- SVG Liquid Refraction Filter -->
-    <svg style="display: none;">
-      <defs>
-        <filter id="water-refraction" x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.025" numOctaves="2" result="noise" />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="12" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-      </defs>
-    </svg>
+    <!-- 3D Constellation / Particle Interactive Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
 
     <!-- Header Navigation -->
     <header>
         <div class="brand"><a href="index.html" style="text-decoration:none; color:inherit;">AEVIX STUDIO</a></div>
-        <nav style="display: flex; align-items: center; gap: 1.5rem;">
+        <nav>
             <a href="#services">Services</a>
             <a href="terms/">Terms & Policies</a>
             
             <!-- Google Auth Button -->
-            <button id="google-login-btn" type="button" style="background: transparent; border: 1px solid #3b82f6; color: #60a5fa; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: all 0.2s ease;">
-                <svg width="18" height="18" viewBox="0 0 24 24">
+            <button id="google-login-btn" type="button" class="google-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                     <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -74,16 +461,16 @@
 
     <!-- Hero Section -->
     <section class="hero" id="hero">
-        <img src="logo.png" alt="Aevix Studio Logo" class="hero-bg-logo" id="hero-logo">
-
+        <div class="hero-badge">Next-Gen Digital Media & Development</div>
         <h1>Crafting Digital Experiences That Scale</h1>
         <p>Aevix Studio delivers high-performance web development, creative direction, social media management, and digital media assets for global brands.</p>
-        <a href="#contact" class="cta-btn">Get Started</a>
+        <a href="#contact" class="cta-btn">Get Started Today</a>
     </section>
 
     <!-- Services Section -->
     <section id="services" class="section-container">
-        <h2>Our Services</h2>
+        <h2>Our Core Services</h2>
+        <p class="section-lead">Engineered for impact. Designed to dominate your market sector.</p>
         <div class="services-container">
             <div class="services-top-row">
                 <div class="card">
@@ -119,39 +506,40 @@
         <h2>Start Your Project</h2>
         <p class="section-lead">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
 
-        <!-- Updated Formspree Endpoint -->
-        <form action="https://formspree.io/f/xnpqbdjv" method="POST" id="contact-form">
-            
-            <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Your Name or Business" required>
-            </div>
+        <div class="contact-card">
+            <form action="https://formspree.io/f/xnpqbdjv" method="POST" id="contact-form">
+                
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" placeholder="Your Name or Business" required>
+                </div>
 
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="your@email.com" required>
-            </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
+                </div>
 
-            <div class="form-group">
-                <label for="message">Project Details</label>
-                <textarea id="message" name="message" rows="5" placeholder="Tell us about your project scope, timeline, and budget..." required></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="message">Project Details</label>
+                    <textarea id="message" name="message" rows="5" placeholder="Tell us about your project scope, timeline, and budget..." required></textarea>
+                </div>
 
-            <!-- Acceptance Checkbox -->
-            <div style="display: flex; align-items: flex-start; gap: 10px; margin: 1.5rem 0; font-size: 0.9rem; color: #9ca3af;">
-                <input type="checkbox" id="terms" name="terms_agreed" value="agreed" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: #3b82f6;">
-                <label for="terms" style="cursor: pointer; line-height: 1.4;">
-                    I have read and agree to the <a href="terms/" target="_blank" style="color: #60a5fa; text-decoration: underline;">Terms & Policies</a>.
-                </label>
-            </div>
+                <!-- Acceptance Checkbox -->
+                <div style="display: flex; align-items: flex-start; gap: 10px; margin: 1.5rem 0; font-size: 0.9rem; color: var(--text-muted);">
+                    <input type="checkbox" id="terms" name="terms_agreed" value="agreed" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--neon-teal);">
+                    <label for="terms" style="cursor: pointer; line-height: 1.4;">
+                        I have read and agree to the <a href="terms/" target="_blank" style="color: var(--neon-teal); text-decoration: underline;">Terms & Policies</a>.
+                    </label>
+                </div>
 
-            <button type="submit" id="submit-btn" class="submit-btn" disabled>Send Message</button>
-        </form>
+                <button type="submit" id="submit-btn" class="submit-btn" disabled>Send Message</button>
+            </form>
+        </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p style="color: #9ca3af; margin-bottom: 0.5rem;">
+        <p style="margin-bottom: 0.5rem;">
             Direct Email: <a href="mailto:aevixstudio962@gmail.com"><strong>aevixstudio962@gmail.com</strong></a> | 
             Instagram: <a href="https://www.instagram.com/aevixstudio?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer"><strong>@aevixstudio</strong></a>
         </p>
@@ -160,8 +548,131 @@
         </div>
     </footer>
 
-    <!-- Interactive Scripts & Direct Auth Handling -->
+    <!-- Interactive Scripts & 3D Canvas Constellation Animation -->
     <script>
+        // --- 3D Interactive Background Constellation Animation ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let scrollY = 0;
+        let mouse = { x: null, y: null, targetX: null, targetY: null };
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.targetX = e.clientX;
+            mouse.targetY = e.clientY;
+        });
+
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+        });
+
+        class Particle3D {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = (Math.random() - 0.5) * width * 1.5;
+                this.y = (Math.random() - 0.5) * height * 1.5;
+                this.z = Math.random() * 1000;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.vz = Math.random() * 1.5 + 0.5;
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.z -= this.vz + (scrollY * 0.005);
+                if (this.z <= 0) {
+                    this.z = 1000;
+                    this.x = (Math.random() - 0.5) * width * 1.5;
+                    this.y = (Math.random() - 0.5) * height * 1.5;
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            draw() {
+                const fov = 400;
+                const scale = fov / (fov + this.z);
+                const x2d = width / 2 + this.x * scale;
+                const y2d = height / 2 + (this.y + (scrollY * 0.2)) * scale;
+
+                if (x2d >= 0 && x2d <= width && y2d >= 0 && y2d <= height) {
+                    const alpha = Math.min(1, (1000 - this.z) / 800) * scale;
+                    ctx.fillStyle = `rgba(192, 132, 252, ${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(x2d, y2d, this.radius * scale * 1.5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // Initialize particles
+        const particleCount = Math.min(window.innerWidth < 768 ? 60 : 120, 150);
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle3D());
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Smooth mouse interpolation
+            if (mouse.targetX !== null) {
+                mouse.x += (mouse.targetX - mouse.x) * 0.05;
+                mouse.y += (mouse.targetY - mouse.y) * 0.05;
+            }
+
+            // Update & draw particles
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+                particles[i].draw();
+
+                // Connect nearby particles with glowing web lines
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dz = particles[i].z - particles[j].z;
+                    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                    if (dist < 140) {
+                        const fov = 400;
+                        const scale1 = fov / (fov + particles[i].z);
+                        const scale2 = fov / (fov + particles[j].z);
+                        const x1 = width / 2 + particles[i].x * scale1;
+                        const y1 = height / 2 + (particles[i].y + (scrollY * 0.2)) * scale1;
+                        const x2 = width / 2 + particles[j].x * scale2;
+                        const y2 = height / 2 + (particles[j].y + (scrollY * 0.2)) * scale2;
+
+                        const lineAlpha = (1 - dist / 140) * 0.18;
+                        ctx.strokeStyle = `rgba(45, 212, 191, ${lineAlpha})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+
+        // --- Supabase & Auth Routing Logic ---
         const SUPABASE_URL = 'https://hvivguwursdsyitmuwbf.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aXZndXd1cnNkc3lpdG11d2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM0MTMsImV4cCI6MjEwNjc4OTQxM30.ZtrxQN9b_3PNt0Zj8us8Iv3FDjbM0PlZ2bLthnMpiDg';
 
@@ -186,19 +697,16 @@
             return supabaseClient;
         }
 
-        // Direct Role Routing Logic
         async function handleRoleRouting(session) {
             if (!session || !session.user) return;
 
             const email = (session.user.email || '').toLowerCase();
 
-            // 1. Super-Admin Check
             if (email === 'aevixstudio962@gmail.com') {
                 window.location.replace('admin-portal.html');
                 return;
             }
 
-            // 2. Database Role Query
             const client = getSupabase();
             try {
                 const { data: profile } = await client
@@ -221,7 +729,6 @@
         document.addEventListener('DOMContentLoaded', async function() {
             const client = getSupabase();
 
-            // Check if user is already logged in (or coming back from OAuth redirect)
             if (client) {
                 const { data: { session } } = await client.auth.getSession();
                 if (session) {
@@ -276,40 +783,9 @@
 
                         if (error) {
                             alert('Login Error: ' + error.message);
-                            console.error('OAuth Error:', error);
                         }
                     } catch (err) {
                         alert('Authentication triggered an exception: ' + err.message);
-                        console.error('Execution Error:', err);
-                    }
-                });
-            }
-
-            // 3. Hero Scroll Animation
-            const heroSection = document.getElementById('hero');
-            const heroLogo = document.getElementById('hero-logo');
-            const startColor = { r: 13, g: 26, b: 45 };
-            const endColor = { r: 11, g: 15, b: 23 };
-
-            if (heroSection && heroLogo) {
-                window.addEventListener('scroll', () => {
-                    const scrollPosition = window.scrollY;
-                    const heroHeight = heroSection.offsetHeight;
-
-                    if (scrollPosition <= heroHeight) {
-                        const progress = Math.min(scrollPosition / heroHeight, 1);
-                        const translateY = -50 - (progress * 100);
-                        const scale = 1 - (progress * 0.2);
-                        const opacity = Math.max(0, 0.22 * (1 - progress * 1.5));
-                        
-                        heroLogo.style.transform = `translate(-50%, ${translateY}%) scale(${scale})`;
-                        heroLogo.style.opacity = opacity;
-
-                        const r = Math.round(startColor.r + (endColor.r - startColor.r) * progress);
-                        const g = Math.round(startColor.g + (endColor.g - startColor.g) * progress);
-                        const b = Math.round(startColor.b + (endColor.b - startColor.b) * progress);
-
-                        heroSection.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
                     }
                 });
             }
