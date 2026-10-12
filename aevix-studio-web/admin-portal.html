@@ -532,7 +532,7 @@
                 <div class="metric-card">
                     <span class="metric-title">Total Billed</span>
                     <span id="metric-billed" class="metric-value">৳0.00</span>
-                    <span class="metric-subtext">Sum of all bills & undercharges</span>
+                    <span class="metric-subtext">Sum of all bills issued</span>
                 </div>
             </div>
 
@@ -723,8 +723,9 @@
                     <h3 class="section-title" style="color: var(--accent-red);">Log Error / Financial Adjustment</h3>
                     <div class="error-note-box">
                         <strong>📌 Internal Financial Adjustment Rules:</strong><br>
-                        • <strong>Undercharged:</strong> Adds to total billed balance & increases client current due.<br>
-                        • <strong>Overcharged:</strong> Deducts from net total paid / revenue calculations.
+                        • <strong>Undercharged:</strong> Adds to net collected payment calculations & balances outstanding revenue.<br>
+                        • <strong>Overcharged:</strong> Deducts from net total collected payment & revenue calculations.<br>
+                        <em>Note: Financial error adjustments do NOT alter base Net Billed figures.</em>
                     </div>
 
                     <form id="create-error-log-form">
@@ -740,8 +741,8 @@
                             <div class="form-group">
                                 <label>Adjustment Type <span style="color: var(--accent-red);">*</span></label>
                                 <select id="err-type" required>
-                                    <option value="Undercharged">Undercharged (Add to Billed / Owed to Us)</option>
-                                    <option value="Overcharged">Overcharged (Deduct from Net Paid / Revenue)</option>
+                                    <option value="Undercharged">Undercharged (Receivable Adjustment)</option>
+                                    <option value="Overcharged">Overcharged (Payable / Deduct from Revenue)</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -1188,7 +1189,6 @@
 
         function calculateMetrics() {
             let totalRevenue = 0;
-            let totalUndercharges = 0;
 
             cachedPayments.forEach(p => {
                 const amt = Number(p.amount || 0);
@@ -1198,7 +1198,7 @@
                 if (p.is_error_log) {
                     const type = (p.transaction_type || '').toLowerCase();
                     if (type.includes('undercharged')) {
-                        totalUndercharges += amt;
+                        totalRevenue += amt;
                     } else if (type.includes('overcharged')) {
                         totalRevenue -= amt;
                     }
@@ -1210,7 +1210,8 @@
                 }
             });
 
-            const totalBilled = cachedBilling.reduce((sum, b) => sum + Number(b.amount || 0), 0) + totalUndercharges;
+            // Error logs DO NOT alter Total Billed figure
+            const totalBilled = cachedBilling.reduce((sum, b) => sum + Number(b.amount || 0), 0);
             const activeProjectsCount = cachedProjects.filter(p => 
                 (p.status || '').toLowerCase() !== 'completed' && (p.status || '').toLowerCase() !== 'cancelled'
             ).length;
@@ -1378,7 +1379,7 @@
             const tbody = document.getElementById('clients-table-body');
             const clientMap = {};
 
-            // 1. Base Billed Sums
+            // 1. Sum up base billing (error logs DO NOT modify billed amount)
             cachedBilling.forEach(b => {
                 const email = extractCleanEmail(b.client_email);
                 if (!email) return;
@@ -1386,7 +1387,7 @@
                 clientMap[email].billed += Number(b.amount || 0);
             });
 
-            // 2. Payments & Financial Adjustments (Corrected Logic)
+            // 2. Sum up payments & process adjustments against paid balance
             cachedPayments.forEach(p => {
                 const email = extractCleanEmail(p.client_email);
                 if (!email) return;
@@ -1402,10 +1403,10 @@
                 if (p.is_error_log) {
                     const type = (p.transaction_type || '').toLowerCase();
                     if (type.includes('undercharged')) {
-                        // Undercharge means we billed less than we should have -> Increases Total Billed
-                        clientMap[email].billed += amt;
+                        // Undercharged = adds to collected/recognized balance
+                        clientMap[email].paid += amt;
                     } else if (type.includes('overcharged')) {
-                        // Overcharge means client was charged extra -> Decreases Net Total Paid
+                        // Overcharged = deducts from collected/recognized balance
                         clientMap[email].paid -= amt;
                     }
                     return;
@@ -1417,7 +1418,7 @@
                 }
             });
 
-            // 3. Fallback to Project Budgets if no direct billing log exists
+            // 3. Sync project budgets if direct billing logs are absent
             cachedProjects.forEach(p => {
                 const email = extractCleanEmail(p.client_email);
                 if (!email) return;
@@ -1429,7 +1430,7 @@
                 }
             });
 
-            // 4. Attach Profile Notes
+            // 4. Attach profile notes
             cachedProfiles.forEach(prof => {
                 const email = extractCleanEmail(prof.email);
                 if (email && clientMap[email]) {
