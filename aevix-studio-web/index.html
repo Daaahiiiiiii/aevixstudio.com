@@ -389,15 +389,20 @@
 
         /* ==========================================================
            ABOUT US SECTION - FULL SCREEN NON-CARD EDITORIAL DESIGN
-           Exclusive Color Palette Applied ONLY HERE with Diffused Transition
+           Exclusive Color Palette with Seamless Gradient Fade-in / Fade-out
            ========================================================== */
         #about {
             position: relative;
             background: #354B3A; /* Moss background from Palette 1 */
             color: #FADD8B;      /* Butter text from Palette 1 */
             width: 100%;
-            /* Smooth gradient diffusion overlay at top border */
-            box-shadow: inset 0 80px 80px -40px #030712;
+            /* Smooth double gradient fade: Fades in from dark at the top AND fades out to dark at the bottom */
+            background-image: 
+                linear-gradient(to bottom, #030712 0%, rgba(53, 75, 58, 0.5) 15%, #354B3A 30%),
+                linear-gradient(to top, #030712 0%, rgba(53, 75, 58, 0.5) 15%, #354B3A 30%);
+            background-size: 100% 50%, 100% 50%;
+            background-position: top, bottom;
+            background-repeat: no-repeat;
         }
 
         .about-sticky-wrapper {
