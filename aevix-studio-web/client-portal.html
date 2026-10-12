@@ -3,144 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Viewing Deck | Aevix Studio</title>
+    <title>Client Viewing Deck | Aevix Studio</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-dark: #0b0f17;
-            --card-bg: #111827;
-            --border-color: #1f2937;
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --accent-blue: #3b82f6;
-            --accent-green: #4ade80;
-            --accent-yellow: #facc15;
+            --bg-dark: #04060f;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #0d152f 0%, #04060f 75%);
+            --card-bg: rgba(13, 19, 38, 0.75);
+            --card-bg-hover: rgba(19, 28, 54, 0.85);
+            --card-border: rgba(56, 189, 248, 0.12);
+            --card-border-hover: rgba(56, 189, 248, 0.35);
+            --border-color: #1e294b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+            --accent-blue-glow: rgba(56, 189, 248, 0.3);
+            --accent-green: #34d399;
             --accent-red: #f87171;
-            --accent-purple: #a855f7;
+            --accent-yellow: #fbbf24;
+            --accent-purple: #c084fc;
+            --input-bg: #070a17;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.03) inset;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         body {
             background-color: var(--bg-dark);
+            background-image: var(--bg-gradient);
             color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
         }
 
         .portal-container {
-            max-width: 1080px;
+            max-width: 1280px;
             width: 100%;
             margin: 0 auto;
-            padding: 2rem 1.5rem;
+            padding: 2rem 1rem;
         }
 
+        @media (min-width: 768px) {
+            .portal-container {
+                padding: 2.5rem 2rem;
+            }
+        }
+
+        /* Header Navigation */
         .portal-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            gap: 1rem;
             margin-bottom: 2rem;
-            padding-bottom: 1.25rem;
+            padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
+            background: linear-gradient(180deg, rgba(13, 19, 38, 0.6) 0%, transparent 100%);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card);
         }
 
-        .brand-title { font-size: 1.5rem; font-weight: 700; color: #ffffff; }
-        .user-info { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+        @media (min-width: 640px) {
+            .portal-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding: 1.5rem 2rem;
+            }
+        }
+
+        .brand-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 20%, var(--accent-blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+        }
+
+        .user-info {
+            font-size: 0.825rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            word-break: break-all;
+        }
+
+        .user-info::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-green);
+            flex-shrink: 0;
+        }
 
         .logout-btn {
-            background: transparent;
+            background: rgba(248, 113, 113, 0.1);
             color: var(--accent-red);
-            border: 1px solid var(--accent-red);
-            padding: 8px 16px;
-            border-radius: 6px;
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            padding: 9px 18px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-weight: 500;
-            font-size: 0.875rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+            align-self: flex-start;
         }
 
+        @media (min-width: 640px) {
+            .logout-btn {
+                align-self: auto;
+            }
+        }
+
+        .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.22);
+            border-color: var(--accent-red);
+            box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Project Selector Cards */
         .project-cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
 
         .project-card-btn {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 1rem 1.25rem;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
             text-align: left;
             cursor: pointer;
             color: var(--text-main);
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--text-muted);
+            opacity: 0.3;
+            transition: var(--transition-smooth);
+        }
+
+        .project-card-btn:hover {
+            transform: translateY(-3px);
+            border-color: var(--card-border-hover);
+            background: var(--card-bg-hover);
         }
 
         .project-card-btn.active {
             border-color: var(--accent-blue);
-            background: rgba(59, 130, 246, 0.08);
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, var(--card-bg) 100%);
+            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.2);
         }
 
+        .project-card-btn.active::before {
+            background: var(--accent-blue);
+            opacity: 1;
+            box-shadow: 0 0 10px var(--accent-blue);
+        }
+
+        /* Card container */
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.75rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-bottom: 1.75rem;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition-smooth);
         }
 
+        @media (min-width: 768px) {
+            .card {
+                padding: 2rem;
+            }
+        }
+
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.2);
+        }
+
+        .card-header-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 1rem;
+        }
+
+        @media (min-width: 640px) {
+            .card-header-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        /* Financial Metrics Grid */
         .project-details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 1.25rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
             padding-top: 1.25rem;
             border-top: 1px solid var(--border-color);
         }
 
-        .detail-item { display: flex; flex-direction: column; gap: 0.25rem; }
-        .detail-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.05em; font-weight: 600; }
-        .detail-val { font-size: 1.2rem; font-weight: 700; color: #ffffff; }
+        @media (min-width: 768px) {
+            .project-details-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
+            }
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            background: rgba(4, 6, 15, 0.4);
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .detail-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .detail-val {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.02em;
+        }
+
+        @media (min-width: 768px) {
+            .detail-val {
+                font-size: 1.45rem;
+            }
+        }
 
         .text-green { color: var(--accent-green) !important; }
         .text-yellow { color: var(--accent-yellow) !important; }
         .text-red { color: var(--accent-red) !important; }
         .text-blue { color: var(--accent-blue) !important; }
+        .text-purple { color: var(--accent-purple) !important; }
 
-        .ledger-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; text-align: left; }
-        .ledger-table th { color: var(--text-muted); padding: 0.75rem 0.5rem; border-bottom: 1px solid var(--border-color); }
-        .ledger-table td { padding: 0.85rem 0.5rem; border-bottom: 1px solid var(--border-color); }
+        /* Tables & Responsive Wrapper */
+        .table-responsive {
+            overflow-x: auto;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            background: rgba(4, 6, 15, 0.5);
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            -webkit-overflow-scrolling: touch;
+        }
 
-        .timeline-list { display: flex; flex-direction: column; gap: 1rem; border-left: 2px solid var(--border-color); padding-left: 1rem; }
-        .timeline-item { position: relative; }
-        .timeline-item::before { content: ''; position: absolute; left: -1.35rem; top: 0.35rem; width: 8px; height: 8px; border-radius: 50%; background: var(--accent-blue); }
+        .ledger-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        @media (min-width: 768px) {
+            .ledger-table {
+                white-space: normal;
+            }
+        }
+
+        .ledger-table th {
+            background: #070a17;
+            color: var(--text-muted);
+            padding: 12px 16px;
+            font-weight: 700;
+            border-bottom: 1px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+        }
+
+        .ledger-table td {
+            padding: 13px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .ledger-table tr:hover td {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .status-paid {
+            background: rgba(52, 211, 153, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .status-overdue {
+            background: rgba(248, 113, 113, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+
+        .status-adjustment {
+            background: rgba(192, 132, 252, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(192, 132, 252, 0.3);
+        }
+
+        /* Timeline Updates */
+        .timeline-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            border-left: 2px solid var(--border-color);
+            padding-left: 1.25rem;
+            margin-left: 0.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -1.5rem;
+            top: 0.35rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            box-shadow: 0 0 10px var(--accent-blue);
+        }
     </style>
 </head>
 <body>
 
     <div class="portal-container">
+        <!-- Top Navigation Header -->
         <div class="portal-header">
             <div>
-                <h1 class="brand-title">Viewing Deck</h1>
-                <div id="user-info-display" class="user-info">Authenticating access...</div>
+                <h1 class="brand-title">Client Viewing Deck</h1>
+                <div id="user-info-display" class="user-info">Authenticating access session...</div>
             </div>
             <button id="logout-btn" class="logout-btn" style="display: none;">Sign Out</button>
         </div>
 
-        <div id="auth-loading" style="text-align: center; padding: 3rem;">
-            <p style="color: var(--text-muted);">Loading workspace content...</p>
+        <div id="auth-loading" style="text-align: center; padding: 5rem 0;">
+            <p style="color: var(--text-muted); font-size: 1rem;">Loading secure workspace content...</p>
         </div>
 
         <div id="portal-main-view" style="display: none;">
+            <!-- Project Selection Cards Grid -->
             <div id="project-cards-grid" class="project-cards-grid"></div>
 
+            <!-- Active Project Overview Card -->
             <div class="card">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                <div class="card-header-flex">
                     <div>
-                        <h2 id="active-proj-title" style="font-size: 1.5rem; color:#fff;">Project Title</h2>
-                        <span id="active-proj-code" style="font-family: monospace; color: var(--accent-blue); font-size: 0.85rem;">#000000</span>
+                        <h2 id="active-proj-title" style="font-size: 1.35rem; color:#fff; font-weight:700;">Project Title</h2>
+                        <span id="active-proj-code" style="font-family: monospace; color: var(--accent-blue); font-size: 0.85rem; background: rgba(56,189,248,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56,189,248,0.2);">#000000</span>
                     </div>
-                    <span id="active-proj-status" style="padding:4px 12px; border-radius:999px; background:rgba(59,130,246,0.15); color:var(--accent-blue); font-weight:600; font-size:0.8rem;">Active</span>
+                    <span id="active-proj-status" class="status-badge status-pending" style="align-self: flex-start;">Active</span>
                 </div>
 
                 <!-- Financial Deck Metrics -->
@@ -166,39 +443,44 @@
 
             <!-- Billed Breakdown Section -->
             <div class="card">
-                <h3 style="color:#fff; margin-bottom:1rem;">Issued Bills Breakdown</h3>
-                <table class="ledger-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Description</th>
-                            <th>Amount Billed</th>
-                        </tr>
-                    </thead>
-                    <tbody id="billing-tbody"></tbody>
-                </table>
+                <h3 style="color:#fff; margin-bottom:1rem; font-size:1.1rem; font-weight:700;">Issued Bills Breakdown</h3>
+                <div class="table-responsive">
+                    <table class="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount Billed</th>
+                            </tr>
+                        </thead>
+                        <tbody id="billing-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Payment Ledger Section -->
             <div class="card">
-                <h3 style="color:#fff; margin-bottom:1rem;">Payments & Transactions Ledger</h3>
-                <table class="ledger-table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Payer</th>
-                            <th>Milestone / Description</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ledger-tbody"></tbody>
-                </table>
+                <h3 style="color:#fff; margin-bottom:1rem; font-size:1.1rem; font-weight:700;">Payments & Transactions Ledger</h3>
+                <div class="table-responsive">
+                    <table class="ledger-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Payer Name</th>
+                                <th>Milestone / Description</th>
+                                <th>Amount</th>
+                                <th>Overdue Fee</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-tbody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Timeline Updates -->
             <div class="card">
-                <h3 style="color:#fff; margin-bottom:1rem;">Project Timeline Updates</h3>
+                <h3 style="color:#fff; margin-bottom:1.25rem; font-size:1.1rem; font-weight:700;">Project Timeline Updates</h3>
                 <div id="timeline-list" class="timeline-list"></div>
             </div>
         </div>
@@ -214,21 +496,52 @@
 
         function escapeHtml(str) {
             if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function extractCleanEmail(raw) {
+            if (!raw) return '';
+            const match = String(raw).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            return match ? match[0].toLowerCase().trim() : String(raw).toLowerCase().trim();
         }
 
         function getSupabase() {
-            if (!supabaseClient) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            if (!supabaseClient) {
+                const config = {
+                    auth: {
+                        flowType: 'pkce',
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                };
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                } else if (typeof createClient === 'function') {
+                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                }
+            }
             return supabaseClient;
         }
 
         document.getElementById('logout-btn').addEventListener('click', async () => {
-            await getSupabase().auth.signOut();
+            const client = getSupabase();
+            if (client) await client.auth.signOut();
             window.location.replace('index.html');
         });
 
         document.addEventListener('DOMContentLoaded', async () => {
             const client = getSupabase();
+            if (!client) {
+                document.getElementById('auth-loading').innerHTML = `<p style="color: var(--accent-red);">Failed to initialize Supabase client.</p>`;
+                return;
+            }
+
             const { data: { session } } = await client.auth.getSession();
 
             if (!session || !session.user) {
@@ -236,11 +549,11 @@
                 return;
             }
 
-            const email = session.user.email.toLowerCase();
+            const email = extractCleanEmail(session.user.email);
             document.getElementById('user-info-display').textContent = `Logged in as ${email}`;
             document.getElementById('logout-btn').style.display = 'inline-block';
 
-            const { data: projects } = await client.from('projects').select('*').ilike('client_email', email);
+            const { data: projects, error } = await client.from('projects').select('*').ilike('client_email', email);
 
             document.getElementById('auth-loading').style.display = 'none';
 
@@ -249,6 +562,14 @@
                 document.getElementById('portal-main-view').style.display = 'block';
                 renderProjectSelector();
                 selectProject(userProjects[0].id);
+            } else {
+                document.getElementById('portal-main-view').style.display = 'block';
+                document.getElementById('portal-main-view').innerHTML = `
+                    <div class="card" style="text-align: center; padding: 3rem;">
+                        <h3 style="color: #fff; margin-bottom: 0.5rem;">No Projects Found</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">No active projects are currently linked to your email address (${email}).</p>
+                    </div>
+                `;
             }
         });
 
@@ -256,7 +577,7 @@
             const grid = document.getElementById('project-cards-grid');
             grid.innerHTML = userProjects.map(p => `
                 <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" onclick="selectProject('${p.id}')">
-                    <div style="font-weight:600; color:#fff;">${escapeHtml(p.title || p.project_name)}</div>
+                    <div style="font-weight:700; color:#fff; font-size:1rem; margin-bottom:4px;">${escapeHtml(p.title || p.project_name || 'Untitled Project')}</div>
                     <div style="font-family:monospace; font-size:0.75rem; color:var(--accent-blue);">#${escapeHtml(p.hex_code || 'N/A')}</div>
                 </button>
             `).join('');
@@ -267,10 +588,22 @@
             renderProjectSelector();
 
             const p = userProjects.find(item => item.id === projectId);
-            document.getElementById('active-proj-title').textContent = p.title || p.project_name;
+            document.getElementById('active-proj-title').textContent = p.title || p.project_name || 'Untitled Project';
             document.getElementById('active-proj-code').textContent = `#${p.hex_code || 'N/A'}`;
-            document.getElementById('active-proj-status').textContent = p.status || 'Active';
-            document.getElementById('active-proj-budget').textContent = `৳${Number(p.budget || 0).toLocaleString()}`;
+            
+            const projStatus = p.status || 'Active';
+            const statusEl = document.getElementById('active-proj-status');
+            statusEl.textContent = projStatus;
+            statusEl.className = `status-badge status-${projStatus.toLowerCase().replace(/\s+/g, '-')}`;
+
+            // Format Budget with optional extension display ('normal budget' + 'new addition if any')
+            const baseBudget = Number(p.budget || 0);
+            const extendedBy = Number(p.budget_extended_by || 0);
+            let budgetHtml = `৳${baseBudget.toLocaleString()}`;
+            if (extendedBy > 0) {
+                budgetHtml += ` <span style="font-size:0.85rem; color:var(--accent-yellow); font-weight:600;">+ ৳${extendedBy.toLocaleString()} extension</span>`;
+            }
+            document.getElementById('active-proj-budget').innerHTML = budgetHtml;
 
             const client = getSupabase();
 
@@ -285,22 +618,22 @@
             const payments = payRes.data || [];
             const logs = logRes.data || [];
 
-            // 1. Total Billed (sum of bills in 'Billing' tab)
+            // 1. Total Billed
             const totalBilled = bills.reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
-            // 2. Current Paid with Error Log additions/deductions
+            // 2. Current Paid with Error Log adjustments
             let totalPaid = 0;
             payments.forEach(pay => {
                 const amt = Number(pay.amount || 0);
                 if (pay.is_error_log) {
-                    if ((pay.transaction_type || '').includes('Undercharged')) totalPaid += amt;
-                    else if ((pay.transaction_type || '').includes('Overcharged')) totalPaid -= amt;
+                    if ((pay.transaction_type || '').toLowerCase().includes('undercharged')) totalPaid += amt;
+                    else if ((pay.transaction_type || '').toLowerCase().includes('overcharged')) totalPaid -= amt;
                 } else if ((pay.status || pay.payment_status || '').toLowerCase() === 'paid') {
                     totalPaid += amt;
                 }
             });
 
-            // 3. Current Due (Billed - Paid)
+            // 3. Current Due
             const currentDue = Math.max(0, totalBilled - totalPaid);
 
             document.getElementById('active-proj-billed').textContent = `৳${totalBilled.toLocaleString()}`;
@@ -309,7 +642,7 @@
 
             // Render Billing Breakdown Table
             document.getElementById('billing-tbody').innerHTML = bills.length === 0 ? 
-                '<tr><td colspan="3" style="color:var(--text-muted);">No bills issued yet.</td></tr>' :
+                '<tr><td colspan="3" style="color:var(--text-muted); text-align:center;">No bills issued yet.</td></tr>' :
                 bills.map(b => `
                     <tr>
                         <td>${new Date(b.created_at).toLocaleDateString()}</td>
@@ -320,24 +653,54 @@
 
             // Render Payment Ledger Table
             document.getElementById('ledger-tbody').innerHTML = payments.length === 0 ? 
-                '<tr><td colspan="5" style="color:var(--text-muted);">No payments recorded.</td></tr>' :
-                payments.map(pay => `
-                    <tr>
-                        <td>${new Date(pay.created_at).toLocaleDateString()}</td>
-                        <td>${escapeHtml(pay.client_name || 'N/A')}</td>
-                        <td>${escapeHtml(pay.milestone || '-')}</td>
-                        <td style="font-weight:600;">৳${Number(pay.amount).toLocaleString()}</td>
-                        <td>${escapeHtml(pay.status || pay.payment_status)}</td>
-                    </tr>
-                `).join('');
+                '<tr><td colspan="6" style="color:var(--text-muted); text-align:center;">No payments recorded.</td></tr>' :
+                payments.map(pay => {
+                    const createdDateStr = new Date(pay.created_at).toLocaleDateString();
+                    const overdueFee = Number(pay.overdue_amount || 0);
 
-            // Render Activity Logs
+                    if (pay.is_error_log) {
+                        return `
+                            <tr style="background: rgba(248, 113, 113, 0.02);">
+                                <td>${createdDateStr}</td>
+                                <td><strong>${escapeHtml(pay.client_name || 'N/A')}</strong></td>
+                                <td style="color: #fca5a5;">${escapeHtml(pay.milestone)}</td>
+                                <td style="font-weight: 700; color: var(--accent-purple);">৳${Number(pay.amount).toLocaleString()} (${escapeHtml(pay.transaction_type)})</td>
+                                <td>-</td>
+                                <td><span class="status-badge status-adjustment">Adjustment</span></td>
+                            </tr>
+                        `;
+                    }
+
+                    const currentStatus = (pay.status || pay.payment_status || 'Pending').toLowerCase();
+                    const isPaid = currentStatus === 'paid';
+                    const paidDateStr = pay.paid_at ? new Date(pay.paid_at).toLocaleDateString() : '';
+
+                    return `
+                        <tr>
+                            <td>
+                                <div>${createdDateStr}</div>
+                                ${isPaid && paidDateStr ? `<div style="font-size: 0.7rem; color: var(--accent-green); white-space: nowrap; margin-top: 2px;">Paid at: ${paidDateStr}</div>` : ''}
+                            </td>
+                            <td><strong>${escapeHtml(pay.client_name || 'N/A')}</strong></td>
+                            <td>${escapeHtml(pay.milestone || 'N/A')}</td>
+                            <td style="font-weight: 600;">৳${Number(pay.amount || 0).toLocaleString()}</td>
+                            <td style="color: var(--accent-red); font-weight: 600;">
+                                ${overdueFee > 0 ? `+৳${overdueFee.toLocaleString()}` : '৳0.00'}
+                            </td>
+                            <td>
+                                <span class="status-badge status-${currentStatus}">${escapeHtml(pay.status || pay.payment_status || 'Pending')}</span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+            // Render Activity Logs Timeline
             document.getElementById('timeline-list').innerHTML = logs.length === 0 ? 
                 '<p style="color:var(--text-muted);">No activity updates posted yet.</p>' :
                 logs.map(l => `
                     <div class="timeline-item">
                         <div style="font-size:0.75rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString()}</div>
-                        <div style="color:#e5e7eb; margin-top:0.25rem;">${escapeHtml(l.log_text || l.message)}</div>
+                        <div style="color:#e5e7eb; margin-top:0.25rem; font-size:0.9rem;">${escapeHtml(l.log_text || l.message)}</div>
                     </div>
                 `).join('');
         }
