@@ -308,100 +308,168 @@
             line-height: 1.6;
         }
 
-        /* --- About Us / Team Horizontal Scroll Section --- */
+        /* ==========================================================
+           ABOUT US SECTION - FULL SCREEN NON-CARD EDITORIAL DESIGN
+           Exclusive Color Palette Applied ONLY HERE
+           ========================================================== */
         #about {
-            height: 500vh; /* Scroll runway for smooth horizontal pinning */
             position: relative;
+            background: #354B3A; /* Moss background from Palette 1 */
+            color: #FADD8B;      /* Butter text from Palette 1 */
+            width: 100%;
         }
 
         .about-sticky-wrapper {
             position: sticky;
             top: 0;
             height: 100vh;
-            display: flex;
-            align-items: center;
+            width: 100vw;
             overflow: hidden;
-            background: rgba(3, 7, 18, 0.92);
-            backdrop-filter: blur(10px);
-        }
-
-        .about-header-absolute {
-            position: absolute;
-            top: 3.5rem;
-            left: 0;
-            right: 0;
-            text-align: center;
-            z-index: 20;
-            padding: 0 1.5rem;
-        }
-
-        .about-header-absolute h2 {
-            font-size: clamp(2rem, 3vw, 2.5rem);
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 0.4rem;
-        }
-
-        .about-header-absolute p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        .team-track {
-            display: flex;
-            gap: 4rem;
-            padding-left: calc(50vw - 220px);
-            will-change: transform;
-        }
-
-        .team-card {
-            flex: 0 0 440px;
-            background: rgba(17, 24, 39, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
+            background: radial-gradient(circle at 80% 20%, rgba(80, 168, 176, 0.25), transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(64, 95, 87, 0.4), transparent 60%),
+                        #354B3A;
+        }
+
+        .about-top-bar {
+            position: absolute;
+            top: 2.5rem;
+            left: 50%;
+            transform: translateX(-50%);
             text-align: center;
-            transition: border-color 0.3s ease;
+            z-index: 25;
+            width: 90%;
+            max-width: 1000px;
         }
 
-        .team-card:hover {
-            border-color: var(--accent-teal);
+        .about-top-bar h2 {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 800;
+            color: #FADD8B; /* Butter color */
+            letter-spacing: -0.02em;
         }
 
-        .team-avatar {
-            width: 120px;
-            height: 120px;
+        .about-top-bar p {
+            color: #ABCA9E; /* Mint color */
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .about-slides-container {
+            position: relative;
+            width: 100%;
+            max-width: 1100px;
+            height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 2rem;
+        }
+
+        .about-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+
+        .about-slide.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        .about-avatar-wrapper {
+            flex: 0 0 280px;
+            height: 280px;
+            position: relative;
+        }
+
+        .about-avatar-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #50A8B0, #BACE6F, #FF974F);
+            opacity: 0.8;
+            filter: blur(8px);
+        }
+
+        .about-avatar {
+            position: relative;
+            width: 100%;
+            height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            margin-bottom: 1.5rem;
-            box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
+            border: 3px solid #FADD8B;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
 
-        .team-name {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.25rem;
+        .about-content {
+            flex: 1;
         }
 
-        .team-role {
-            font-size: 0.85rem;
-            color: var(--accent-teal);
-            font-weight: 600;
+        .about-role-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #64AEF2, #8D95FF);
+            color: #030712;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 1.25rem;
+            letter-spacing: 0.06em;
+            margin-bottom: 1rem;
         }
 
-        .team-bio {
-            font-size: 0.925rem;
-            color: var(--text-muted);
-            line-height: 1.6;
+        .about-name {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .about-bio {
+            font-size: clamp(1rem, 1.5vw, 1.15rem);
+            color: #ABCA9E; /* Mint color */
+            line-height: 1.7;
+            max-width: 650px;
+        }
+
+        /* Slide Indicators */
+        .about-indicators {
+            position: absolute;
+            bottom: 3rem;
+            display: flex;
+            gap: 12px;
+            z-index: 25;
+        }
+
+        .about-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(250, 221, 139, 0.3);
+            transition: var(--transition-smooth);
+        }
+
+        .about-dot.active {
+            background: #FADD8B;
+            width: 32px;
+            border-radius: 999px;
         }
 
         /* Contact Form Card */
@@ -511,7 +579,7 @@
             color: #6b7280;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 868px) {
             header {
                 flex-direction: column;
                 gap: 1rem;
@@ -522,15 +590,18 @@
                 justify-content: center;
                 gap: 1rem;
             }
-            .contact-card {
-                padding: 1.75rem 1.25rem;
+            .about-slide {
+                flex-direction: column;
+                justify-content: center;
+                text-align: center;
+                gap: 1.5rem;
             }
-            .team-card {
-                flex: 0 0 300px;
-                padding: 1.75rem;
+            .about-avatar-wrapper {
+                flex: 0 0 160px;
+                height: 160px;
             }
-            .team-track {
-                padding-left: calc(50vw - 150px);
+            .about-bio {
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -606,67 +677,102 @@
         </div>
     </section>
 
-    <!-- About Us / Horizontal Scroll Team Section -->
+    <!-- About Us / Full Screen Editorial Showcase Section -->
     <section id="about">
         <div class="about-sticky-wrapper">
-            <div class="about-header-absolute">
+            <div class="about-top-bar">
                 <h2>Meet The Minds Behind Aevix</h2>
-                <p>Scroll down to explore our executive leadership and creative forces.</p>
+                <p>Scroll to reveal executive leadership and creative directors.</p>
             </div>
-            <div class="team-track" id="team-track">
-                <!-- 1. Ettihad Madhurjo -->
-                <div class="team-card">
-                    <img src="etti.png" alt="Ettihad Madhurjo" class="team-avatar" onerror="this.src='https://via.placeholder.com/120?text=EM'">
-                    <h3 class="team-name">Ettihad Madhurjo</h3>
-                    <div class="team-role">Founder & Chief Executive Officer</div>
-                    <p class="team-bio">The visionary driving Aevix Studio forward. An absolute titan in social media management and cinematic video editing, turning organic viewer engagement into viral momentum.</p>
+
+            <div class="about-slides-container">
+                <!-- Slide 1: Ettihad Madhurjo -->
+                <div class="about-slide active" data-index="0">
+                    <div class="about-avatar-wrapper">
+                        <img src="etti.png" alt="Ettihad Madhurjo" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=EM'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge">Founder & Chief Executive Officer</span>
+                        <h3 class="about-name">Ettihad Madhurjo</h3>
+                        <p class="about-bio">The driving force and visionary behind Aevix Studio. An elite maestro in social media management and cinematic video editing, turning organic audience engagement into multi-million impression campaigns.</p>
+                    </div>
                 </div>
 
-                <!-- 2. Dahiyat Danesh Chowdhury -->
-                <div class="team-card">
-                    <img src="dahi.png" alt="Dahiyat Danesh Chowdhury" class="team-avatar" onerror="this.src='https://via.placeholder.com/120?text=DC'">
-                    <h3 class="team-name">Dahiyat Danesh Chowdhury</h3>
-                    <div class="team-role">Co-Founder, COO & Head of SMM</div>
-                    <p class="team-bio">Masterminding daily studio operations across web development, visual design, and high-converting SMM campaigns. A multi-disciplinary craftsman dedicated to flawless digital execution.</p>
+                <!-- Slide 2: Dahiyat Danesh Chowdhury -->
+                <div class="about-slide" data-index="1">
+                    <div class="about-avatar-wrapper">
+                        <img src="dahi.png" alt="Dahiyat Danesh Chowdhury" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=DC'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #FF974F, #FEBD61);">Co-Founder, COO & Head of SMM</span>
+                        <h3 class="about-name">Dahiyat Danesh Chowdhury</h3>
+                        <p class="about-bio">Masterminds studio operations across web systems, photo/video curation, and brand strategy. A relentless multi-disciplinary operator delivering pristine execution on every commercial engagement.</p>
+                    </div>
                 </div>
 
-                <!-- 3. Ahnaf Tahmid -->
-                <div class="team-card">
-                    <img src="ahnaf.png" alt="Ahnaf Tahmid" class="team-avatar" onerror="this.src='https://via.placeholder.com/120?text=AT'">
-                    <h3 class="team-name">Ahnaf Tahmid</h3>
-                    <div class="team-role">Dedicated Web Developer</div>
-                    <p class="team-bio">An engineering powerhouse building blistering-fast web architectures, robust backend databases, and flawless, bulletproof digital platforms that stand out globally.</p>
+                <!-- Slide 3: Ahnaf Tahmid -->
+                <div class="about-slide" data-index="2">
+                    <div class="about-avatar-wrapper">
+                        <img src="ahnaf.png" alt="Ahnaf Tahmid" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AT'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #6BD995, #8FECC2);">Dedicated Web Developer</span>
+                        <h3 class="about-name">Ahnaf Tahmid</h3>
+                        <p class="about-bio">An engineering powerhouse building lightning-fast web architectures, bulletproof full-stack applications, and scalable cloud platforms engineered for total operational stability.</p>
+                    </div>
                 </div>
 
-                <!-- 4. Md Nafasat Kalbi -->
-                <div class="team-card">
-                    <img src="nafa.png" alt="Md Nafasat Kalbi" class="team-avatar" onerror="this.src='https://via.placeholder.com/120?text=NK'">
-                    <h3 class="team-name">Md Nafasat Kalbi</h3>
-                    <div class="team-role">Expert Video & Photo Editor</div>
-                    <p class="team-bio">An absolute wizard with visual media. Transforming raw footage and photography into breathtaking masterpieces that captivate audiences and define luxury brand aesthetics.</p>
+                <!-- Slide 4: Md Nafasat Kalbi -->
+                <div class="about-slide" data-index="3">
+                    <div class="about-avatar-wrapper">
+                        <img src="nafa.png" alt="Md Nafasat Kalbi" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=NK'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #FF598A, #FF8A9C);">Expert Video & Photo Editor</span>
+                        <h3 class="about-name">Md Nafasat Kalbi</h3>
+                        <p class="about-bio">A master craftsman in post-production. Transforming raw camera logs into mesmerizing visual assets and color-graded campaigns that captivate audiences and define luxury brand aesthetics.</p>
+                    </div>
                 </div>
 
-                <!-- 5. Ariyan Arabi Sikder -->
-                <div class="team-card">
-                    <img src="ari.png" alt="Ariyan Arabi Sikder" class="team-avatar" onerror="this.src='https://via.placeholder.com/120?text=AS'">
-                    <h3 class="team-name">Ariyan Arabi Sikder</h3>
-                    <div class="team-role">Designer & Creative Director</div>
-                    <p class="team-bio">A brilliant design visionary shaping unforgettable brand identities, striking visual languages, and pristine art direction that leaves lasting impressions on every viewer.</p>
+                <!-- Slide 5: Ariyan Arabi Sikder -->
+                <div class="about-slide" data-index="4">
+                    <div class="about-avatar-wrapper">
+                        <img src="ari.png" alt="Ariyan Arabi Sikder" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AS'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #50A8B0, #ABCA9E);">Designer & Creative Director</span>
+                        <h3 class="about-name">Ariyan Arabi Sikder</h3>
+                        <p class="about-bio">A creative visionary crafting striking brand identities, custom typography, and high-end visual languages that elevate modern businesses into iconic market leaders.</p>
+                    </div>
                 </div>
 
-                <!-- 6. Munkadeer Mahmud -->
-                <div class="team-card">
-                    <img src="munkadeer.png" alt="Munkadeer Mahmud" class="team-avatar" onerror="this.src='https://via.placeholder.com/120?text=MM'" onerror="this.src='https://via.placeholder.com/120?text=MM'">
-                    <h3 class="team-name">Munkadeer Mahmud</h3>
-                    <div class="team-role">Designer & Animator</div>
-                    <p class="team-bio">Breathing motion and life into static concepts. Crafting fluid animations and striking graphics that transform standard interfaces into immersive digital experiences.</p>
+                <!-- Slide 6: Munkadeer Mahmud -->
+                <div class="about-slide" data-index="5">
+                    <div class="about-avatar-wrapper">
+                        <img src="munkadeer.png" alt="Munkadeer Mahmud" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=MM'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #BACE6F, #FADD8B);">Designer & Animator</span>
+                        <h3 class="about-name">Munkadeer Mahmud</h3>
+                        <p class="about-bio">Infuses motion and energy into modern digital design. Crafting fluid 2D/3D animations and UI motion graphics that turn standard digital assets into unforgettable experiences.</p>
+                    </div>
                 </div>
+            </div>
+
+            <!-- Slide Progress Indicators -->
+            <div class="about-indicators" id="about-indicators">
+                <div class="about-dot active"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
             </div>
         </div>
     </section>
 
     <!-- Contact Form Section -->
-    <section id="contact" class="section-container">
+    <section id="contact" class="section-container" style="margin-top: 6rem;">
         <h2>Start Your Project</h2>
         <p class="section-lead">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
 
@@ -714,31 +820,50 @@
         </div>
     </footer>
 
-    <!-- Interactive Evolving 3D Canvas Script & Horizontal Scroll Team Animation -->
+    <!-- Interactive Evolving 3D Canvas Script & About Section Scroll Controller -->
     <script>
-        // --- 1. Smooth Horizontal Scroll for About Us Section ---
+        // --- 1. Seamless Full-Screen Slide Transitions for About Us Section ---
         const aboutSection = document.getElementById('about');
-        const teamTrack = document.getElementById('team-track');
+        const slides = document.querySelectorAll('.about-slide');
+        const dots = document.querySelectorAll('.about-dot');
+        const slideCount = slides.length;
 
-        window.addEventListener('scroll', () => {
+        // Set section height to create enough vertical scroll space for 6 slides
+        aboutSection.style.height = `${slideCount * 100}vh`;
+
+        function updateAboutSlides() {
             const rect = aboutSection.getBoundingClientRect();
             const sectionHeight = aboutSection.offsetHeight;
             const windowHeight = window.innerHeight;
 
-            // Calculate scroll progress through the #about section (0 to 1)
-            let scrollProgress = -rect.top / (sectionHeight - windowHeight);
-            scrollProgress = Math.max(0, Math.min(1, scrollProgress));
+            let progress = -rect.top / (sectionHeight - windowHeight);
+            progress = Math.max(0, Math.min(1, progress));
 
-            // Calculate max horizontal translate distance
-            const trackWidth = teamTrack.scrollWidth;
-            const maxTranslate = trackWidth - window.innerWidth;
-            
-            const translateX = scrollProgress * maxTranslate;
-            teamTrack.style.transform = `translateX(-${translateX}px)`;
-        });
+            // Calculate active slide index
+            let activeIndex = Math.floor(progress * slideCount);
+            if (activeIndex >= slideCount) activeIndex = slideCount - 1;
+
+            slides.forEach((slide, index) => {
+                if (index === activeIndex) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            dots.forEach((dot, index) => {
+                if (index === activeIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', updateAboutSlides);
 
 
-        // --- 2. 3D Evolving Background Constellation Animation ---
+        // --- 2. 3D Background Constellation Animation ---
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
 
@@ -852,7 +977,7 @@
         animate();
 
 
-        // --- 3. Contact Form Submission Handler (In-Site Staying) ---
+        // --- 3. Contact Form Submission Handler ---
         const contactForm = document.getElementById('contact-form');
         const successMsg = document.getElementById('form-success-msg');
 
