@@ -308,15 +308,96 @@
             line-height: 1.6;
         }
 
+        /* Contact Form Card */
+        .contact-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.5rem;
+            max-width: 760px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-card);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.725rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        .form-group input, 
+        .form-group textarea {
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            color: var(--text-main);
+            padding: 13px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.925rem;
+            outline: none;
+            width: 100%;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: var(--transition-smooth);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-group textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus {
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: #0d1222;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            background: #ffffff;
+            color: #030712;
+            border: none;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            background: #cbd5e1;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
         /* ==========================================================
            ABOUT US SECTION - FULL SCREEN NON-CARD EDITORIAL DESIGN
-           Exclusive Color Palette Applied ONLY HERE
+           Exclusive Color Palette Applied ONLY HERE with Diffused Transition
            ========================================================== */
         #about {
             position: relative;
             background: #354B3A; /* Moss background from Palette 1 */
             color: #FADD8B;      /* Butter text from Palette 1 */
             width: 100%;
+            /* Smooth gradient diffusion overlay at top border */
+            box-shadow: inset 0 80px 80px -40px #030712;
         }
 
         .about-sticky-wrapper {
@@ -377,7 +458,7 @@
             height: 100%;
             opacity: 0;
             transform: translateY(30px) scale(0.98);
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
             display: flex;
             align-items: center;
@@ -470,85 +551,6 @@
             background: #FADD8B;
             width: 32px;
             border-radius: 999px;
-        }
-
-        /* Contact Form Card */
-        .contact-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 3rem 2.5rem;
-            max-width: 760px;
-            margin: 0 auto;
-            box-shadow: var(--shadow-card);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.45rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            font-size: 0.725rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 700;
-        }
-
-        .form-group input, 
-        .form-group textarea {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-main);
-            padding: 13px 16px;
-            border-radius: var(--radius-sm);
-            font-size: 0.925rem;
-            outline: none;
-            width: 100%;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: var(--transition-smooth);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .form-group textarea {
-            min-height: 130px;
-            resize: vertical;
-        }
-
-        .form-group input:focus, 
-        .form-group textarea:focus {
-            border-color: var(--accent-teal);
-            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.3);
-            background: #0d1222;
-        }
-
-        .submit-btn {
-            display: block;
-            width: 100%;
-            background: #ffffff;
-            color: #030712;
-            border: none;
-            padding: 14px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            background: #cbd5e1;
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.35;
-            cursor: not-allowed;
         }
 
         /* Footer */
@@ -677,102 +679,8 @@
         </div>
     </section>
 
-    <!-- About Us / Full Screen Editorial Showcase Section -->
-    <section id="about">
-        <div class="about-sticky-wrapper">
-            <div class="about-top-bar">
-                <h2>Meet The Minds Behind Aevix</h2>
-                <p>Scroll to reveal executive leadership and creative directors.</p>
-            </div>
-
-            <div class="about-slides-container">
-                <!-- Slide 1: Ettihad Madhurjo -->
-                <div class="about-slide active" data-index="0">
-                    <div class="about-avatar-wrapper">
-                        <img src="etti.png" alt="Ettihad Madhurjo" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=EM'">
-                    </div>
-                    <div class="about-content">
-                        <span class="about-role-badge">Founder & Chief Executive Officer</span>
-                        <h3 class="about-name">Ettihad Madhurjo</h3>
-                        <p class="about-bio">The driving force and visionary behind Aevix Studio. An elite maestro in social media management and cinematic video editing, turning organic audience engagement into multi-million impression campaigns.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 2: Dahiyat Danesh Chowdhury -->
-                <div class="about-slide" data-index="1">
-                    <div class="about-avatar-wrapper">
-                        <img src="dahi.png" alt="Dahiyat Danesh Chowdhury" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=DC'">
-                    </div>
-                    <div class="about-content">
-                        <span class="about-role-badge" style="background: linear-gradient(135deg, #FF974F, #FEBD61);">Co-Founder, COO & Head of SMM</span>
-                        <h3 class="about-name">Dahiyat Danesh Chowdhury</h3>
-                        <p class="about-bio">Masterminds studio operations across web systems, photo/video curation, and brand strategy. A relentless multi-disciplinary operator delivering pristine execution on every commercial engagement.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 3: Ahnaf Tahmid -->
-                <div class="about-slide" data-index="2">
-                    <div class="about-avatar-wrapper">
-                        <img src="ahnaf.png" alt="Ahnaf Tahmid" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AT'">
-                    </div>
-                    <div class="about-content">
-                        <span class="about-role-badge" style="background: linear-gradient(135deg, #6BD995, #8FECC2);">Dedicated Web Developer</span>
-                        <h3 class="about-name">Ahnaf Tahmid</h3>
-                        <p class="about-bio">An engineering powerhouse building lightning-fast web architectures, bulletproof full-stack applications, and scalable cloud platforms engineered for total operational stability.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 4: Md Nafasat Kalbi -->
-                <div class="about-slide" data-index="3">
-                    <div class="about-avatar-wrapper">
-                        <img src="nafa.png" alt="Md Nafasat Kalbi" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=NK'">
-                    </div>
-                    <div class="about-content">
-                        <span class="about-role-badge" style="background: linear-gradient(135deg, #FF598A, #FF8A9C);">Expert Video & Photo Editor</span>
-                        <h3 class="about-name">Md Nafasat Kalbi</h3>
-                        <p class="about-bio">A master craftsman in post-production. Transforming raw camera logs into mesmerizing visual assets and color-graded campaigns that captivate audiences and define luxury brand aesthetics.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 5: Ariyan Arabi Sikder -->
-                <div class="about-slide" data-index="4">
-                    <div class="about-avatar-wrapper">
-                        <img src="ari.png" alt="Ariyan Arabi Sikder" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AS'">
-                    </div>
-                    <div class="about-content">
-                        <span class="about-role-badge" style="background: linear-gradient(135deg, #50A8B0, #ABCA9E);">Designer & Creative Director</span>
-                        <h3 class="about-name">Ariyan Arabi Sikder</h3>
-                        <p class="about-bio">A creative visionary crafting striking brand identities, custom typography, and high-end visual languages that elevate modern businesses into iconic market leaders.</p>
-                    </div>
-                </div>
-
-                <!-- Slide 6: Munkadeer Mahmud -->
-                <div class="about-slide" data-index="5">
-                    <div class="about-avatar-wrapper">
-                        <img src="munkadeer.png" alt="Munkadeer Mahmud" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=MM'">
-                    </div>
-                    <div class="about-content">
-                        <span class="about-role-badge" style="background: linear-gradient(135deg, #BACE6F, #FADD8B);">Designer & Animator</span>
-                        <h3 class="about-name">Munkadeer Mahmud</h3>
-                        <p class="about-bio">Infuses motion and energy into modern digital design. Crafting fluid 2D/3D animations and UI motion graphics that turn standard digital assets into unforgettable experiences.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Slide Progress Indicators -->
-            <div class="about-indicators" id="about-indicators">
-                <div class="about-dot active"></div>
-                <div class="about-dot"></div>
-                <div class="about-dot"></div>
-                <div class="about-dot"></div>
-                <div class="about-dot"></div>
-                <div class="about-dot"></div>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Form Section -->
-    <section id="contact" class="section-container" style="margin-top: 6rem;">
+    <section id="contact" class="section-container">
         <h2>Start Your Project</h2>
         <p class="section-lead">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
 
@@ -809,6 +717,100 @@
         </div>
     </section>
 
+    <!-- About Us / Full Screen Editorial Showcase Section (Underneath Form) -->
+    <section id="about">
+        <div class="about-sticky-wrapper">
+            <div class="about-top-bar">
+                <h2>Meet The Minds Behind Aevix</h2>
+                <p>Scroll to reveal executive leadership and creative directors.</p>
+            </div>
+
+            <div class="about-slides-container">
+                <!-- Slide 1: Ettihad Madhurjo -->
+                <div class="about-slide active" data-index="0">
+                    <div class="about-avatar-wrapper">
+                        <img src="etti.png" alt="Ettihad Madhurjo" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=EM'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge">Founder & Chief Executive Officer</span>
+                        <h3 class="about-name">Ettihad Madhurjo</h3>
+                        <p class="about-bio">The visionary driving Aevix Studio forward. An exceptional Social Media Manager whose brilliant work instantly captivates audiences, paired with his stellar expertise as an essential member of our advanced editing team.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 2: Dahiyat Danesh Chowdhury -->
+                <div class="about-slide" data-index="1">
+                    <div class="about-avatar-wrapper">
+                        <img src="dahi.png" alt="Dahiyat Danesh Chowdhury" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=DC'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #FF974F, #FEBD61);">Co-Founder, COO & Head of Social Media Management</span>
+                        <h3 class="about-name">Dahiyat Danesh Chowdhury</h3>
+                        <p class="about-bio">The mastermind behind studio operations spanning web development, photo and video curation, and brand strategy. A relentless multi-disciplinary operator delivering PRISTINE execution on every engagement.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 3: Ahnaf Tahmid -->
+                <div class="about-slide" data-index="2">
+                    <div class="about-avatar-wrapper">
+                        <img src="ahnaf.png" alt="Ahnaf Tahmid" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AT'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #6BD995, #8FECC2);">Dedicated Web Developer</span>
+                        <h3 class="about-name">Ahnaf Tahmid</h3>
+                        <p class="about-bio">A computer mastermind building exceptionally fast and attractive UI frontends, whilst seamlessly integrating backend systems for total operational stability.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 4: Md Nafasat Kalbi -->
+                <div class="about-slide" data-index="3">
+                    <div class="about-avatar-wrapper">
+                        <img src="nafa.png" alt="Md Nafasat Kalbi" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=NK'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #FF598A, #FF8A9C);">Expert Video & Photo Editor</span>
+                        <h3 class="about-name">Md Nafasat Kalbi</h3>
+                        <p class="about-bio">A true master of his craft and a literal example of gifted talent on professional editing software. Producing mesmerizing videos with custom assets, flawless color grading, and meticulous color correction—handling photo editing without breaking a sweat.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 5: Ariyan Arabi Sikder -->
+                <div class="about-slide" data-index="4">
+                    <div class="about-avatar-wrapper">
+                        <img src="ari.png" alt="Ariyan Arabi Sikder" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AS'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #50A8B0, #ABCA9E);">Designer & Creative Director</span>
+                        <h3 class="about-name">Ariyan Arabi Sikder</h3>
+                        <p class="about-bio">One of the brilliant creative brains of the studio, shaping high-end custom typography and striking visual identities that elevate ambitious businesses into iconic market leaders.</p>
+                    </div>
+                </div>
+
+                <!-- Slide 6: Munkadeer Mahmud -->
+                <div class="about-slide" data-index="5">
+                    <div class="about-avatar-wrapper">
+                        <img src="munkadeer.png" alt="Munkadeer Mahmud" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=MM'">
+                    </div>
+                    <div class="about-content">
+                        <span class="about-role-badge" style="background: linear-gradient(135deg, #BACE6F, #FADD8B);">Designer & Animator</span>
+                        <h3 class="about-name">Munkadeer Mahmud</h3>
+                        <p class="about-bio">Infuses motion energy into brilliant creative doodles that transform into living, breathing videos. A master of content creation ideation who loves taking bold, visionary leaps.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide Progress Indicators -->
+            <div class="about-indicators" id="about-indicators">
+                <div class="about-dot active"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+                <div class="about-dot"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer>
         <p style="margin-bottom: 0.5rem;">
@@ -822,14 +824,14 @@
 
     <!-- Interactive Evolving 3D Canvas Script & About Section Scroll Controller -->
     <script>
-        // --- 1. Seamless Full-Screen Slide Transitions for About Us Section ---
+        // --- 1. Seamless Full-Screen Slide Transitions for About Us Section (Optimized Scroll Runway) ---
         const aboutSection = document.getElementById('about');
         const slides = document.querySelectorAll('.about-slide');
         const dots = document.querySelectorAll('.about-dot');
         const slideCount = slides.length;
 
-        // Set section height to create enough vertical scroll space for 6 slides
-        aboutSection.style.height = `${slideCount * 100}vh`;
+        // Reduced height multiplier from 100vh per slide to 75vh for quicker slide pacing
+        aboutSection.style.height = `${slideCount * 75}vh`;
 
         function updateAboutSlides() {
             const rect = aboutSection.getBoundingClientRect();
@@ -839,7 +841,6 @@
             let progress = -rect.top / (sectionHeight - windowHeight);
             progress = Math.max(0, Math.min(1, progress));
 
-            // Calculate active slide index
             let activeIndex = Math.floor(progress * slideCount);
             if (activeIndex >= slideCount) activeIndex = slideCount - 1;
 
