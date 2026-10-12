@@ -8,28 +8,32 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-dark: #04060f;
-            --bg-gradient: radial-gradient(circle at 50% 0%, #0d152f 0%, #04060f 75%);
-            --card-bg: rgba(13, 19, 38, 0.75);
-            --card-bg-hover: rgba(19, 28, 54, 0.85);
-            --card-border: rgba(56, 189, 248, 0.12);
-            --card-border-hover: rgba(56, 189, 248, 0.35);
-            --border-color: #1e294b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-blue-glow: rgba(56, 189, 248, 0.3);
-            --accent-green: #34d399;
-            --accent-red: #f87171;
-            --accent-yellow: #fbbf24;
-            --accent-purple: #c084fc;
-            --input-bg: #070a17;
-            --input-border: #1e294b;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 18px;
+            --bg-dark: #030712;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #111827 0%, #030712 80%);
+            --card-bg: rgba(17, 24, 39, 0.7);
+            --card-bg-hover: rgba(22, 32, 51, 0.85);
+            --card-border: rgba(192, 132, 252, 0.15);
+            --card-border-hover: rgba(192, 132, 252, 0.4);
+            --border-color: #1f293d;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            
+            /* Viral Neon Palette */
+            --neon-purple: #c084fc;
+            --neon-purple-glow: rgba(192, 132, 252, 0.35);
+            --neon-teal: #2dd4bf;
+            --neon-teal-glow: rgba(45, 212, 191, 0.35);
+            --neon-lime: #a3e635;
+            --neon-pink: #f472b6;
+            --accent-red: #fb7185;
+            
+            --input-bg: #0b0f19;
+            --input-border: #26334d;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 20px;
             --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.03) inset;
+            --shadow-card: 0 12px 40px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(192, 132, 252, 0.05) inset;
         }
 
         * {
@@ -61,50 +65,49 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(180deg, rgba(13, 19, 38, 0.6) 0%, transparent 100%);
-            backdrop-filter: blur(10px);
+            padding: 1.75rem 2.25rem;
+            border: 1px solid var(--card-border);
+            background: linear-gradient(135deg, rgba(17, 24, 39, 0.8) 0%, rgba(11, 15, 25, 0.9) 100%);
+            backdrop-filter: blur(16px);
             border-radius: var(--radius-lg);
-            padding: 1.5rem 2rem;
             box-shadow: var(--shadow-card);
         }
 
         .brand-title {
-            font-size: 1.75rem;
+            font-size: 1.85rem;
             font-weight: 800;
             letter-spacing: -0.03em;
-            background: linear-gradient(135deg, #ffffff 20%, var(--accent-blue) 100%);
+            background: linear-gradient(135deg, #ffffff 10%, var(--neon-purple) 50%, var(--neon-teal) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
+            text-shadow: 0 0 35px var(--neon-purple-glow);
         }
 
         .user-info {
             font-size: 0.85rem;
             color: var(--text-muted);
-            margin-top: 0.3rem;
+            margin-top: 0.35rem;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .user-info::before {
             content: '';
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
+            width: 9px;
+            height: 9px;
+            background: var(--neon-lime);
             border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-green);
+            box-shadow: 0 0 10px var(--neon-lime);
         }
 
         .logout-btn {
-            background: rgba(248, 113, 113, 0.1);
+            background: rgba(251, 113, 133, 0.1);
             color: var(--accent-red);
-            border: 1px solid rgba(248, 113, 113, 0.3);
-            padding: 9px 18px;
+            border: 1px solid rgba(251, 113, 133, 0.3);
+            padding: 10px 20px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-weight: 600;
@@ -113,9 +116,9 @@
         }
 
         .logout-btn:hover {
-            background: rgba(248, 113, 113, 0.22);
+            background: rgba(251, 113, 133, 0.25);
             border-color: var(--accent-red);
-            box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
+            box-shadow: 0 0 20px rgba(251, 113, 133, 0.4);
             transform: translateY(-2px);
         }
 
@@ -129,10 +132,10 @@
 
         .metric-card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 1.5rem 1.75rem;
+            padding: 1.75rem 2rem;
             box-shadow: var(--shadow-card);
             transition: var(--transition-smooth);
             position: relative;
@@ -142,15 +145,15 @@
         .metric-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
-            opacity: 0.6;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-teal));
+            opacity: 0.8;
         }
 
         .metric-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px);
             border-color: var(--card-border-hover);
-            box-shadow: 0 20px 40px -10px rgba(56, 189, 248, 0.15);
+            box-shadow: 0 20px 45px -10px var(--neon-purple-glow);
         }
 
         .metric-title {
@@ -162,37 +165,39 @@
         }
 
         .metric-value {
-            font-size: 2.1rem;
+            font-size: 2.25rem;
             font-weight: 800;
             color: #ffffff;
-            margin: 6px 0;
+            margin: 8px 0;
             letter-spacing: -0.02em;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
         }
 
         .metric-subtext {
-            font-size: 0.8rem;
-            color: var(--accent-green);
+            font-size: 0.825rem;
+            color: var(--neon-lime);
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            text-shadow: 0 0 10px rgba(163, 230, 53, 0.3);
         }
 
         /* Tab Navigation */
         .tab-bar {
             display: flex;
-            gap: 0.75rem;
+            gap: 0.85rem;
             border-bottom: 1px solid var(--border-color);
             margin-bottom: 2rem;
             overflow-x: auto;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
         }
 
         .tab-btn {
-            background: rgba(13, 19, 38, 0.4);
+            background: rgba(17, 24, 39, 0.5);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            padding: 0.85rem 1.5rem;
+            padding: 0.95rem 1.65rem;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.925rem;
@@ -202,16 +207,16 @@
         }
 
         .tab-btn.active {
-            color: var(--accent-blue);
-            border-color: rgba(56, 189, 248, 0.4);
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(13, 19, 38, 0.8) 100%);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
-            text-shadow: 0 0 10px var(--accent-blue-glow);
+            color: var(--neon-teal);
+            border-color: rgba(45, 212, 191, 0.4);
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.15) 0%, rgba(17, 24, 39, 0.9) 100%);
+            box-shadow: 0 0 25px var(--neon-teal-glow);
+            text-shadow: 0 0 12px var(--neon-teal-glow);
         }
 
         .tab-btn:hover:not(.active) {
             color: var(--text-main);
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.04);
             border-color: var(--card-border-hover);
         }
 
@@ -232,62 +237,62 @@
         /* Cards & Forms */
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 1.75rem;
-            margin-bottom: 1.75rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
             box-shadow: var(--shadow-card);
             transition: var(--transition-smooth);
         }
 
         .card:hover {
-            border-color: rgba(56, 189, 248, 0.2);
+            border-color: var(--card-border-hover);
         }
 
         .card.error-card {
-            border: 1px solid rgba(248, 113, 113, 0.3);
-            background: linear-gradient(135deg, rgba(248, 113, 113, 0.03) 0%, var(--card-bg) 100%);
+            border: 1px solid rgba(251, 113, 133, 0.35);
+            background: linear-gradient(135deg, rgba(251, 113, 133, 0.04) 0%, var(--card-bg) 100%);
         }
 
         .section-title {
             margin-top: 0;
-            margin-bottom: 1.25rem;
-            font-size: 1.15rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
             letter-spacing: -0.01em;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 0.85rem;
         }
 
         .error-note-box {
-            background: rgba(248, 113, 113, 0.08);
+            background: rgba(251, 113, 133, 0.08);
             border-left: 3px solid var(--accent-red);
-            padding: 1rem 1.25rem;
+            padding: 1.15rem 1.4rem;
             border-radius: var(--radius-sm);
             margin-bottom: 1.5rem;
-            font-size: 0.85rem;
-            color: #fca5a5;
+            font-size: 0.875rem;
+            color: #fda4af;
             line-height: 1.6;
         }
 
         /* Compact Form Grid */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 1.25rem;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
             align-items: end;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 0.45rem;
+            gap: 0.5rem;
         }
 
         .form-group.full-width {
@@ -298,7 +303,7 @@
             font-size: 0.75rem;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.07em;
+            letter-spacing: 0.08em;
             font-weight: 700;
         }
 
@@ -308,78 +313,79 @@
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--text-main);
-            padding: 11px 14px;
+            padding: 12px 16px;
             border-radius: var(--radius-sm);
-            font-size: 0.9rem;
+            font-size: 0.925rem;
             outline: none;
             width: 100%;
             transition: var(--transition-smooth);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         .form-group textarea {
-            min-height: 75px;
+            min-height: 80px;
             resize: vertical;
         }
 
         .form-group input:focus, 
         .form-group select:focus, 
         .form-group textarea:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow), inset 0 2px 4px rgba(0, 0, 0, 0.2);
-            background: #090e1f;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px var(--neon-purple-glow), inset 0 2px 5px rgba(0, 0, 0, 0.3);
+            background: #0d1222;
         }
 
         .form-group input:disabled, 
         .form-group select:disabled {
             opacity: 0.5;
             cursor: not-allowed;
-            background: rgba(255, 255, 255, 0.015);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .action-btn {
-            background: linear-gradient(135deg, var(--accent-blue) 0%, #0284c7 100%);
-            color: #04060f;
+            background: linear-gradient(135deg, var(--neon-purple) 0%, #9333ea 100%);
+            color: #ffffff;
             border: none;
-            padding: 11px 24px;
+            padding: 12px 26px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.925rem;
             transition: var(--transition-smooth);
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 6px 20px var(--neon-purple-glow);
+            text-shadow: 0 0 10px rgba(0,0,0,0.3);
         }
 
         .action-btn:hover {
-            background: linear-gradient(135deg, #7dd3fc 0%, var(--accent-blue) 100%);
-            box-shadow: 0 6px 22px rgba(56, 189, 248, 0.45);
+            background: linear-gradient(135deg, #d8b4fe 0%, var(--neon-purple) 100%);
+            box-shadow: 0 8px 30px rgba(192, 132, 252, 0.5);
             transform: translateY(-2px);
         }
 
         .warning-btn {
-            background: linear-gradient(135deg, var(--accent-red) 0%, #dc2626 100%);
-            color: #04060f;
+            background: linear-gradient(135deg, var(--accent-red) 0%, #e11d48 100%);
+            color: #ffffff;
             border: none;
-            padding: 11px 24px;
+            padding: 12px 26px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.925rem;
             transition: var(--transition-smooth);
-            box-shadow: 0 4px 15px rgba(248, 113, 113, 0.3);
+            box-shadow: 0 6px 20px rgba(251, 113, 133, 0.4);
         }
 
         .warning-btn:hover {
-            background: linear-gradient(135deg, #fca5a5 0%, var(--accent-red) 100%);
-            box-shadow: 0 6px 22px rgba(248, 113, 113, 0.45);
+            background: linear-gradient(135deg, #fda4af 0%, var(--accent-red) 100%);
+            box-shadow: 0 8px 30px rgba(251, 113, 133, 0.6);
             transform: translateY(-2px);
         }
 
         .danger-btn {
             background: transparent;
             color: var(--accent-red);
-            border: 1px solid rgba(248, 113, 113, 0.35);
-            padding: 5px 12px;
+            border: 1px solid rgba(251, 113, 133, 0.4);
+            padding: 6px 14px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 0.8rem;
@@ -388,16 +394,16 @@
         }
 
         .danger-btn:hover {
-            background: rgba(248, 113, 113, 0.15);
+            background: rgba(251, 113, 133, 0.2);
             border-color: var(--accent-red);
-            box-shadow: 0 0 10px rgba(248, 113, 113, 0.2);
+            box-shadow: 0 0 15px rgba(251, 113, 133, 0.35);
         }
 
         .edit-btn {
             background: transparent;
-            color: var(--accent-blue);
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            padding: 5px 12px;
+            color: var(--neon-teal);
+            border: 1px solid rgba(45, 212, 191, 0.4);
+            padding: 6px 14px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 0.8rem;
@@ -407,9 +413,9 @@
         }
 
         .edit-btn:hover:not(:disabled) {
-            background: rgba(56, 189, 248, 0.15);
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+            background: rgba(45, 212, 191, 0.15);
+            border-color: var(--neon-teal);
+            box-shadow: 0 0 15px var(--neon-teal-glow);
         }
 
         .edit-btn:disabled {
@@ -422,8 +428,8 @@
             overflow-x: auto;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
-            background: rgba(4, 6, 15, 0.5);
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+            background: rgba(3, 7, 18, 0.6);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         table {
@@ -434,9 +440,9 @@
         }
 
         th {
-            background: #070a17;
+            background: #070b16;
             color: var(--text-muted);
-            padding: 12px 16px;
+            padding: 13px 18px;
             font-weight: 700;
             border-bottom: 1px solid var(--border-color);
             text-transform: uppercase;
@@ -445,64 +451,69 @@
         }
 
         td {
-            padding: 13px 16px;
+            padding: 14px 18px;
             border-bottom: 1px solid var(--border-color);
             color: #e2e8f0;
             vertical-align: middle;
         }
 
         tr:hover td {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.035);
         }
 
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 5px 12px;
             border-radius: 999px;
             font-size: 0.75rem;
             font-weight: 700;
             letter-spacing: 0.03em;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
 
         .status-paid, .status-completed {
-            background: rgba(52, 211, 153, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(52, 211, 153, 0.3);
+            background: rgba(163, 230, 53, 0.15);
+            color: var(--neon-lime);
+            border: 1px solid rgba(163, 230, 53, 0.35);
+            text-shadow: 0 0 8px rgba(163, 230, 53, 0.3);
         }
 
         .status-pending, .status-in-progress {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent-blue);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            background: rgba(45, 212, 191, 0.15);
+            color: var(--neon-teal);
+            border: 1px solid rgba(45, 212, 191, 0.35);
+            text-shadow: 0 0 8px var(--neon-teal-glow);
         }
 
         .status-overdue, .status-cancelled {
-            background: rgba(248, 113, 113, 0.15);
+            background: rgba(251, 113, 133, 0.15);
             color: var(--accent-red);
-            border: 1px solid rgba(248, 113, 113, 0.3);
+            border: 1px solid rgba(251, 113, 133, 0.35);
+            text-shadow: 0 0 8px rgba(251, 113, 133, 0.3);
         }
 
         .status-adjustment {
             background: rgba(192, 132, 252, 0.15);
-            color: var(--accent-purple);
-            border: 1px solid rgba(192, 132, 252, 0.3);
+            color: var(--neon-purple);
+            border: 1px solid rgba(192, 132, 252, 0.35);
+            text-shadow: 0 0 8px var(--neon-purple-glow);
         }
 
         .hex-code-badge {
             font-family: monospace;
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent-blue);
-            padding: 4px 8px;
+            background: rgba(192, 132, 252, 0.1);
+            color: var(--neon-purple);
+            padding: 5px 10px;
             border-radius: 6px;
             font-size: 0.8rem;
-            border: 1px solid rgba(56, 189, 248, 0.25);
+            border: 1px solid rgba(192, 132, 252, 0.3);
             font-weight: 600;
             letter-spacing: 0.05em;
+            text-shadow: 0 0 8px var(--neon-purple-glow);
         }
 
         .gmail-link {
-            color: var(--accent-blue);
+            color: var(--neon-teal);
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition-smooth);
@@ -510,8 +521,8 @@
 
         .gmail-link:hover {
             text-decoration: underline;
-            color: #7dd3fc;
-            text-shadow: 0 0 8px var(--accent-blue-glow);
+            color: #5eead4;
+            text-shadow: 0 0 10px var(--neon-teal-glow);
         }
 
         .client-note-textarea {
@@ -528,15 +539,15 @@
         }
 
         .client-note-textarea:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 0 3px var(--neon-purple-glow);
         }
 
         .save-note-btn {
-            background: rgba(56, 189, 248, 0.12);
-            color: var(--accent-blue);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            padding: 4px 10px;
+            background: rgba(45, 212, 191, 0.12);
+            color: var(--neon-teal);
+            border: 1px solid rgba(45, 212, 191, 0.35);
+            padding: 5px 10px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.75rem;
@@ -546,32 +557,32 @@
         }
 
         .save-note-btn:hover {
-            background: rgba(56, 189, 248, 0.25);
-            box-shadow: 0 0 10px var(--accent-blue-glow);
+            background: rgba(45, 212, 191, 0.25);
+            box-shadow: 0 0 12px var(--neon-teal-glow);
         }
 
         .search-bar {
             background: var(--input-bg);
             border: 1px solid var(--input-border);
             border-radius: var(--radius-sm);
-            padding: 9px 14px;
+            padding: 10px 15px;
             color: var(--text-main);
-            width: 270px;
+            width: 280px;
             font-size: 0.875rem;
             outline: none;
             transition: var(--transition-smooth);
         }
 
         .search-bar:focus {
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px var(--accent-blue-glow);
+            border-color: var(--neon-teal);
+            box-shadow: 0 0 0 3px var(--neon-teal-glow);
         }
 
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(4, 6, 15, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(3, 7, 18, 0.88);
+            backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -588,14 +599,14 @@
 
         .modal-box {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
             border: 1px solid var(--card-border-hover);
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 620px;
-            padding: 2.25rem;
+            max-width: 640px;
+            padding: 2.5rem;
             position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(56, 189, 248, 0.1);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px var(--neon-purple-glow);
             animation: modalScaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -610,7 +621,7 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--border-color);
             color: var(--text-muted);
-            width: 36px; height: 36px;
+            width: 38px; height: 38px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -621,10 +632,10 @@
         }
 
         .modal-close:hover {
-            background: rgba(248, 113, 113, 0.2);
+            background: rgba(251, 113, 133, 0.2);
             color: var(--accent-red);
-            border-color: rgba(248, 113, 113, 0.4);
-            box-shadow: 0 0 12px rgba(248, 113, 113, 0.3);
+            border-color: rgba(251, 113, 133, 0.4);
+            box-shadow: 0 0 15px rgba(251, 113, 133, 0.4);
         }
     </style>
 </head>
@@ -634,7 +645,7 @@
         <!-- Top Navigation Header -->
         <div class="admin-header">
             <div>
-                <h1 class="brand-title">Admin Management Portal</h1>
+                <h1 class="brand-title">Admin Command Portal</h1>
                 <div id="user-info-display" class="user-info">Authenticating administrative session...</div>
             </div>
             <div class="header-actions">
@@ -759,7 +770,7 @@
             <!-- TAB 2: BILLING SECTION -->
             <div id="tab-billing" class="tab-content">
                 <div class="card">
-                    <h3 class="section-title">Issue New Bill</h3>
+                    <h3 class="section-title">Issue New Bill <span style="font-size:0.75rem; color:var(--neon-teal); font-weight:normal;">(Accessible by all admins)</span></h3>
                     <form id="create-bill-form">
                         <div class="form-grid">
                             <div class="form-group">
@@ -1027,7 +1038,7 @@
                         <input type="number" id="edit-proj-progress" min="0" max="100">
                     </div>
                     <div class="form-group" id="base-budget-group">
-                        <label>Base Budget (৳) <span id="budget-role-badge" style="font-size:0.65rem; color:var(--accent-yellow);"></span></label>
+                        <label>Base Budget (৳) <span id="budget-role-badge" style="font-size:0.65rem; color:var(--neon-purple);"></span></label>
                         <input type="number" id="edit-proj-new-budget" min="0" step="0.01">
                     </div>
                     <div class="form-group">
@@ -1042,6 +1053,25 @@
                 <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
                     <button type="button" class="danger-btn" onclick="closeModal('edit-project-modal')">Cancel</button>
                     <button type="submit" class="action-btn">Update Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit Bill Modal (Hadmin Only) -->
+    <div id="edit-bill-modal" class="modal-overlay">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeModal('edit-bill-modal')">&times;</button>
+            <h3 style="margin-bottom: 1.25rem; color: #fff; font-size: 1.15rem;">Edit Bill Value (Hadmin Only)</h3>
+            <form id="edit-bill-form">
+                <input type="hidden" id="edit-bill-id">
+                <div class="form-group">
+                    <label>Amount Billed (৳) <span style="color: var(--accent-red);">*</span></label>
+                    <input type="number" id="edit-bill-amount" min="0" step="0.01" required>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                    <button type="button" class="danger-btn" onclick="closeModal('edit-bill-modal')">Cancel</button>
+                    <button type="submit" class="action-btn">Save Bill Value</button>
                 </div>
             </form>
         </div>
@@ -1207,6 +1237,7 @@
 
             document.getElementById('create-project-form').addEventListener('submit', handleCreateProject);
             document.getElementById('create-bill-form').addEventListener('submit', handleCreateBill);
+            document.getElementById('edit-bill-form').addEventListener('submit', handleUpdateBillValue);
             document.getElementById('create-payment-form').addEventListener('submit', handleCreatePayment);
             document.getElementById('create-error-log-form').addEventListener('submit', handleCreateErrorLog);
             document.getElementById('create-log-form').addEventListener('submit', handleCreateLog);
@@ -1394,7 +1425,7 @@
                         <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
                         <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
                         <td>${p.progress || 0}%</td>
-                        <td>৳${baseBudget.toLocaleString()}${extendedBy > 0 ? ` <span style="font-size:0.7rem; color:var(--accent-yellow);">(+৳${extendedBy.toLocaleString()})</span>` : ''}</td>
+                        <td>৳${baseBudget.toLocaleString()}${extendedBy > 0 ? ` <span style="font-size:0.7rem; color:var(--neon-teal);">(+৳${extendedBy.toLocaleString()})</span>` : ''}</td>
                         <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
                         <td>
                             <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
@@ -1422,8 +1453,13 @@
                         <td><span class="hex-code-badge">${escapeHtml(proj ? proj.hex_code : 'N/A')}</span></td>
                         <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
                         <td>${escapeHtml(b.description)}</td>
-                        <td style="font-weight:600; color:var(--accent-blue);">৳${Number(b.amount).toLocaleString()}</td>
-                        <td>${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deleteBill('${b.id}')">Delete</button>` : '<span style="color:var(--text-muted); font-size:0.75rem;">Restricted</span>'}</td>
+                        <td style="font-weight:600; color:var(--neon-teal);">৳${Number(b.amount).toLocaleString()}</td>
+                        <td>
+                            ${currentUserRole === 'hadmin' ? `
+                                <button class="edit-btn" onclick="openEditBill('${b.id}',${b.amount})">Edit</button>
+                                <button class="danger-btn" onclick="deleteBill('${b.id}')">Delete</button>
+                            ` : '<span style="color:var(--text-muted); font-size:0.75rem;">Hadmin Restricted</span>'}
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -1443,13 +1479,13 @@
 
                 if (p.is_error_log) {
                     return `
-                        <tr style="background: rgba(248, 113, 113, 0.02);">
+                        <tr style="background: rgba(251, 113, 133, 0.02);">
                             <td>${createdDateStr}</td>
                             <td><strong>${escapeHtml(p.client_name)}</strong></td>
                             <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
-                            <td style="color: var(--accent-yellow); font-size: 0.75rem;">🔑 ${escapeHtml(loggedBy)}</td>
-                            <td style="color: #fca5a5;">${escapeHtml(p.milestone)}</td>
-                            <td style="font-weight: 700; color: var(--accent-purple);">৳${Number(p.amount).toLocaleString()} (${escapeHtml(p.transaction_type)})</td>
+                            <td style="color: var(--neon-purple); font-size: 0.75rem;">🔑 ${escapeHtml(loggedBy)}</td>
+                            <td style="color: #fda4af;">${escapeHtml(p.milestone)}</td>
+                            <td style="font-weight: 700; color: var(--neon-purple);">৳${Number(p.amount).toLocaleString()} (${escapeHtml(p.transaction_type)})</td>
                             <td>-</td>
                             <td><span class="status-badge status-adjustment">Adjustment</span></td>
                             <td>${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}</td>
@@ -1466,7 +1502,7 @@
                     <tr>
                         <td>
                             <div>${createdDateStr}</div>
-                            ${isPaid && paidDateStr ? `<div style="font-size: 0.7rem; color: var(--accent-green); white-space: nowrap; margin-top: 2px;">Paid at: ${paidDateStr}</div>` : ''}
+                            ${isPaid && paidDateStr ? `<div style="font-size: 0.7rem; color: var(--neon-lime); white-space: nowrap; margin-top: 2px;">Paid at: ${paidDateStr}</div>` : ''}
                         </td>
                         <td><strong>${escapeHtml(p.client_name || 'N/A')}</strong></td>
                         <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
@@ -1586,10 +1622,10 @@
                 return `
                     <tr>
                         <td><a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}" target="_blank" class="gmail-link">${escapeHtml(c.email)}</a></td>
-                        <td style="color:var(--accent-blue); font-weight:600;">৳${Math.max(0, c.billed).toLocaleString()}</td>
-                        <td style="color:var(--accent-green); font-weight:600;">৳${Math.max(0, c.paid).toLocaleString()}</td>
-                        <td style="color:var(--accent-purple); font-weight:600;">৳${Math.max(0, extraPaidCalc).toLocaleString()}</td>
-                        <td style="color:var(--accent-yellow); font-weight:700;">৳${netDue.toLocaleString()}</td>
+                        <td style="color:var(--neon-teal); font-weight:600;">৳${Math.max(0, c.billed).toLocaleString()}</td>
+                        <td style="color:var(--neon-lime); font-weight:600;">৳${Math.max(0, c.paid).toLocaleString()}</td>
+                        <td style="color:var(--neon-purple); font-weight:600;">৳${Math.max(0, extraPaidCalc).toLocaleString()}</td>
+                        <td style="color:var(--accent-red); font-weight:700;">৳${netDue.toLocaleString()}</td>
                         <td>
                             <textarea id="note-${c.profileId || c.email.replace(/[^a-zA-Z0-9]/g, '_')}" class="client-note-textarea" placeholder="Add internal note...">${escapeHtml(c.note)}</textarea>
                             <button class="save-note-btn" onclick="saveClientNote('${c.profileId || ''}', '${escapeHtml(c.email)}')">${hasExistingNote ? 'Update Note' : 'Save Note'}</button>
@@ -1653,11 +1689,6 @@
 
         async function handleCreateBill(e) {
             e.preventDefault();
-            if (currentUserRole !== 'hadmin') {
-                alert('Only Hadmin can issue and create new bills.');
-                return;
-            }
-
             const projId = document.getElementById('bill-project-id').value;
             const proj = cachedProjects.find(p => p.id === projId);
 
@@ -1671,8 +1702,34 @@
             const { error } = await getSupabase().from('billing').insert([payload]);
             if (error) alert(error.message);
             else {
-                alert('Bill logged!');
+                alert('Bill logged successfully!');
                 document.getElementById('create-bill-form').reset();
+                await loadAllAdminData();
+            }
+        }
+
+        function openEditBill(id, amount) {
+            if (currentUserRole !== 'hadmin') {
+                alert('Only Hadmin can edit bill values.');
+                return;
+            }
+            document.getElementById('edit-bill-id').value = id;
+            document.getElementById('edit-bill-amount').value = amount;
+            openModal('edit-bill-modal');
+        }
+
+        async function handleUpdateBillValue(e) {
+            e.preventDefault();
+            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can edit bill values.');
+
+            const id = document.getElementById('edit-bill-id').value;
+            const newAmount = parseFloat(document.getElementById('edit-bill-amount').value) || 0;
+
+            const { error } = await getSupabase().from('billing').update({ amount: newAmount }).eq('id', id);
+            if (error) alert(error.message);
+            else {
+                closeModal('edit-bill-modal');
+                alert('Bill updated successfully!');
                 await loadAllAdminData();
             }
         }
@@ -1836,7 +1893,7 @@
         }
 
         async function deleteProject(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
+            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete records.');
             if (confirm('Delete project entry?')) {
                 await getSupabase().from('projects').delete().eq('id', id);
                 await loadAllAdminData();
@@ -1844,7 +1901,7 @@
         }
 
         async function deleteBill(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
+            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete bills.');
             if (confirm('Delete bill entry?')) {
                 await getSupabase().from('billing').delete().eq('id', id);
                 await loadAllAdminData();
@@ -1852,7 +1909,7 @@
         }
 
         async function deletePayment(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
+            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete payment records.');
             if (confirm('Delete payment record?')) {
                 await getSupabase().from('payments').delete().eq('id', id);
                 await loadAllAdminData();
@@ -1860,7 +1917,7 @@
         }
 
         async function deleteLog(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete.');
+            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete logs.');
             if (confirm('Delete activity log?')) {
                 await getSupabase().from('activity_logs').delete().eq('id', id);
                 await loadAllAdminData();
