@@ -230,6 +230,40 @@
             }
         }
 
+        /* Meta Info Box (Team members & scope) */
+        .project-meta-box {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: rgba(4, 6, 15, 0.5);
+            padding: 1.25rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 768px) {
+            .project-meta-box {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .meta-group label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .meta-group p {
+            font-size: 0.925rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
         /* Financial Metrics Grid */
         .project-details-grid {
             display: grid;
@@ -420,7 +454,19 @@
                     <span id="active-proj-status" class="status-badge status-pending" style="align-self: flex-start;">Active</span>
                 </div>
 
-                <!-- Financial Deck Metrics -->
+                <!-- NEW: Team Members & Project Scope Metadata Box -->
+                <div class="project-meta-box">
+                    <div class="meta-group">
+                        <label>Assigned Team Members Working</label>
+                        <p id="active-proj-members" style="color: var(--accent-blue); font-weight: 600;">Loading members...</p>
+                    </div>
+                    <div class="meta-group">
+                        <label>Project Scope & Overview</label>
+                        <p id="active-proj-desc">No overview description specified.</p>
+                    </div>
+                </div>
+
+                <!-- Financial Deck Metrics (Fixed Math) -->
                 <div class="project-details-grid">
                     <div class="detail-item">
                         <span class="detail-label">Project Budget</span>
@@ -554,20 +600,22 @@
 
             // LOG CLIENT EMAIL & ASSIGN 'client' ROLE IN SUPABASE
             try {
-                const { data: existingProfile } = await client
+                const { data: existingProfile, error: fetchErr } = await client
                     .from('profiles')
-                    .select('role')
+                    .select('id, role')
                     .eq('id', userId)
                     .maybeSingle();
 
-                if (!existingProfile || !existingProfile.role) {
-                    await client.from('profiles').upsert({
+                if (!existingProfile) {
+                    await client.from('profiles').insert([{
                         id: userId,
                         email: email,
                         role: 'client'
-                    }, { onConflict: 'id' });
-                } else if (existingProfile.role !== 'admin' && existingProfile.role !== 'hadmin' && existingProfile.role !== 'team') {
-                    await client.from('profiles').update({ email: email }).eq('id', userId);
+                    }]);
+                } else if (!existingProfile.role || existingProfile.role === '') {
+                    await client.from('profiles')
+                        .update({ role: 'client', email: email })
+                        .eq('id', userId);
                 }
             } catch (err) {
                 console.error('Error logging client profile:', err);
@@ -614,16 +662,23 @@
             document.getElementById('active-proj-title').textContent = p.title || p.project_name || 'Untitled Project';
             document.getElementById('active-proj-code').textContent = `#${p.hex_code || 'N/A'}`;
             
+            // Populate Team Members and Project Overview / Scope
+            document.getElementById('active-proj-members').textContent = p.members_working ? p.members_working : 'Unassigned';
+            document.getElementById('active-proj-desc').textContent = p.description ? p.description : 'No scope or overview details specified for this project yet.';
+
             const projStatus = p.status || 'Active';
             const statusEl = document.getElementById('active-proj-status');
             statusEl.textContent = projStatus;
             statusEl.className = `status-badge status-${projStatus.toLowerCase().replace(/\s+/g, '-')}`;
 
+            // FIXED MATH: Total Agreed Budget (Base + Extension)
             const baseBudget = Number(p.budget || 0);
             const extendedBy = Number(p.budget_extended_by || 0);
-            let budgetHtml = `৳${baseBudget.toLocaleString()}`;
+            const totalAgreedBudget = baseBudget + extendedBy;
+
+            let budgetHtml = `৳${totalAgreedBudget.toLocaleString()}`;
             if (extendedBy > 0) {
-                budgetHtml += ` <span style="font-size:0.85rem; color:var(--accent-yellow); font-weight:600;">+ ৳${extendedBy.toLocaleString()} extension</span>`;
+                budgetHtml += ` <span style="font-size:0.75rem; color:var(--accent-yellow); font-weight:600;">(৳${baseBudget.toLocaleString()} + ৳${extendedBy.toLocaleString()} ext)</span>`;
             }
             document.getElementById('active-proj-budget').innerHTML = budgetHtml;
 
@@ -639,25 +694,30 @@
             const payments = payRes.data || [];
             const logs = logRes.data || [];
 
+            // FIXED MATH: Total Billed across issued bills
             const totalBilled = bills.reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
+            // FIXED MATH: Total Paid with Error Log adjustments (Undercharged/Overcharged)
             let totalPaid = 0;
             payments.forEach(pay => {
                 const amt = Number(pay.amount || 0);
+                const overdueFee = Number(pay.overdue_amount || 0);
                 if (pay.is_error_log) {
                     if ((pay.transaction_type || '').toLowerCase().includes('undercharged')) totalPaid += amt;
                     else if ((pay.transaction_type || '').toLowerCase().includes('overcharged')) totalPaid -= amt;
                 } else if ((pay.status || pay.payment_status || '').toLowerCase() === 'paid') {
-                    totalPaid += amt;
+                    totalPaid += (amt + overdueFee);
                 }
             });
 
+            // FIXED MATH: Current Due calculation based on total billed minus collected payments
             const currentDue = Math.max(0, totalBilled - totalPaid);
 
             document.getElementById('active-proj-billed').textContent = `৳${totalBilled.toLocaleString()}`;
             document.getElementById('active-proj-paid').textContent = `৳${totalPaid.toLocaleString()}`;
             document.getElementById('active-proj-due').textContent = `৳${currentDue.toLocaleString()}`;
 
+            // Render Billing Breakdown Table
             document.getElementById('billing-tbody').innerHTML = bills.length === 0 ? 
                 '<tr><td colspan="3" style="color:var(--text-muted); text-align:center;">No bills issued yet.</td></tr>' :
                 bills.map(b => `
@@ -668,6 +728,7 @@
                     </tr>
                 `).join('');
 
+            // Render Payment Ledger Table
             document.getElementById('ledger-tbody').innerHTML = payments.length === 0 ? 
                 '<tr><td colspan="6" style="color:var(--text-muted); text-align:center;">No payments recorded.</td></tr>' :
                 payments.map(pay => {
@@ -710,6 +771,7 @@
                     `;
                 }).join('');
 
+            // Render Activity Logs Timeline
             document.getElementById('timeline-list').innerHTML = logs.length === 0 ? 
                 '<p style="color:var(--text-muted);">No activity updates posted yet.</p>' :
                 logs.map(l => `
