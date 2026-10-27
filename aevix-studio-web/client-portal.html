@@ -549,7 +549,30 @@
                 return;
             }
 
+            const userId = session.user.id;
             const email = extractCleanEmail(session.user.email);
+
+            // LOG CLIENT EMAIL & ASSIGN 'client' ROLE IN SUPABASE
+            try {
+                const { data: existingProfile } = await client
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', userId)
+                    .maybeSingle();
+
+                if (!existingProfile || !existingProfile.role) {
+                    await client.from('profiles').upsert({
+                        id: userId,
+                        email: email,
+                        role: 'client'
+                    }, { onConflict: 'id' });
+                } else if (existingProfile.role !== 'admin' && existingProfile.role !== 'hadmin' && existingProfile.role !== 'team') {
+                    await client.from('profiles').update({ email: email }).eq('id', userId);
+                }
+            } catch (err) {
+                console.error('Error logging client profile:', err);
+            }
+
             document.getElementById('user-info-display').textContent = `Logged in as ${email}`;
             document.getElementById('logout-btn').style.display = 'inline-block';
 
@@ -596,7 +619,6 @@
             statusEl.textContent = projStatus;
             statusEl.className = `status-badge status-${projStatus.toLowerCase().replace(/\s+/g, '-')}`;
 
-            // Format Budget with optional extension display ('normal budget' + 'new addition if any')
             const baseBudget = Number(p.budget || 0);
             const extendedBy = Number(p.budget_extended_by || 0);
             let budgetHtml = `৳${baseBudget.toLocaleString()}`;
@@ -607,7 +629,6 @@
 
             const client = getSupabase();
 
-            // Fetch Project Billing, Payments, and Activity Logs
             const [billRes, payRes, logRes] = await Promise.all([
                 client.from('billing').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
                 client.from('payments').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
@@ -618,10 +639,8 @@
             const payments = payRes.data || [];
             const logs = logRes.data || [];
 
-            // 1. Total Billed
             const totalBilled = bills.reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
-            // 2. Current Paid with Error Log adjustments
             let totalPaid = 0;
             payments.forEach(pay => {
                 const amt = Number(pay.amount || 0);
@@ -633,14 +652,12 @@
                 }
             });
 
-            // 3. Current Due
             const currentDue = Math.max(0, totalBilled - totalPaid);
 
             document.getElementById('active-proj-billed').textContent = `৳${totalBilled.toLocaleString()}`;
             document.getElementById('active-proj-paid').textContent = `৳${totalPaid.toLocaleString()}`;
             document.getElementById('active-proj-due').textContent = `৳${currentDue.toLocaleString()}`;
 
-            // Render Billing Breakdown Table
             document.getElementById('billing-tbody').innerHTML = bills.length === 0 ? 
                 '<tr><td colspan="3" style="color:var(--text-muted); text-align:center;">No bills issued yet.</td></tr>' :
                 bills.map(b => `
@@ -651,7 +668,6 @@
                     </tr>
                 `).join('');
 
-            // Render Payment Ledger Table
             document.getElementById('ledger-tbody').innerHTML = payments.length === 0 ? 
                 '<tr><td colspan="6" style="color:var(--text-muted); text-align:center;">No payments recorded.</td></tr>' :
                 payments.map(pay => {
@@ -694,7 +710,6 @@
                     `;
                 }).join('');
 
-            // Render Activity Logs Timeline
             document.getElementById('timeline-list').innerHTML = logs.length === 0 ? 
                 '<p style="color:var(--text-muted);">No activity updates posted yet.</p>' :
                 logs.map(l => `
