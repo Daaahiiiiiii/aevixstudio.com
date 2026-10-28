@@ -11,10 +11,10 @@
     <style>
         :root {
             --bg-dark: #030712;
-            --card-bg: rgba(17, 24, 39, 0.7);
-            --card-bg-hover: rgba(22, 32, 51, 0.85);
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-bg-hover: rgba(22, 32, 51, 0.9);
             --card-border: rgba(255, 255, 255, 0.08);
-            --card-border-hover: rgba(45, 212, 191, 0.4);
+            --card-border-hover: rgba(255, 255, 255, 0.22);
             --border-color: #1f293d;
             --text-main: #f9fafb;
             --text-muted: #94a3b8;
@@ -22,11 +22,11 @@
             
             --input-bg: #0b0f19;
             --input-border: #26334d;
-            --radius-sm: 10px;
-            --radius-md: 14px;
-            --radius-lg: 20px;
-            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-card: 0 15px 35px -10px rgba(0, 0, 0, 0.6);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 
             --palette-midnight: #0D1B2A;
             --palette-navy: #1B263B;
@@ -81,14 +81,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(13, 27, 42, 0.85);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(13, 27, 42, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--radius-lg);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
             width: calc(100% - 2.5rem);
             z-index: 1000;
-            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
         }
 
         header.header-hidden {
@@ -104,16 +104,16 @@
         }
 
         .brand-logo {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             object-fit: contain;
             border-radius: 6px;
         }
 
         .brand-name {
             font-weight: 800;
-            font-size: 1.1rem;
-            letter-spacing: 0.05em;
+            font-size: 1.05rem;
+            letter-spacing: 0.06em;
             color: #ffffff;
             text-transform: uppercase;
         }
@@ -134,12 +134,12 @@
         }
 
         nav a:hover {
-            color: var(--palette-frost);
+            color: #ffffff;
         }
 
         .google-btn {
             background: transparent;
-            border: 1px solid rgba(119, 141, 169, 0.3);
+            border: 1px solid rgba(119, 141, 169, 0.25);
             color: var(--palette-frost);
             padding: 0.5rem 1rem;
             border-radius: var(--radius-sm);
@@ -153,8 +153,9 @@
         }
 
         .google-btn:hover {
-            background: rgba(119, 141, 169, 0.15);
+            background: rgba(119, 141, 169, 0.1);
             border-color: var(--palette-slate);
+            color: #ffffff;
         }
 
         .nav-cta {
@@ -216,17 +217,16 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(45, 212, 191, 0.08);
-            border: 1px solid rgba(45, 212, 191, 0.25);
-            color: var(--accent-teal);
-            padding: 6px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--palette-slate);
+            padding: 6px 16px;
             border-radius: 999px;
             font-size: 0.775rem;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 1.75rem;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-            box-shadow: 0 0 20px rgba(45, 212, 191, 0.15);
         }
 
         .hero h1 {
@@ -261,7 +261,6 @@
         .cta-btn:hover {
             transform: translateY(-2px);
             background: #ffffff;
-            box-shadow: 0 6px 25px rgba(224, 225, 221, 0.25);
         }
 
         /* Sections Container */
@@ -277,7 +276,7 @@
             text-align: center;
             margin-bottom: 0.75rem;
             letter-spacing: -0.02em;
-            color: #fff;
+            color: #ffffff;
         }
 
         .section-lead {
@@ -288,16 +287,28 @@
             font-size: 0.975rem;
         }
 
-        /* Refined Services Bento Grid (Improvement #4) */
+        /* Uniform Services Bento Grid (Improvement #2 & #5) */
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(12, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .service-card {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             padding: 2.25rem 2rem;
@@ -307,57 +318,33 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .service-card.col-4 { grid-column: span 4; }
-        .service-card.col-6 { grid-column: span 6; }
-
-        @media (max-width: 1024px) {
-            .service-card.col-4, .service-card.col-6 {
-                grid-column: span 12;
-            }
+            justify-content: flex-start;
+            min-height: 240px;
         }
 
         .service-card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 2px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.1);
             transition: var(--transition-smooth);
         }
 
         .service-card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
             border-color: var(--card-border-hover);
             background: var(--card-bg-hover);
-            box-shadow: 0 20px 40px -15px rgba(45, 212, 191, 0.18);
         }
 
         .service-card:hover::before {
-            background: var(--accent-teal);
-            box-shadow: 0 0 12px var(--accent-teal);
-        }
-
-        .service-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: var(--radius-sm);
-            background: rgba(45, 212, 191, 0.1);
-            border: 1px solid rgba(45, 212, 191, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            color: var(--accent-teal);
-            font-size: 1.25rem;
+            background: var(--palette-slate);
         }
 
         .service-card h3 {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 700;
-            color: #fff;
-            margin-bottom: 0.75rem;
+            color: #ffffff;
+            margin-bottom: 0.85rem;
             letter-spacing: -0.01em;
         }
 
@@ -370,7 +357,7 @@
         /* Contact Form Card */
         .contact-card {
             background: var(--card-bg);
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(14px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
             padding: 2.75rem 2.25rem;
@@ -416,8 +403,8 @@
 
         .form-group input:focus, 
         .form-group textarea:focus {
-            border-color: var(--accent-teal);
-            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            border-color: var(--palette-slate);
+            box-shadow: 0 0 0 3px rgba(119, 141, 169, 0.12), inset 0 2px 4px rgba(0, 0, 0, 0.3);
             background: #0d1222;
         }
 
@@ -483,8 +470,8 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: radial-gradient(circle at 80% 20%, rgba(65, 90, 119, 0.3), transparent 50%),
-                        radial-gradient(circle at 20% 80%, rgba(27, 38, 59, 0.6), transparent 60%),
+            background: radial-gradient(circle at 80% 20%, rgba(65, 90, 119, 0.25), transparent 50%),
+                        radial-gradient(circle at 20% 80%, rgba(27, 38, 59, 0.5), transparent 60%),
                         var(--palette-midnight);
         }
 
@@ -531,8 +518,9 @@
             width: 100%;
             height: 100%;
             opacity: 0;
-            transform: translateY(30px) scale(0.98);
-            transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(25px) scale(0.98);
+            /* Accelerated animation transition speed (#4) */
+            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
             display: flex;
             align-items: center;
@@ -558,7 +546,7 @@
             inset: -8px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--palette-steel), var(--palette-slate), #ffffff);
-            opacity: 0.6;
+            opacity: 0.45;
             filter: blur(10px);
         }
 
@@ -673,26 +661,25 @@
                 display: flex;
             }
 
-            /* Improved Modern Mobile Nav Menu Drawer (Improvement #1, #2, #3) */
             nav {
                 position: fixed;
                 top: 4.8rem;
                 left: 0.75rem;
                 right: 0.75rem;
                 background: rgba(13, 27, 42, 0.96);
-                backdrop-filter: blur(30px);
+                backdrop-filter: blur(25px);
                 flex-direction: column;
                 align-items: center;
                 gap: 1.25rem;
                 padding: 2rem 1.5rem;
-                border: 1px solid rgba(255, 255, 255, 0.12);
+                border: 1px solid rgba(255, 255, 255, 0.1);
                 border-radius: var(--radius-lg);
                 box-shadow: 0 25px 50px rgba(0,0,0,0.7);
                 max-height: 0;
                 overflow: hidden;
                 opacity: 0;
                 pointer-events: none;
-                transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, transform 0.3s ease;
+                transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, transform 0.25s ease;
                 transform: translateY(-10px);
                 z-index: 999;
             }
@@ -804,55 +791,57 @@
         <a href="#contact" class="cta-btn">Get Started Today</a>
     </section>
 
-    <!-- Services Section (Bento Grid Overhaul - Improvement #4) -->
+    <!-- Services Section (Uniform Bento Grid without Emojis - Improvement #1 & #2) -->
     <section id="services" class="section-container">
         <h2>Our Core Services</h2>
         <p class="section-lead">Engineered for impact. Designed to dominate your market sector.</p>
         
         <div class="services-grid">
-            <div class="service-card col-4">
+            <div class="service-card">
                 <div>
-                    <div class="service-icon">✦</div>
                     <h3>Creative Direction</h3>
                     <p>Strategic brand positioning, visual storytelling, and comprehensive art direction to build brands that stand out.</p>
                 </div>
             </div>
             
-            <div class="service-card col-4">
+            <div class="service-card">
                 <div>
-                    <div class="service-icon">⚡</div>
                     <h3>Social Media Management</h3>
                     <p>End-to-end strategy, content curation, profile optimization (SMM), and audience engagement strategies.</p>
                 </div>
             </div>
             
-            <div class="service-card col-4">
+            <div class="service-card">
                 <div>
-                    <div class="service-icon">💻</div>
                     <h3>Web Development</h3>
                     <p>High-performance, responsive websites built with modern frameworks and robust security protocols.</p>
                 </div>
             </div>
             
-            <div class="service-card col-6">
+            <div class="service-card">
                 <div>
-                    <div class="service-icon">✨</div>
                     <h3>Visual & Media Design</h3>
                     <p>Industry-standard video editing, photo editing, motion graphics, and tailored brand asset generation that captivates audiences.</p>
                 </div>
             </div>
             
-            <div class="service-card col-6">
+            <div class="service-card">
                 <div>
-                    <div class="service-icon">🚀</div>
                     <h3>Digital Solutions</h3>
                     <p>End-to-end technical consulting, infrastructure management, and high-velocity performance optimization for scalable growth.</p>
+                </div>
+            </div>
+
+            <div class="service-card">
+                <div>
+                    <h3>Brand Strategy</h3>
+                    <p>Comprehensive market analysis and growth scaling blueprints designed to elevate your enterprise to industry leadership.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Contact Form Section (AJAX Formspree with Sent State - Improvement #6) -->
+    <!-- Contact Form Section -->
     <section id="contact" class="section-container" style="margin-bottom: 9rem;">
         <h2>Start Your Project</h2>
         <p class="section-lead">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
@@ -876,15 +865,15 @@
 
                 <!-- Acceptance Checkbox -->
                 <div style="display: flex; align-items: flex-start; gap: 10px; margin: 1.5rem 0; font-size: 0.9rem; color: var(--text-muted);">
-                    <input type="checkbox" id="terms" name="terms_agreed" value="agreed" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--accent-teal);">
-                    <label for="terms" style="cursor: pointer; line-height: 1.4;">
-                        I have read and agree to the <a href="terms/" target="_blank" style="color: var(--accent-teal); text-decoration: underline;">Terms & Policies</a>.
+                    <input type="checkbox" id="terms" name="terms_agreed" value="agreed" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--palette-slate);">
+                    <label for="terms" style="cursor: pointer; line-height: 1.4; color: var(--text-muted);">
+                        I have read and agree to the <a href="terms/" target="_blank" style="color: var(--palette-frost); text-decoration: underline;">Terms & Policies</a>.
                     </label>
                 </div>
 
                 <button type="submit" id="submit-btn" class="submit-btn" disabled>Send Message</button>
             </form>
-            <div id="form-success-msg" style="display: none; margin-top: 1.25rem; padding: 1rem; background: rgba(45, 212, 191, 0.1); border: 1px solid var(--accent-teal); border-radius: var(--radius-sm); color: var(--accent-teal); text-align: center; font-weight: 600;">
+            <div id="form-success-msg" style="display: none; margin-top: 1.25rem; padding: 1rem; background: rgba(119, 141, 169, 0.1); border: 1px solid var(--palette-slate); border-radius: var(--radius-sm); color: var(--palette-frost); text-align: center; font-weight: 600;">
                 Thank you! Your message has been received. Our team will contact you within 48 hours.
             </div>
         </div>
@@ -922,7 +911,7 @@
                         <div class="about-content">
                             <span class="about-role-badge" style="background: linear-gradient(135deg, var(--palette-steel), var(--palette-slate));">Co-Founder, COO & Head of Social Media Management</span>
                             <h3 class="about-name">Dahiyat Danesh Chowdhury</h3>
-                            <p class="about-bio">The mastermind behind studio operations spanning web development, photo and video curation, and brand strategy. A relentless multi-disciplinary operator delivering PRISTINE execution on every engagement.</p>
+                            <p class="about-bio">The mastermind behind studio operations spanning web development, photo and video curation, and brand strategy. A relentless multi-disciplinary operator delivering pristine execution on every engagement.</p>
                         </div>
                     </div>
 
@@ -1035,7 +1024,7 @@
             });
         }
 
-        // --- AJAX Formspree Handler with Sent State & Cooldown (Improvement #6) ---
+        // --- AJAX Formspree Handler with Sent State & Cooldown ---
         const contactForm = document.getElementById('contact-form');
         const submitBtn = document.getElementById('submit-btn');
         const successMsg = document.getElementById('form-success-msg');
@@ -1058,8 +1047,8 @@
                     });
 
                     if (response.ok) {
-                        submitBtn.style.background = 'var(--accent-teal)';
-                        submitBtn.style.color = 'var(--palette-midnight)';
+                        submitBtn.style.background = 'var(--palette-slate)';
+                        submitBtn.style.color = '#ffffff';
                         submitBtn.textContent = 'Sent!';
                         contactForm.reset();
                         successMsg.style.display = 'block';
@@ -1086,13 +1075,13 @@
             });
         }
 
-        // --- About Us Slide Scroll Controller ---
+        // --- About Us Slide Scroll Controller (Accelerated speed 0.75x) ---
         const aboutSection = document.getElementById('about');
         const slides = document.querySelectorAll('.about-slide');
         const dots = document.querySelectorAll('.about-dot');
         const slideCount = slides.length;
 
-        aboutSection.style.height = `${slideCount * 75}vh`;
+        aboutSection.style.height = `${slideCount * 60}vh`;
 
         function updateAboutSlides() {
             const rect = aboutSection.getBoundingClientRect();
@@ -1180,7 +1169,7 @@
 
                 if (x2d >= 0 && x2d <= width && y2d >= 0 && y2d <= height) {
                     const alpha = Math.min(1, (1000 - this.z) / 750) * scale;
-                    ctx.fillStyle = `rgba(226, 232, 240, ${alpha * 0.65})`;
+                    ctx.fillStyle = `rgba(226, 232, 240, ${alpha * 0.55})`;
                     ctx.beginPath();
                     ctx.arc(x2d, y2d, this.radius * scale * 1.2, 0, Math.PI * 2);
                     ctx.fill();
@@ -1221,8 +1210,8 @@
                         const x2 = width / 2 + particles[j].x * scale2;
                         const y2 = height / 2 + (particles[j].y + (scrollY * 0.08)) * scale2;
 
-                        const lineAlpha = (1 - dist / maxDist) * 0.12;
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.2, lineAlpha)})`;
+                        const lineAlpha = (1 - dist / maxDist) * 0.08;
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.15, lineAlpha)})`;
                         ctx.lineWidth = 0.5;
                         ctx.beginPath();
                         ctx.moveTo(x1, y1);
