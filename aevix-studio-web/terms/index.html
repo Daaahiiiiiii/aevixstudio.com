@@ -4,18 +4,399 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terms & Policies | Aevix Studio</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --bg-dark: #030712;
+            --card-bg: rgba(17, 24, 39, 0.75);
+            --card-bg-hover: rgba(22, 32, 51, 0.9);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --card-border-hover: rgba(255, 255, 255, 0.22);
+            --border-color: #1f293d;
+            --text-main: #f9fafb;
+            --text-muted: #94a3b8;
+            
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+
+            --palette-midnight: #0D1B2A;
+            --palette-navy: #1B263B;
+            --palette-steel: #415A77;
+            --palette-slate: #778DA9;
+            --palette-frost: #E0E1DD;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        header, section, footer {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Executive Header & Scroll Hide/Show */
+        header {
+            position: fixed;
+            top: 1.25rem;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 1280px;
+            padding: 0.9rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(13, 27, 42, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            width: calc(100% - 2.5rem);
+            z-index: 1000;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
+        }
+
+        header.header-hidden {
+            transform: translate(-50%, -130%);
+        }
+
+        .brand-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .brand-logo {
+            width: 30px;
+            height: 30px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+
+        .brand-name {
+            font-weight: 800;
+            font-size: 1.05rem;
+            letter-spacing: 0.06em;
+            color: #ffffff;
+            text-transform: uppercase;
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.75rem;
+        }
+
+        nav a {
+            color: var(--palette-slate);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            letter-spacing: 0.02em;
+            transition: var(--transition-smooth);
+        }
+
+        nav a:hover {
+            color: #ffffff;
+        }
+
+        .google-btn {
+            background: transparent;
+            border: 1px solid rgba(119, 141, 169, 0.25);
+            color: var(--palette-frost);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.825rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .google-btn:hover {
+            background: rgba(119, 141, 169, 0.1);
+            border-color: var(--palette-slate);
+            color: #ffffff;
+        }
+
+        .nav-cta {
+            background: var(--palette-frost);
+            color: var(--palette-midnight) !important;
+            padding: 0.55rem 1.25rem;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.01em;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-cta:hover {
+            background: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* Mobile Menu Toggle Button */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 1100;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: var(--palette-frost);
+            transition: var(--transition-smooth);
+            border-radius: 2px;
+        }
+
+        .mobile-menu-toggle.active span:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+        .mobile-menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .mobile-menu-toggle.active span:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        /* Main Content Section */
+        .section-container {
+            max-width: 960px;
+            margin: 10rem auto 7rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-container h2 {
+            font-size: clamp(2rem, 3.5vw, 3rem);
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .section-lead {
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 620px;
+            margin: 0 auto 3rem auto;
+            font-size: 1rem;
+        }
+
+        /* Terms Card Wrapper */
+        .terms-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2.5rem;
+            box-shadow: var(--shadow-card);
+        }
+
+        @media (max-width: 768px) {
+            .terms-card {
+                padding: 1.75rem 1.25rem;
+            }
+        }
+
+        .term-block {
+            margin-bottom: 2rem;
+        }
+
+        .term-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .term-block h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .term-block h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--palette-frost);
+            margin-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .term-block p {
+            color: var(--text-muted);
+            font-size: 0.925rem;
+            line-height: 1.7;
+        }
+
+        .term-block strong {
+            color: #ffffff;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 15;
+            background-color: var(--palette-midnight);
+            max-width: 100%;
+            margin: 0;
+            padding: 3.5rem 1.5rem 3rem 1.5rem;
+            border-top: 1px solid rgba(119, 141, 169, 0.15);
+            text-align: center;
+            color: var(--palette-slate);
+            font-size: 0.875rem;
+        }
+
+        footer a {
+            color: var(--palette-frost);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition-smooth);
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+            color: #ffffff;
+        }
+
+        .copyright {
+            margin-top: 0.85rem;
+            font-size: 0.8rem;
+            color: rgba(119, 141, 169, 0.65);
+        }
+
+        /* Responsive Mobile Drawer */
+        @media (max-width: 868px) {
+            header {
+                padding: 0.85rem 1.25rem;
+                width: calc(100% - 1.5rem);
+                top: 0.75rem;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            nav {
+                position: fixed;
+                top: 4.8rem;
+                left: 0.75rem;
+                right: 0.75rem;
+                background: rgba(13, 27, 42, 0.96);
+                backdrop-filter: blur(25px);
+                flex-direction: column;
+                align-items: center;
+                gap: 1.25rem;
+                padding: 2rem 1.5rem;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: var(--radius-lg);
+                box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+                max-height: 0;
+                overflow: hidden;
+                opacity: 0;
+                pointer-events: none;
+                transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, transform 0.25s ease;
+                transform: translateY(-10px);
+                z-index: 999;
+            }
+
+            nav.mobile-open {
+                max-height: 420px;
+                opacity: 1;
+                pointer-events: auto;
+                transform: translateY(0);
+            }
+
+            nav a {
+                font-size: 1.05rem;
+                font-weight: 600;
+            }
+
+            .section-container {
+                margin: 9rem auto 4rem auto;
+                padding: 0 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
+    <!-- 3D Background Constellation Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
     <!-- Header Navigation -->
-    <header>
-        <div class="brand"><a href="/" style="text-decoration:none; color:inherit;">AEVIX STUDIO</a></div>
-        <nav>
-            <a href="/#services">Services</a>
-            <a href="/#portfolio">Work</a>
-            <a href="/terms">Terms & Policies</a>
-            <a href="/#contact" class="nav-cta">Start Project</a>
+    <header id="main-header">
+        <a href="../index.html" class="brand-link">
+            <img src="../logo.png" alt="Aevix Studio Logo" class="brand-logo" onerror="this.style.display='none'">
+            <span class="brand-name">AEVIX STUDIO</span>
+        </a>
+
+        <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+
+        <nav id="nav-menu">
+            <a href="../index.html#services">Services</a>
+            <a href="../index.html#about">About Us</a>
+            <a href="./">Terms & Policies</a>
+            
+            <button id="google-login-btn" type="button" class="google-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                Sign In
+            </button>
+
+            <a href="../index.html#contact" class="nav-cta">Start Project</a>
         </nav>
     </header>
 
@@ -27,7 +408,7 @@
         <div class="terms-card">
             
             <div class="term-block">
-                <p style="color: #9ca3af; font-style: italic;">Note: Terms and Policies are subject to change without prior notice.</p>
+                <p style="color: var(--palette-slate); font-style: italic;">Note: Terms and Policies are subject to change without prior notice.</p>
             </div>
 
             <!-- SECTION: TERMS OF SERVICE -->
@@ -82,7 +463,7 @@
             </div>
 
             <!-- SECTION: POLICIES -->
-            <div class="term-block" id="policies" style="margin-top:2rem; border-top: 1px solid #374151; padding-top:2rem;">
+            <div class="term-block" id="policies" style="margin-top:2.5rem; border-top: 1px solid var(--border-color); padding-top:2rem;">
                 <h3>Policies</h3>
             </div>
 
@@ -117,9 +498,9 @@
             <div class="term-block" id="privacy">
                 <h4>6. Data Privacy, Google OAuth & Confidentiality Policy</h4>
                 <p><strong>a. Information Collection:</strong> Aevix Studio collects personal identification details (such as names, business emails, and project specifications) submitted voluntarily through contact forms, project briefs, or payment processing channels.</p>
-                <p style="margin-top:0.75rem;"><strong>b. Google OAuth User Data Access & Limited Use:</strong> When users authenticate or log in via Google OAuth, Aevix Studio retrieves basic user profile information (email address, full name, and avatar picture). This data is accessed strictly to authenticate identity, establish client dashboard user accounts, and maintain secure access. Aevix Studio will **never** sell, rent, lease, trade, or transfer Google user data to third parties, nor do we use Google user data for commercial advertising or personalized targeting.</p>
+                <p style="margin-top:0.75rem;"><strong>b. Google OAuth User Data Access & Limited Use:</strong> When users authenticate or log in via Google OAuth, Aevix Studio retrieves basic user profile information (email address, full name, and avatar picture). This data is accessed strictly to authenticate identity, establish client dashboard user accounts, and maintain secure access. Aevix Studio will <strong>never</strong> sell, rent, lease, trade, or transfer Google user data to third parties, nor do we use Google user data for commercial advertising or personalized targeting.</p>
                 <p style="margin-top:0.75rem;"><strong>c. Cookies & Session Storage:</strong> We do not use persistent tracking cookies for third-party ad profiling. We utilize necessary session cookies and browser local storage (managed via Supabase Auth) strictly to keep users securely logged in across portal sessions and protect user submissions.</p>
-                <p style="margin-top:0.75rem;"><strong>d. Account Erasure & Data Deletion Rights:</strong> Users retain full rights to inspect, update, or request the complete deletion of their account credentials and stored personal information at any time. To request immediate data erasure, email us directly at <a href="mailto:aevixstudio962@gmail.com" style="color: #60a5fa; text-decoration: none; font-weight: bold;">aevixstudio962@gmail.com</a>. All valid account deletion requests are processed and confirmed within 30 business days.</p>
+                <p style="margin-top:0.75rem;"><strong>d. Account Erasure & Data Deletion Rights:</strong> Users retain full rights to inspect, update, or request the complete deletion of their account credentials and stored personal information at any time. To request immediate data erasure, email us directly at <a href="mailto:aevixstudio962@gmail.com" style="color: var(--palette-slate); text-decoration: underline; font-weight: bold;">aevixstudio962@gmail.com</a>. All valid account deletion requests are processed and confirmed within 30 business days.</p>
                 <p style="margin-top:0.75rem;"><strong>e. Client Asset Confidentiality:</strong> All raw video footage, audio assets, design files, branding guidelines, source code, and project communications shared by the Client are treated as strictly confidential. Aevix Studio will not publish or share non-public assets without prior written consent, unless permitted under the Studio Portfolio License clause.</p>
                 <p style="margin-top:0.75rem;"><strong>f. Third-Party Data Processors:</strong> The Client acknowledges that data and assets may pass through secure, trusted third-party infrastructure—including Cloudflare (hosting/CDN security), Supabase (database & user authentication infrastructure), Formspree (contact handling), and international banking platforms—solely to facilitate necessary studio operations and service delivery.</p>
             </div>
@@ -136,13 +517,162 @@
 
     <!-- Footer -->
     <footer>
-        <p style="color: #9ca3af; margin-bottom: 0.5rem;">
-            Direct Email: <a href="mailto:aevixstudio962@gmail.com" style="color: #60a5fa; text-decoration: none; font-weight: bold;">aevixstudio962@gmail.com</a>
+        <p style="margin-bottom: 0.5rem;">
+            Direct Email: <a href="mailto:aevixstudio962@gmail.com"><strong>aevixstudio962@gmail.com</strong></a>
         </p>
         <div class="copyright">
             &copy; 2026 Aevix Studio. All Rights Reserved.
         </div>
     </footer>
 
+    <!-- Script Controllers -->
+    <script>
+        // --- Smart Header Scroll Hide/Show & Mobile Menu ---
+        const header = document.getElementById('main-header');
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        let lastScrollY = window.scrollY;
+
+        window.addEventListener('scroll', () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                header.classList.add('header-hidden');
+                if (navMenu.classList.contains('mobile-open')) {
+                    navMenu.classList.remove('mobile-open');
+                    menuToggle.classList.remove('active');
+                }
+            } else {
+                header.classList.remove('header-hidden');
+            }
+            lastScrollY = currentScrollY;
+        });
+
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('mobile-open');
+                menuToggle.classList.toggle('active');
+            });
+
+            navMenu.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('click', () => {
+                    navMenu.classList.remove('mobile-open');
+                    menuToggle.classList.remove('active');
+                });
+            });
+        }
+
+        // --- 3D Background Constellation Animation ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let scrollY = 0;
+        let targetScrollY = 0;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        window.addEventListener('scroll', () => {
+            targetScrollY = window.scrollY;
+        });
+
+        class Particle3D {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = (Math.random() - 0.5) * width * 1.6;
+                this.y = (Math.random() - 0.5) * height * 1.6;
+                this.z = Math.random() * 1000 + 100;
+                this.vx = (Math.random() - 0.5) * 0.15;
+                this.vy = (Math.random() - 0.5) * 0.15;
+                this.vz = Math.random() * 0.35 + 0.1;
+                this.radius = Math.random() * 1.5 + 0.6;
+            }
+
+            update(scrollProgress) {
+                this.z -= (this.vz + (scrollProgress * 0.0008));
+                if (this.z <= 10) {
+                    this.z = 1000;
+                    this.x = (Math.random() - 0.5) * width * 1.6;
+                    this.y = (Math.random() - 0.5) * height * 1.6;
+                }
+
+                this.x += this.vx;
+                this.y += this.vy;
+            }
+
+            draw(scrollProgress) {
+                const fov = 450;
+                const scale = fov / (fov + this.z);
+                const x2d = width / 2 + this.x * scale;
+                const y2d = height / 2 + (this.y + (scrollY * 0.08)) * scale;
+
+                if (x2d >= 0 && x2d <= width && y2d >= 0 && y2d <= height) {
+                    const alpha = Math.min(1, (1000 - this.z) / 750) * scale;
+                    ctx.fillStyle = `rgba(226, 232, 240, ${alpha * 0.55})`;
+                    ctx.beginPath();
+                    ctx.arc(x2d, y2d, this.radius * scale * 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        const particleCount = Math.min(window.innerWidth < 768 ? 35 : 85, 100);
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle3D());
+        }
+
+        function animate() {
+            scrollY += (targetScrollY - scrollY) * 0.06;
+            
+            ctx.clearRect(0, 0, width, height);
+
+            const scrollFactor = Math.min(scrollY, 2000);
+
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update(scrollFactor);
+                particles[i].draw(scrollFactor);
+
+                const maxDist = 130 + (scrollFactor * 0.01);
+
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dz = particles[i].z - particles[j].z;
+                    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                    if (dist < maxDist) {
+                        const fov = 450;
+                        const scale1 = fov / (fov + particles[i].z);
+                        const scale2 = fov / (fov + particles[j].z);
+                        const x1 = width / 2 + particles[i].x * scale1;
+                        const y1 = height / 2 + (particles[i].y + (scrollY * 0.08)) * scale1;
+                        const x2 = width / 2 + particles[j].x * scale2;
+                        const y2 = height / 2 + (particles[j].y + (scrollY * 0.08)) * scale2;
+
+                        const lineAlpha = (1 - dist / maxDist) * 0.08;
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.15, lineAlpha)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y1);
+                        ctx.lineTo(x2, y2);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
 </body>
 </html>
