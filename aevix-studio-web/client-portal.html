@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Viewing Deck | Aevix Studio</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -35,6 +34,8 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         body {
@@ -45,16 +46,23 @@
             min-height: 100vh;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
         .portal-container {
             max-width: 1280px;
             width: 100%;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 1rem 0.75rem;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
+            .portal-container {
+                padding: 1.5rem 1.25rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
             .portal-container {
                 padding: 2.5rem 2rem;
             }
@@ -65,8 +73,8 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
             border-bottom: 1px solid var(--border-color);
             background: linear-gradient(180deg, rgba(13, 19, 38, 0.6) 0%, transparent 100%);
             backdrop-filter: blur(10px);
@@ -84,7 +92,7 @@
         }
 
         .brand-title {
-            font-size: 1.5rem;
+            font-size: 1.35rem;
             font-weight: 800;
             letter-spacing: -0.03em;
             background: linear-gradient(135deg, #ffffff 20%, var(--accent-blue) 100%);
@@ -93,8 +101,14 @@
             text-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
         }
 
+        @media (min-width: 768px) {
+            .brand-title {
+                font-size: 1.6rem;
+            }
+        }
+
         .user-info {
-            font-size: 0.825rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
             margin-top: 0.25rem;
             font-weight: 500;
@@ -119,13 +133,14 @@
             background: rgba(248, 113, 113, 0.1);
             color: var(--accent-red);
             border: 1px solid rgba(248, 113, 113, 0.3);
-            padding: 9px 18px;
+            padding: 10px 18px;
             border-radius: var(--radius-sm);
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
             transition: var(--transition-smooth);
             align-self: flex-start;
+            white-space: nowrap;
         }
 
         @media (min-width: 640px) {
@@ -144,9 +159,9 @@
         /* Project Selector Cards */
         .project-cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.85rem;
+            margin-bottom: 1.5rem;
         }
 
         .project-card-btn {
@@ -154,7 +169,7 @@
             backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-md);
-            padding: 1.25rem;
+            padding: 1rem 1.15rem;
             text-align: left;
             cursor: pointer;
             color: var(--text-main);
@@ -162,6 +177,7 @@
             box-shadow: var(--shadow-card);
             position: relative;
             overflow: hidden;
+            min-width: 0;
         }
 
         .project-card-btn::before {
@@ -174,7 +190,7 @@
         }
 
         .project-card-btn:hover {
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             border-color: var(--card-border-hover);
             background: var(--card-bg-hover);
         }
@@ -197,15 +213,17 @@
             backdrop-filter: blur(12px);
             border: 1px solid var(--card-border);
             border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            margin-bottom: 1.75rem;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
             box-shadow: var(--shadow-card);
             transition: var(--transition-smooth);
+            min-width: 0;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 640px) {
             .card {
-                padding: 2rem;
+                padding: 1.75rem;
+                margin-bottom: 1.5rem;
             }
         }
 
@@ -217,16 +235,17 @@
             display: flex;
             flex-direction: column;
             gap: 0.75rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             border-bottom: 1px solid rgba(255, 255, 255, 0.04);
             padding-bottom: 1rem;
+            min-width: 0;
         }
 
         @media (min-width: 640px) {
             .card-header-flex {
                 flex-direction: row;
                 justify-content: space-between;
-                align-items: center;
+                align-items: flex-start;
             }
         }
 
@@ -235,17 +254,23 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             background: rgba(4, 6, 15, 0.5);
-            padding: 1.25rem;
+            padding: 1rem;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
+            min-width: 0;
         }
 
         @media (min-width: 768px) {
             .project-meta-box {
                 grid-template-columns: 1fr 1fr;
+                padding: 1.25rem;
             }
+        }
+
+        .meta-group {
+            min-width: 0;
         }
 
         .meta-group label {
@@ -259,7 +284,7 @@
         }
 
         .meta-group p {
-            font-size: 0.925rem;
+            font-size: 0.9rem;
             color: #e2e8f0;
             line-height: 1.5;
         }
@@ -268,15 +293,16 @@
         .project-details-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            padding-top: 1.25rem;
+            gap: 0.85rem;
+            padding-top: 1.15rem;
             border-top: 1px solid var(--border-color);
+            min-width: 0;
         }
 
         @media (min-width: 768px) {
             .project-details-grid {
                 grid-template-columns: repeat(4, 1fr);
-                gap: 1.5rem;
+                gap: 1.25rem;
             }
         }
 
@@ -285,13 +311,14 @@
             flex-direction: column;
             gap: 0.35rem;
             background: rgba(4, 6, 15, 0.4);
-            padding: 1rem;
+            padding: 0.85rem;
             border-radius: var(--radius-sm);
             border: 1px solid rgba(255, 255, 255, 0.02);
+            min-width: 0;
         }
 
         .detail-label {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             text-transform: uppercase;
             color: var(--text-muted);
             letter-spacing: 0.08em;
@@ -299,15 +326,16 @@
         }
 
         .detail-val {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 800;
             color: #ffffff;
             letter-spacing: -0.02em;
+            word-break: break-all;
         }
 
         @media (min-width: 768px) {
             .detail-val {
-                font-size: 1.45rem;
+                font-size: 1.35rem;
             }
         }
 
@@ -319,41 +347,37 @@
 
         /* Tables & Responsive Wrapper */
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
             border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
             background: rgba(4, 6, 15, 0.5);
             box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
-            -webkit-overflow-scrolling: touch;
+            margin-top: 0.5rem;
         }
 
         .ledger-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             text-align: left;
-            white-space: nowrap;
-        }
-
-        @media (min-width: 768px) {
-            .ledger-table {
-                white-space: normal;
-            }
         }
 
         .ledger-table th {
             background: #070a17;
             color: var(--text-muted);
-            padding: 12px 16px;
+            padding: 10px 14px;
             font-weight: 700;
             border-bottom: 1px solid var(--border-color);
             text-transform: uppercase;
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             letter-spacing: 0.08em;
+            white-space: nowrap;
         }
 
         .ledger-table td {
-            padding: 13px 16px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--border-color);
             color: #e2e8f0;
             vertical-align: middle;
@@ -368,9 +392,10 @@
             display: inline-block;
             padding: 4px 10px;
             border-radius: 999px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
             letter-spacing: 0.03em;
+            white-space: nowrap;
         }
 
         .status-paid {
@@ -401,23 +426,25 @@
         .timeline-list {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: 1.15rem;
             border-left: 2px solid var(--border-color);
-            padding-left: 1.25rem;
+            padding-left: 1.15rem;
             margin-left: 0.5rem;
+            min-width: 0;
         }
 
         .timeline-item {
             position: relative;
+            min-width: 0;
         }
 
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -1.5rem;
+            left: -1.4rem;
             top: 0.35rem;
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             background: var(--accent-blue);
             box-shadow: 0 0 10px var(--accent-blue);
@@ -447,14 +474,14 @@
             <!-- Active Project Overview Card -->
             <div class="card">
                 <div class="card-header-flex">
-                    <div>
-                        <h2 id="active-proj-title" style="font-size: 1.35rem; color:#fff; font-weight:700;">Project Title</h2>
-                        <span id="active-proj-code" style="font-family: monospace; color: var(--accent-blue); font-size: 0.85rem; background: rgba(56,189,248,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56,189,248,0.2);">#000000</span>
+                    <div style="min-width: 0; flex: 1;">
+                        <h2 id="active-proj-title" style="font-size: 1.25rem; color:#fff; font-weight:700; word-break: break-word;">Project Title</h2>
+                        <span id="active-proj-code" style="display: inline-block; margin-top: 4px; font-family: monospace; color: var(--accent-blue); font-size: 0.8rem; background: rgba(56,189,248,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56,189,248,0.2);">#000000</span>
                     </div>
-                    <span id="active-proj-status" class="status-badge status-pending" style="align-self: flex-start;">Active</span>
+                    <span id="active-proj-status" class="status-badge status-pending" style="margin-top: 0.25rem;">Active</span>
                 </div>
 
-                <!-- NEW: Team Members & Project Scope Metadata Box -->
+                <!-- Team Members & Project Scope Metadata Box -->
                 <div class="project-meta-box">
                     <div class="meta-group">
                         <label>Assigned Team Members Working</label>
@@ -466,7 +493,7 @@
                     </div>
                 </div>
 
-                <!-- Financial Deck Metrics (Fixed Math) -->
+                <!-- Financial Deck Metrics -->
                 <div class="project-details-grid">
                     <div class="detail-item">
                         <span class="detail-label">Project Budget</span>
@@ -489,7 +516,7 @@
 
             <!-- Billed Breakdown Section -->
             <div class="card">
-                <h3 style="color:#fff; margin-bottom:1rem; font-size:1.1rem; font-weight:700;">Issued Bills Breakdown</h3>
+                <h3 style="color:#fff; margin-bottom:0.85rem; font-size:1.05rem; font-weight:700;">Issued Bills Breakdown</h3>
                 <div class="table-responsive">
                     <table class="ledger-table">
                         <thead>
@@ -506,7 +533,7 @@
 
             <!-- Payment Ledger Section -->
             <div class="card">
-                <h3 style="color:#fff; margin-bottom:1rem; font-size:1.1rem; font-weight:700;">Payments & Transactions Ledger</h3>
+                <h3 style="color:#fff; margin-bottom:0.85rem; font-size:1.05rem; font-weight:700;">Payments & Transactions Ledger</h3>
                 <div class="table-responsive">
                     <table class="ledger-table">
                         <thead>
@@ -526,7 +553,7 @@
 
             <!-- Timeline Updates -->
             <div class="card">
-                <h3 style="color:#fff; margin-bottom:1.25rem; font-size:1.1rem; font-weight:700;">Project Timeline Updates</h3>
+                <h3 style="color:#fff; margin-bottom:1rem; font-size:1.05rem; font-weight:700;">Project Timeline Updates</h3>
                 <div id="timeline-list" class="timeline-list"></div>
             </div>
         </div>
@@ -598,7 +625,6 @@
             const userId = session.user.id;
             const email = extractCleanEmail(session.user.email);
 
-            // LOG CLIENT EMAIL & ASSIGN 'client' ROLE IN SUPABASE
             try {
                 const { data: existingProfile, error: fetchErr } = await client
                     .from('profiles')
@@ -636,8 +662,8 @@
             } else {
                 document.getElementById('portal-main-view').style.display = 'block';
                 document.getElementById('portal-main-view').innerHTML = `
-                    <div class="card" style="text-align: center; padding: 3rem;">
-                        <h3 style="color: #fff; margin-bottom: 0.5rem;">No Projects Found</h3>
+                    <div class="card" style="text-align: center; padding: 2.5rem 1.25rem;">
+                        <h3 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.15rem;">No Projects Found</h3>
                         <p style="color: var(--text-muted); font-size: 0.9rem;">No active projects are currently linked to your email address (${email}).</p>
                     </div>
                 `;
@@ -648,7 +674,7 @@
             const grid = document.getElementById('project-cards-grid');
             grid.innerHTML = userProjects.map(p => `
                 <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" onclick="selectProject('${p.id}')">
-                    <div style="font-weight:700; color:#fff; font-size:1rem; margin-bottom:4px;">${escapeHtml(p.title || p.project_name || 'Untitled Project')}</div>
+                    <div style="font-weight:700; color:#fff; font-size:0.95rem; margin-bottom:4px; word-break: break-word;">${escapeHtml(p.title || p.project_name || 'Untitled Project')}</div>
                     <div style="font-family:monospace; font-size:0.75rem; color:var(--accent-blue);">#${escapeHtml(p.hex_code || 'N/A')}</div>
                 </button>
             `).join('');
@@ -662,7 +688,6 @@
             document.getElementById('active-proj-title').textContent = p.title || p.project_name || 'Untitled Project';
             document.getElementById('active-proj-code').textContent = `#${p.hex_code || 'N/A'}`;
             
-            // Populate Team Members and Project Overview / Scope
             document.getElementById('active-proj-members').textContent = p.members_working ? p.members_working : 'Unassigned';
             document.getElementById('active-proj-desc').textContent = p.description ? p.description : 'No scope or overview details specified for this project yet.';
 
@@ -671,14 +696,13 @@
             statusEl.textContent = projStatus;
             statusEl.className = `status-badge status-${projStatus.toLowerCase().replace(/\s+/g, '-')}`;
 
-            // FIXED MATH: Total Agreed Budget (Base + Extension)
             const baseBudget = Number(p.budget || 0);
             const extendedBy = Number(p.budget_extended_by || 0);
             const totalAgreedBudget = baseBudget + extendedBy;
 
             let budgetHtml = `৳${totalAgreedBudget.toLocaleString()}`;
             if (extendedBy > 0) {
-                budgetHtml += ` <span style="font-size:0.75rem; color:var(--accent-yellow); font-weight:600;">(৳${baseBudget.toLocaleString()} + ৳${extendedBy.toLocaleString()} ext)</span>`;
+                budgetHtml += ` <span style="font-size:0.7rem; color:var(--accent-yellow); font-weight:600; display:inline-block;">(৳${baseBudget.toLocaleString()} + ৳${extendedBy.toLocaleString()} ext)</span>`;
             }
             document.getElementById('active-proj-budget').innerHTML = budgetHtml;
 
@@ -694,10 +718,8 @@
             const payments = payRes.data || [];
             const logs = logRes.data || [];
 
-            // FIXED MATH: Total Billed across issued bills
             const totalBilled = bills.reduce((sum, b) => sum + Number(b.amount || 0), 0);
 
-            // FIXED MATH: Total Paid with Error Log adjustments (Undercharged/Overcharged)
             let totalPaid = 0;
             payments.forEach(pay => {
                 const amt = Number(pay.amount || 0);
@@ -710,7 +732,6 @@
                 }
             });
 
-            // FIXED MATH: Current Due calculation based on total billed minus collected payments
             const currentDue = Math.max(0, totalBilled - totalPaid);
 
             document.getElementById('active-proj-billed').textContent = `৳${totalBilled.toLocaleString()}`;
@@ -722,9 +743,9 @@
                 '<tr><td colspan="3" style="color:var(--text-muted); text-align:center;">No bills issued yet.</td></tr>' :
                 bills.map(b => `
                     <tr>
-                        <td>${new Date(b.created_at).toLocaleDateString()}</td>
+                        <td style="white-space: nowrap;">${new Date(b.created_at).toLocaleDateString()}</td>
                         <td>${escapeHtml(b.description)}</td>
-                        <td style="color:var(--accent-blue); font-weight:600;">৳${Number(b.amount).toLocaleString()}</td>
+                        <td style="color:var(--accent-blue); font-weight:600; white-space: nowrap;">৳${Number(b.amount).toLocaleString()}</td>
                     </tr>
                 `).join('');
 
@@ -738,11 +759,11 @@
                     if (pay.is_error_log) {
                         return `
                             <tr style="background: rgba(248, 113, 113, 0.02);">
-                                <td>${createdDateStr}</td>
+                                <td style="white-space: nowrap;">${createdDateStr}</td>
                                 <td><strong>${escapeHtml(pay.client_name || 'N/A')}</strong></td>
                                 <td style="color: #fca5a5;">${escapeHtml(pay.milestone)}</td>
-                                <td style="font-weight: 700; color: var(--accent-purple);">৳${Number(pay.amount).toLocaleString()} (${escapeHtml(pay.transaction_type)})</td>
-                                <td>-</td>
+                                <td style="font-weight: 700; color: var(--accent-purple); white-space: nowrap;">৳${Number(pay.amount).toLocaleString()} (${escapeHtml(pay.transaction_type)})</td>
+                                <td style="white-space: nowrap;">-</td>
                                 <td><span class="status-badge status-adjustment">Adjustment</span></td>
                             </tr>
                         `;
@@ -754,14 +775,14 @@
 
                     return `
                         <tr>
-                            <td>
+                            <td style="white-space: nowrap;">
                                 <div>${createdDateStr}</div>
-                                ${isPaid && paidDateStr ? `<div style="font-size: 0.7rem; color: var(--accent-green); white-space: nowrap; margin-top: 2px;">Paid at: ${paidDateStr}</div>` : ''}
+                                ${isPaid && paidDateStr ? `<div style="font-size: 0.65rem; color: var(--accent-green); white-space: nowrap; margin-top: 2px;">Paid: ${paidDateStr}</div>` : ''}
                             </td>
                             <td><strong>${escapeHtml(pay.client_name || 'N/A')}</strong></td>
                             <td>${escapeHtml(pay.milestone || 'N/A')}</td>
-                            <td style="font-weight: 600;">৳${Number(pay.amount || 0).toLocaleString()}</td>
-                            <td style="color: var(--accent-red); font-weight: 600;">
+                            <td style="font-weight: 600; white-space: nowrap;">৳${Number(pay.amount || 0).toLocaleString()}</td>
+                            <td style="color: var(--accent-red); font-weight: 600; white-space: nowrap;">
                                 ${overdueFee > 0 ? `+৳${overdueFee.toLocaleString()}` : '৳0.00'}
                             </td>
                             <td>
@@ -773,11 +794,11 @@
 
             // Render Activity Logs Timeline
             document.getElementById('timeline-list').innerHTML = logs.length === 0 ? 
-                '<p style="color:var(--text-muted);">No activity updates posted yet.</p>' :
+                '<p style="color:var(--text-muted); font-size: 0.9rem;">No activity updates posted yet.</p>' :
                 logs.map(l => `
                     <div class="timeline-item">
                         <div style="font-size:0.75rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString()}</div>
-                        <div style="color:#e5e7eb; margin-top:0.25rem; font-size:0.9rem;">${escapeHtml(l.log_text || l.message)}</div>
+                        <div style="color:#e5e7eb; margin-top:0.25rem; font-size:0.875rem;">${escapeHtml(l.log_text || l.message)}</div>
                     </div>
                 `).join('');
         }
