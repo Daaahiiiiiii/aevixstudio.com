@@ -287,7 +287,7 @@
             font-size: 0.975rem;
         }
 
-        /* Uniform Services Bento Grid (Improvement #2 & #5) */
+        /* Uniform Services Bento Grid */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -519,7 +519,6 @@
             height: 100%;
             opacity: 0;
             transform: translateY(25px) scale(0.98);
-            /* Accelerated animation transition speed (#4) */
             transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             pointer-events: none;
             display: flex;
@@ -791,7 +790,7 @@
         <a href="#contact" class="cta-btn">Get Started Today</a>
     </section>
 
-    <!-- Services Section (Uniform Bento Grid without Emojis - Improvement #1 & #2) -->
+    <!-- Services Section -->
     <section id="services" class="section-container">
         <h2>Our Core Services</h2>
         <p class="section-lead">Engineered for impact. Designed to dominate your market sector.</p>
@@ -879,7 +878,7 @@
         </div>
     </section>
 
-    <!-- About Us Wrapper -->
+    <!-- About Us Wrapper (5 Active Members) -->
     <div id="about-wrapper">
         <div class="about-top-fade"></div>
 
@@ -939,20 +938,8 @@
                         </div>
                     </div>
 
-                    <!-- Slide 5: Ariyan Arabi Sikder -->
+                    <!-- Slide 5: Munkadeer Mahmud -->
                     <div class="about-slide" data-index="4">
-                        <div class="about-avatar-wrapper">
-                            <img src="ari.png" alt="Ariyan Arabi Sikder" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AS'">
-                        </div>
-                        <div class="about-content">
-                            <span class="about-role-badge" style="background: linear-gradient(135deg, #778DA9, #E0E1DD); color: #0D1B2A;">Designer & Creative Director</span>
-                            <h3 class="about-name">Ariyan Arabi Sikder</h3>
-                            <p class="about-bio">One of the brilliant creative brains of the studio, shaping high-end custom typography and striking visual identities that elevate ambitious businesses into iconic market leaders.</p>
-                        </div>
-                    </div>
-
-                    <!-- Slide 6: Munkadeer Mahmud -->
-                    <div class="about-slide" data-index="5">
                         <div class="about-avatar-wrapper">
                             <img src="munkadeer.png" alt="Munkadeer Mahmud" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=MM'">
                         </div>
@@ -964,10 +951,9 @@
                     </div>
                 </div>
 
-                <!-- Slide Progress Indicators -->
+                <!-- Slide Progress Indicators (Reduced to 5) -->
                 <div class="about-indicators" id="about-indicators">
                     <div class="about-dot active"></div>
-                    <div class="about-dot"></div>
                     <div class="about-dot"></div>
                     <div class="about-dot"></div>
                     <div class="about-dot"></div>
@@ -978,121 +964,68 @@
 
         <!-- Footer -->
         <footer>
-            <p style="margin-bottom: 0.5rem;">
-                Direct Email: <a href="mailto:aevixstudio962@gmail.com"><strong>aevixstudio962@gmail.com</strong></a> | 
-                Instagram: <a href="https://www.instagram.com/aevixstudio?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer"><strong>@aevixstudio</strong></a>
-            </p>
-            <div class="copyright">
-                &copy; 2026 Aevix Studio. All Rights Reserved. | <a href="terms/">Terms & Policies</a>
-            </div>
+            <p>&copy; 2026 Aevix Studio. All rights reserved.</p>
+            <div class="copyright">Crafted with precision & human intent.</div>
         </footer>
     </div>
 
-    <!-- Script Controllers -->
     <script>
-        // --- Smart Header Scroll Hide/Show & Mobile Menu ---
+        // Header Hide/Show on Scroll Logic
+        let lastScrollTop = 0;
         const header = document.getElementById('main-header');
-        const menuToggle = document.getElementById('menu-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        let lastScrollY = window.scrollY;
-
         window.addEventListener('scroll', () => {
-            const currentScrollY = window.scrollY;
-            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
                 header.classList.add('header-hidden');
-                if (navMenu.classList.contains('mobile-open')) {
-                    navMenu.classList.remove('mobile-open');
-                    menuToggle.classList.remove('active');
-                }
             } else {
                 header.classList.remove('header-hidden');
             }
-            lastScrollY = currentScrollY;
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         });
 
-        if (menuToggle && navMenu) {
-            menuToggle.addEventListener('click', () => {
-                navMenu.classList.toggle('mobile-open');
-                menuToggle.classList.toggle('active');
-            });
+        // Mobile Menu Toggle Logic
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            navMenu.classList.toggle('mobile-open');
+        });
 
-            navMenu.querySelectorAll('a, button').forEach(el => {
-                el.addEventListener('click', () => {
-                    navMenu.classList.remove('mobile-open');
-                    menuToggle.classList.remove('active');
-                });
+        // Close mobile menu when clicking nav links
+        document.querySelectorAll('#nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                navMenu.classList.remove('mobile-open');
             });
-        }
+        });
 
-        // --- AJAX Formspree Handler with Sent State & Cooldown ---
-        const contactForm = document.getElementById('contact-form');
+        // Form Terms Checkbox Validation Logic
+        const termsCheckbox = document.getElementById('terms');
         const submitBtn = document.getElementById('submit-btn');
-        const successMsg = document.getElementById('form-success-msg');
-
-        if (contactForm) {
-            contactForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Sending...';
-
-                const formData = new FormData(contactForm);
-
-                try {
-                    const response = await fetch(contactForm.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        submitBtn.style.background = 'var(--palette-slate)';
-                        submitBtn.style.color = '#ffffff';
-                        submitBtn.textContent = 'Sent!';
-                        contactForm.reset();
-                        successMsg.style.display = 'block';
-
-                        // Cooldown / disable for 5 seconds before resetting
-                        setTimeout(() => {
-                            submitBtn.style.background = '';
-                            submitBtn.style.color = '';
-                            submitBtn.textContent = 'Send Message';
-                            successMsg.style.display = 'none';
-                            const termsCheckbox = document.getElementById('terms');
-                            submitBtn.disabled = termsCheckbox ? !termsCheckbox.checked : false;
-                        }, 5000);
-                    } else {
-                        alert('Oops! There was a problem submitting your form.');
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Send Message';
-                    }
-                } catch (error) {
-                    alert('Network error. Please try again.');
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = 'Send Message';
-                }
+        if (termsCheckbox && submitBtn) {
+            termsCheckbox.addEventListener('change', () => {
+                submitBtn.disabled = !termsCheckbox.checked;
             });
         }
 
-        // --- About Us Slide Scroll Controller (Accelerated speed 0.75x) ---
+        // About Sticky Scroll & Slide Transition Logic
         const aboutSection = document.getElementById('about');
         const slides = document.querySelectorAll('.about-slide');
         const dots = document.querySelectorAll('.about-dot');
-        const slideCount = slides.length;
+        const totalSlides = slides.length;
 
-        aboutSection.style.height = `${slideCount * 60}vh`;
-
-        function updateAboutSlides() {
+        window.addEventListener('scroll', () => {
             const rect = aboutSection.getBoundingClientRect();
-            const sectionHeight = aboutSection.offsetHeight;
-            const windowHeight = window.innerHeight;
+            const stickyWrapperHeight = aboutSection.offsetHeight - window.innerHeight;
+            
+            if (stickyWrapperHeight <= 0) return;
 
-            let progress = -rect.top / (sectionHeight - windowHeight);
+            // Calculate progress through the sticky section (0 to 1)
+            let progress = -rect.top / stickyWrapperHeight;
             progress = Math.max(0, Math.min(1, progress));
 
-            let activeIndex = Math.floor(progress * slideCount);
-            if (activeIndex >= slideCount) activeIndex = slideCount - 1;
+            let activeIndex = Math.floor(progress * totalSlides);
+            if (activeIndex >= totalSlides) activeIndex = totalSlides - 1;
 
             slides.forEach((slide, index) => {
                 if (index === activeIndex) {
@@ -1109,229 +1042,6 @@
                     dot.classList.remove('active');
                 }
             });
-        }
-
-        window.addEventListener('scroll', updateAboutSlides);
-
-        // --- 3D Background Constellation Animation ---
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-
-        let width, height;
-        let particles = [];
-        let scrollY = 0;
-        let targetScrollY = 0;
-
-        function resize() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-        }
-
-        window.addEventListener('resize', resize);
-        resize();
-
-        window.addEventListener('scroll', () => {
-            targetScrollY = window.scrollY;
-        });
-
-        class Particle3D {
-            constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = (Math.random() - 0.5) * width * 1.6;
-                this.y = (Math.random() - 0.5) * height * 1.6;
-                this.z = Math.random() * 1000 + 100;
-                this.vx = (Math.random() - 0.5) * 0.15;
-                this.vy = (Math.random() - 0.5) * 0.15;
-                this.vz = Math.random() * 0.35 + 0.1;
-                this.radius = Math.random() * 1.5 + 0.6;
-            }
-
-            update(scrollProgress) {
-                this.z -= (this.vz + (scrollProgress * 0.0008));
-                if (this.z <= 10) {
-                    this.z = 1000;
-                    this.x = (Math.random() - 0.5) * width * 1.6;
-                    this.y = (Math.random() - 0.5) * height * 1.6;
-                }
-
-                this.x += this.vx;
-                this.y += this.vy;
-            }
-
-            draw(scrollProgress) {
-                const fov = 450;
-                const scale = fov / (fov + this.z);
-                const x2d = width / 2 + this.x * scale;
-                const y2d = height / 2 + (this.y + (scrollY * 0.08)) * scale;
-
-                if (x2d >= 0 && x2d <= width && y2d >= 0 && y2d <= height) {
-                    const alpha = Math.min(1, (1000 - this.z) / 750) * scale;
-                    ctx.fillStyle = `rgba(226, 232, 240, ${alpha * 0.55})`;
-                    ctx.beginPath();
-                    ctx.arc(x2d, y2d, this.radius * scale * 1.2, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-        }
-
-        const particleCount = Math.min(window.innerWidth < 768 ? 35 : 85, 100);
-        for (let i = 0; i < particleCount; i++) {
-            particles.push(new Particle3D());
-        }
-
-        function animate() {
-            scrollY += (targetScrollY - scrollY) * 0.06;
-            
-            ctx.clearRect(0, 0, width, height);
-
-            const scrollFactor = Math.min(scrollY, 2000);
-
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update(scrollFactor);
-                particles[i].draw(scrollFactor);
-
-                const maxDist = 130 + (scrollFactor * 0.01);
-
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dz = particles[i].z - particles[j].z;
-                    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-                    if (dist < maxDist) {
-                        const fov = 450;
-                        const scale1 = fov / (fov + particles[i].z);
-                        const scale2 = fov / (fov + particles[j].z);
-                        const x1 = width / 2 + particles[i].x * scale1;
-                        const y1 = height / 2 + (particles[i].y + (scrollY * 0.08)) * scale1;
-                        const x2 = width / 2 + particles[j].x * scale2;
-                        const y2 = height / 2 + (particles[j].y + (scrollY * 0.08)) * scale2;
-
-                        const lineAlpha = (1 - dist / maxDist) * 0.08;
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(0.15, lineAlpha)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.beginPath();
-                        ctx.moveTo(x1, y1);
-                        ctx.lineTo(x2, y2);
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            requestAnimationFrame(animate);
-        }
-
-        animate();
-
-        // --- Supabase Auth Routing Logic ---
-        const SUPABASE_URL = 'https://hvivguwursdsyitmuwbf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aXZndXd1cnNkc3lpdG11d2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM0MTMsImV4cCI6MjEwNjc4OTQxM30.ZtrxQN9b_3PNt0Zj8us8Iv3FDjbM0PlZ2bLthnMpiDg';
-
-        let supabaseClient = null;
-
-        function getSupabase() {
-            if (!supabaseClient) {
-                const config = {
-                    auth: {
-                        flowType: 'pkce',
-                        autoRefreshToken: true,
-                        persistSession: true,
-                        detectSessionInUrl: true
-                    }
-                };
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
-                } else if (typeof createClient === 'function') {
-                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
-                }
-            }
-            return supabaseClient;
-        }
-
-        async function handleRoleRouting(session) {
-            if (!session || !session.user) return;
-            const email = (session.user.email || '').toLowerCase();
-            if (email === 'aevixstudio962@gmail.com') {
-                window.location.replace('admin-portal.html');
-                return;
-            }
-
-            const client = getSupabase();
-            try {
-                const { data: profile } = await client
-                    .from('profiles')
-                    .select('role')
-                    .eq('id', session.user.id)
-                    .maybeSingle();
-
-                if (profile && (profile.role === 'admin' || profile.role === 'hadmin' || profile.role === 'team')) {
-                    window.location.replace('admin-portal.html');
-                } else {
-                    window.location.replace('client-portal.html');
-                }
-            } catch (err) {
-                console.error('Routing check error:', err);
-                window.location.replace('client-portal.html');
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            const client = getSupabase();
-
-            if (client) {
-                const { data: { session } } = await client.auth.getSession();
-                if (session) {
-                    await handleRoleRouting(session);
-                }
-
-                client.auth.onAuthStateChange(async (event, session) => {
-                    if (session && event === 'SIGNED_IN') {
-                        await handleRoleRouting(session);
-                    }
-                });
-            }
-
-            const termsCheckbox = document.getElementById('terms');
-            const submitBtn = document.getElementById('submit-btn');
-
-            function syncSubmitButtonState() {
-                if (termsCheckbox && submitBtn && submitBtn.textContent === 'Send Message') {
-                    submitBtn.disabled = !termsCheckbox.checked;
-                }
-            }
-
-            if (termsCheckbox && submitBtn) {
-                syncSubmitButtonState();
-                termsCheckbox.addEventListener('change', syncSubmitButtonState);
-                termsCheckbox.addEventListener('click', syncSubmitButtonState);
-            }
-
-            const googleLoginBtn = document.getElementById('google-login-btn');
-            if (googleLoginBtn) {
-                googleLoginBtn.addEventListener('click', async (e) => {
-                    e.preventDefault();
-                    if (!client) {
-                        alert('Supabase SDK failed to load.');
-                        return;
-                    }
-
-                    try {
-                        const { error } = await client.auth.signInWithOAuth({
-                            provider: 'google',
-                            options: {
-                                redirectTo: window.location.origin + '/index.html',
-                                queryParams: { access_type: 'offline', prompt: 'consent' }
-                            }
-                        });
-                        if (error) alert('Login Error: ' + error.message);
-                    } catch (err) {
-                        alert('Authentication exception: ' + err.message);
-                    }
-                });
-            }
         });
     </script>
 </body>
