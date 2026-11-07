@@ -1,1048 +1,605 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aevix Studio | Digital Media & Development Agency</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --bg-dark: #030712;
-            --card-bg: rgba(17, 24, 39, 0.75);
-            --card-bg-hover: rgba(22, 32, 51, 0.9);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --card-border-hover: rgba(255, 255, 255, 0.22);
-            --border-color: #1f293d;
-            --text-main: #f9fafb;
-            --text-muted: #94a3b8;
-            --accent-teal: #2dd4bf;
-            
-            --input-bg: #0b0f19;
-            --input-border: #26334d;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-
-            --palette-midnight: #0D1B2A;
-            --palette-navy: #1B263B;
-            --palette-steel: #415A77;
-            --palette-slate: #778DA9;
-            --palette-frost: #E0E1DD;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-            line-height: 1.6;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        #bg-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        header, section, footer {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Executive Header & Scroll Hide/Show */
-        header {
-            position: fixed;
-            top: 1.25rem;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: 1280px;
-            padding: 0.9rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(13, 27, 42, 0.88);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: var(--radius-lg);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            width: calc(100% - 2.5rem);
-            z-index: 1000;
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s ease;
-        }
-
-        header.header-hidden {
-            transform: translate(-50%, -130%);
-        }
-
-        .brand-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .brand-logo {
-            width: 30px;
-            height: 30px;
-            object-fit: contain;
-            border-radius: 6px;
-        }
-
-        .brand-name {
-            font-weight: 800;
-            font-size: 1.05rem;
-            letter-spacing: 0.06em;
-            color: #ffffff;
-            text-transform: uppercase;
-        }
-
-        nav {
-            display: flex;
-            align-items: center;
-            gap: 1.75rem;
-        }
-
-        nav a {
-            color: var(--palette-slate);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.875rem;
-            letter-spacing: 0.02em;
-            transition: var(--transition-smooth);
-        }
-
-        nav a:hover {
-            color: #ffffff;
-        }
-
-        .google-btn {
-            background: transparent;
-            border: 1px solid rgba(119, 141, 169, 0.25);
-            color: var(--palette-frost);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.825rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: var(--transition-smooth);
-        }
-
-        .google-btn:hover {
-            background: rgba(119, 141, 169, 0.1);
-            border-color: var(--palette-slate);
-            color: #ffffff;
-        }
-
-        .nav-cta {
-            background: var(--palette-frost);
-            color: var(--palette-midnight) !important;
-            padding: 0.55rem 1.25rem;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 0.85rem;
-            letter-spacing: 0.01em;
-            transition: var(--transition-smooth);
-        }
-
-        .nav-cta:hover {
-            background: #ffffff;
-            transform: translateY(-1px);
-        }
-
-        /* Mobile Menu Toggle Button */
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            flex-direction: column;
-            gap: 6px;
-            z-index: 1100;
-        }
-
-        .mobile-menu-toggle span {
-            display: block;
-            width: 24px;
-            height: 2px;
-            background-color: var(--palette-frost);
-            transition: var(--transition-smooth);
-            border-radius: 2px;
-        }
-
-        .mobile-menu-toggle.active span:nth-child(1) {
-            transform: translateY(8px) rotate(45deg);
-        }
-        .mobile-menu-toggle.active span:nth-child(2) {
-            opacity: 0;
-        }
-        .mobile-menu-toggle.active span:nth-child(3) {
-            transform: translateY(-8px) rotate(-45deg);
-        }
-
-        /* Hero Section */
-        .hero {
-            max-width: 960px;
-            margin: 10rem auto 6rem auto;
-            text-align: center;
-            padding: 0 1.5rem;
-        }
-
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--palette-slate);
-            padding: 6px 16px;
-            border-radius: 999px;
-            font-size: 0.775rem;
-            font-weight: 600;
-            margin-bottom: 1.75rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4.5rem);
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            line-height: 1.15;
-            margin-bottom: 1.5rem;
-            color: #ffffff;
-        }
-
-        .hero p {
-            font-size: clamp(1rem, 2vw, 1.15rem);
-            color: var(--text-muted);
-            max-width: 680px;
-            margin: 0 auto 2.5rem auto;
-            line-height: 1.7;
-        }
-
-        .cta-btn {
-            display: inline-block;
-            background: var(--palette-frost);
-            color: var(--palette-midnight);
-            padding: 0.9rem 2.25rem;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            text-decoration: none;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            transition: var(--transition-smooth);
-        }
-
-        .cta-btn:hover {
-            transform: translateY(-2px);
-            background: #ffffff;
-        }
-
-        /* Sections Container */
-        .section-container {
-            max-width: 1280px;
-            margin: 0 auto 7rem auto;
-            padding: 0 1.5rem;
-        }
-
-        .section-container h2 {
-            font-size: clamp(1.75rem, 3vw, 2.5rem);
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.02em;
-            color: #ffffff;
-        }
-
-        .section-lead {
-            text-align: center;
-            color: var(--text-muted);
-            max-width: 580px;
-            margin: 0 auto 3.5rem auto;
-            font-size: 0.975rem;
-        }
-
-        /* Uniform Services Bento Grid */
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-
-        @media (max-width: 1024px) {
-            .services-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .services-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .service-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 2.25rem 2rem;
-            box-shadow: var(--shadow-card);
-            transition: var(--transition-smooth);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            min-height: 240px;
-        }
-
-        .service-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: var(--transition-smooth);
-        }
-
-        .service-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--card-border-hover);
-            background: var(--card-bg-hover);
-        }
-
-        .service-card:hover::before {
-            background: var(--palette-slate);
-        }
-
-        .service-card h3 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.85rem;
-            letter-spacing: -0.01em;
-        }
-
-        .service-card p {
-            color: var(--text-muted);
-            font-size: 0.925rem;
-            line-height: 1.65;
-        }
-
-        /* Contact Form Card */
-        .contact-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 2.75rem 2.25rem;
-            max-width: 760px;
-            margin: 0 auto;
-            box-shadow: var(--shadow-card);
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            font-weight: 700;
-        }
-
-        .form-group input, 
-        .form-group textarea {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-main);
-            padding: 14px 18px;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            outline: none;
-            width: 100%;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: var(--transition-smooth);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .form-group textarea {
-            min-height: 140px;
-            resize: vertical;
-        }
-
-        .form-group input:focus, 
-        .form-group textarea:focus {
-            border-color: var(--palette-slate);
-            box-shadow: 0 0 0 3px rgba(119, 141, 169, 0.12), inset 0 2px 4px rgba(0, 0, 0, 0.3);
-            background: #0d1222;
-        }
-
-        .submit-btn {
-            display: block;
-            width: 100%;
-            background: var(--palette-frost);
-            color: var(--palette-midnight);
-            border: none;
-            padding: 15px;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            background: #ffffff;
-        }
-
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ==========================================================
-           ABOUT US SECTION - FULL SCREEN EDITORIAL DESIGN
-           ========================================================== */
-        #about-wrapper {
-            position: relative;
-            width: 100%;
-            background: var(--palette-midnight);
-        }
-
-        .about-top-fade {
-            position: absolute;
-            top: -180px;
-            left: 0;
-            width: 100%;
-            height: 220px;
-            background: linear-gradient(to bottom, transparent 0%, rgba(13, 27, 42, 0.5) 45%, var(--palette-midnight) 100%);
-            pointer-events: none;
-            z-index: 12;
-        }
-
-        #about {
-            position: relative;
-            background: var(--palette-midnight);
-            color: var(--palette-frost);
-            width: 100%;
-        }
-
-        .about-sticky-wrapper {
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: radial-gradient(circle at 80% 20%, rgba(65, 90, 119, 0.25), transparent 50%),
-                        radial-gradient(circle at 20% 80%, rgba(27, 38, 59, 0.5), transparent 60%),
-                        var(--palette-midnight);
-        }
-
-        .about-top-bar {
-            position: absolute;
-            top: 2.5rem;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            z-index: 25;
-            width: 90%;
-            max-width: 1000px;
-        }
-
-        .about-top-bar h2 {
-            font-size: clamp(1.6rem, 3vw, 2.5rem);
-            font-weight: 800;
-            color: var(--palette-frost);
-            letter-spacing: -0.02em;
-        }
-
-        .about-top-bar p {
-            color: var(--palette-slate);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-
-        .about-slides-container {
-            position: relative;
-            width: 100%;
-            max-width: 1100px;
-            height: 65vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .about-slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transform: translateY(25px) scale(0.98);
-            transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4rem;
-        }
-
-        .about-slide.active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-            pointer-events: auto;
-        }
-
-        .about-avatar-wrapper {
-            flex: 0 0 240px;
-            height: 240px;
-            position: relative;
-        }
-
-        .about-avatar-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: -8px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--palette-steel), var(--palette-slate), #ffffff);
-            opacity: 0.45;
-            filter: blur(10px);
-        }
-
-        .about-avatar {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid var(--palette-frost);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-        }
-
-        .about-content {
-            flex: 1;
-            max-width: 600px;
-        }
-
-        .about-role-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--palette-steel), var(--palette-slate));
-            color: var(--palette-midnight);
-            padding: 6px 14px;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            margin-bottom: 0.85rem;
-        }
-
-        .about-name {
-            font-size: clamp(1.8rem, 3.5vw, 3.2rem);
-            font-weight: 800;
-            color: #ffffff;
-            line-height: 1.1;
-            margin-bottom: 0.85rem;
-            letter-spacing: -0.02em;
-        }
-
-        .about-bio {
-            font-size: clamp(0.925rem, 1.4vw, 1.15rem);
-            color: var(--palette-slate);
-            line-height: 1.6;
-        }
-
-        .about-indicators {
-            position: absolute;
-            bottom: 2.5rem;
-            display: flex;
-            gap: 10px;
-            z-index: 25;
-        }
-
-        .about-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(119, 141, 169, 0.3);
-            transition: var(--transition-smooth);
-        }
-
-        .about-dot.active {
-            background: var(--palette-frost);
-            width: 28px;
-            border-radius: 999px;
-        }
-
-        /* Footer */
-        footer {
-            position: relative;
-            z-index: 15;
-            background-color: var(--palette-midnight);
-            max-width: 100%;
-            margin: 0;
-            padding: 3.5rem 1.5rem 3rem 1.5rem;
-            border-top: 1px solid rgba(119, 141, 169, 0.15);
-            text-align: center;
-            color: var(--palette-slate);
-            font-size: 0.875rem;
-        }
-
-        footer a {
-            color: var(--palette-frost);
-            text-decoration: none;
-            font-weight: 600;
-            transition: var(--transition-smooth);
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-            color: #ffffff;
-        }
-
-        .copyright {
-            margin-top: 0.85rem;
-            font-size: 0.8rem;
-            color: rgba(119, 141, 169, 0.65);
-        }
-
-        /* ==========================================================
-           RESPONSIVE MOBILE OVERHAUL (Screens <= 868px)
-           ========================================================== */
-        @media (max-width: 868px) {
-            header {
-                padding: 0.85rem 1.25rem;
-                width: calc(100% - 1.5rem);
-                top: 0.75rem;
-            }
-
-            .mobile-menu-toggle {
-                display: flex;
-            }
-
-            nav {
-                position: fixed;
-                top: 4.8rem;
-                left: 0.75rem;
-                right: 0.75rem;
-                background: rgba(13, 27, 42, 0.96);
-                backdrop-filter: blur(25px);
-                flex-direction: column;
-                align-items: center;
-                gap: 1.25rem;
-                padding: 2rem 1.5rem;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-                border-radius: var(--radius-lg);
-                box-shadow: 0 25px 50px rgba(0,0,0,0.7);
-                max-height: 0;
-                overflow: hidden;
-                opacity: 0;
-                pointer-events: none;
-                transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, transform 0.25s ease;
-                transform: translateY(-10px);
-                z-index: 999;
-            }
-
-            nav.mobile-open {
-                max-height: 420px;
-                opacity: 1;
-                pointer-events: auto;
-                transform: translateY(0);
-            }
-
-            nav a {
-                font-size: 1.05rem;
-                font-weight: 600;
-            }
-
-            .hero {
-                margin: 9rem auto 4rem auto;
-                padding: 0 1rem;
-            }
-
-            .section-container {
-                margin: 0 auto 4rem auto;
-                padding: 0 1rem;
-            }
-
-            .contact-card {
-                padding: 2rem 1.25rem;
-            }
-
-            .about-slides-container {
-                padding: 0 1rem;
-                height: 70vh;
-            }
-
-            .about-slide {
-                flex-direction: column;
-                justify-content: center;
-                text-align: center;
-                gap: 1.25rem;
-            }
-
-            .about-avatar-wrapper {
-                flex: 0 0 140px;
-                height: 140px;
-                width: 140px;
-                margin: 0 auto;
-            }
-
-            .about-content {
-                max-width: 100%;
-                padding: 0 0.5rem;
-            }
-
-            .about-bio {
-                font-size: 0.9rem;
-                line-height: 1.5;
-            }
-
-            .about-top-bar {
-                top: 1.5rem;
-                width: 95%;
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#030712">
+<title>Aevix Studio | Digital Media & Development Agency</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg-dark:#030712;--card-bg:rgba(17,24,39,.72);--card-border:rgba(255,255,255,.08);--text-main:#f9fafb;--text-muted:#94a3b8;--accent-teal:#2dd4bf;--input-bg:#0b0f19;--input-border:#26334d;--radius-sm:8px;--radius-md:12px;--radius-lg:16px;--palette-midnight:#0D1B2A;--palette-navy:#1B263B;--palette-steel:#415A77;--palette-slate:#778DA9;--palette-frost:#E0E1DD;--serif:'Instrument Serif',Georgia,serif;--ease:cubic-bezier(.2,.7,.2,1);--pad:clamp(1.25rem,6vw,5rem)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg-dark);color:var(--text-main);font-family:'Plus Jakarta Sans',sans-serif;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+em{font-family:var(--serif);font-style:italic;font-weight:400;color:var(--palette-frost);letter-spacing:0}
+#bg-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+header,main,section,footer{position:relative;z-index:10}
+
+/* loader */
+.loader{position:fixed;inset:0;z-index:3000;background:var(--bg-dark);display:grid;place-items:center;transition:opacity .7s .15s,visibility .7s .15s}
+.loader b{display:flex;font-size:clamp(2rem,9vw,4rem);font-weight:800;letter-spacing:.3em;margin-right:-.3em}
+.loader b i{font-style:normal;opacity:0;translate:0 .6em;animation:lt .7s var(--ease) forwards;animation-delay:calc(var(--i)*.07s)}
+@keyframes lt{to{opacity:1;translate:0 0}}
+body.loaded .loader{opacity:0;visibility:hidden}
+
+/* cursor */
+.cursor{position:fixed;top:-17px;left:-17px;width:34px;height:34px;border:1px solid rgba(224,225,221,.5);border-radius:50%;z-index:2500;pointer-events:none;opacity:0;transition:opacity .3s,width .25s,height .25s,top .25s,left .25s,background .25s}
+.cursor.on{opacity:1}.cursor.big{width:60px;height:60px;top:-30px;left:-30px;background:rgba(45,212,191,.08)}
+@media(hover:none){.cursor{display:none}}
+
+/* header */
+header{position:fixed;top:1.25rem;left:50%;transform:translateX(-50%);width:calc(100% - 2.5rem);max-width:1280px;padding:.8rem 1.75rem;display:flex;justify-content:space-between;align-items:center;background:rgba(13,27,42,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);box-shadow:0 10px 30px rgba(0,0,0,.4);z-index:1000;transition:transform .35s var(--ease)}
+header.header-hidden{transform:translate(-50%,-140%)}
+.brand-link{display:flex;align-items:center;gap:12px;text-decoration:none}
+.brand-logo{width:30px;height:30px;object-fit:contain;border-radius:6px}
+.brand-name{font-weight:800;font-size:1.02rem;letter-spacing:.08em;text-transform:uppercase}
+nav{display:flex;align-items:center;gap:1.75rem}
+nav a{color:var(--palette-slate);text-decoration:none;font-weight:500;font-size:.875rem;position:relative;transition:color .2s}
+nav a:not(.nav-cta)::after{content:'';position:absolute;left:0;right:0;bottom:-4px;height:1px;background:var(--palette-frost);transform:scaleX(0);transform-origin:left;transition:transform .35s var(--ease)}
+nav a:hover{color:#fff}nav a:not(.nav-cta):hover::after{transform:scaleX(1)}
+.google-btn{background:transparent;border:1px solid rgba(119,141,169,.28);color:var(--palette-frost);padding:.5rem .9rem;border-radius:var(--radius-sm);cursor:pointer;font:500 .825rem 'Plus Jakarta Sans',sans-serif;display:flex;align-items:center;gap:8px;transition:.2s}
+.google-btn:hover{background:rgba(119,141,169,.12);border-color:var(--palette-slate);color:#fff}
+.nav-cta{background:var(--palette-frost);color:var(--palette-midnight)!important;padding:.55rem 1.25rem;border-radius:var(--radius-sm);font-weight:700!important;font-size:.85rem;transition:.2s}
+.nav-cta:hover{background:#fff;transform:translateY(-1px)}
+.mobile-menu-toggle{display:none;background:none;border:0;cursor:pointer;padding:10px;flex-direction:column;gap:6px;z-index:1100}
+.mobile-menu-toggle span{display:block;width:24px;height:2px;background:var(--palette-frost);border-radius:2px;transition:.3s}
+.mobile-menu-toggle.active span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+.mobile-menu-toggle.active span:nth-child(2){opacity:0}
+.mobile-menu-toggle.active span:nth-child(3){transform:translateY(-8px) rotate(-45deg)}
+
+/* hero (sticky cover) */
+.hero{position:sticky;top:0;height:100vh;height:100svh;display:flex;align-items:center;padding:0 var(--pad);z-index:1}
+.hero-inner{max-width:820px;will-change:transform,opacity}
+.hero-badge{display:inline-flex;align-items:center;gap:10px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--palette-slate);padding:7px 16px;border-radius:999px;font-size:.74rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;margin-bottom:1.75rem;opacity:0;transition:opacity .9s .5s}
+.hero-badge::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent-teal);box-shadow:0 0 0 0 rgba(45,212,191,.6);animation:pulse 2.2s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 9px rgba(45,212,191,0)}100%{box-shadow:0 0 0 0 rgba(45,212,191,0)}}
+.hero h1{font-size:clamp(2.7rem,7.6vw,6.6rem);font-weight:800;letter-spacing:-.045em;line-height:1.02;margin-bottom:1.6rem}
+.ln{display:block;overflow:hidden;padding-bottom:.08em}
+.ln>span{display:block;transform:translateY(110%);transition:transform 1.1s var(--ease)}
+.ln:nth-child(2)>span{transition-delay:.1s}.ln:nth-child(3)>span{transition-delay:.2s}
+.hero h1 em{font-size:1.08em;color:var(--accent-teal)}
+.hero p{color:var(--text-muted);max-width:560px;font-size:clamp(1rem,2vw,1.12rem);line-height:1.7;margin-bottom:2.4rem;opacity:0;translate:0 16px;transition:.9s .6s var(--ease)}
+.cta-btn{display:inline-flex;align-items:center;gap:12px;background:var(--palette-frost);color:var(--palette-midnight);padding:.95rem 2rem;border-radius:var(--radius-sm);font-weight:700;text-decoration:none;opacity:0;translate:0 16px;transition:opacity .9s .75s,translate .9s .75s var(--ease),background .2s,gap .3s}
+.cta-btn::after{content:'';width:18px;height:2px;background:currentColor;transition:width .3s var(--ease)}
+.cta-btn:hover{background:#fff;gap:16px}.cta-btn:hover::after{width:28px}
+body.loaded .ln>span{transform:none}
+body.loaded .hero-badge,body.loaded .hero p,body.loaded .cta-btn{opacity:1;translate:0 0}
+.cue{position:absolute;left:var(--pad);bottom:2rem;display:flex;align-items:center;gap:12px;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--palette-slate)}
+.cue i{width:44px;height:1px;background:rgba(255,255,255,.2);position:relative;overflow:hidden}
+.cue i::after{content:'';position:absolute;inset:0;background:var(--palette-frost);animation:cue 2s var(--ease) infinite}
+@keyframes cue{0%{transform:translateX(-100%)}60%,100%{transform:translateX(100%)}}
+
+/* services sheet (rises as a mask over the hero) */
+.services.open{clip-path:none}
+.services{position:relative;z-index:5;background:linear-gradient(#061022,#050a16);padding:clamp(3rem,8vw,6rem) 0 clamp(4rem,9vw,7rem);clip-path:inset(var(--r,10vh) var(--s,6%) 0 var(--s,6%) round var(--rad,40px) var(--rad,40px) 0 0)}
+.marquee{overflow:hidden;margin-bottom:clamp(3rem,7vw,5rem);border-block:1px solid rgba(255,255,255,.06);padding:1rem 0}
+.marquee ul{will-change:transform;display:flex;width:max-content;list-style:none;animation:mq 38s linear infinite}
+.marquee li{font:italic 400 clamp(1.4rem,3.4vw,2.2rem)/1 var(--serif);color:var(--palette-slate);padding:0 1.6rem;display:flex;align-items:center;gap:3.2rem;white-space:nowrap}
+.marquee li::after{content:'';width:7px;height:7px;border-radius:50%;background:var(--accent-teal)}
+@keyframes mq{to{transform:translateX(-50%)}}
+.section-container{max-width:1280px;margin:0 auto;padding:0 1.5rem}
+.section-container h2{font-size:clamp(2rem,4.6vw,3.4rem);font-weight:800;letter-spacing:-.035em;line-height:1.1;margin-bottom:.9rem}
+.section-lead{color:var(--text-muted);max-width:560px;font-size:1rem;margin-bottom:3.2rem}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+.service-card{position:relative;overflow:hidden;min-height:260px;display:flex;flex-direction:column;justify-content:space-between;background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:1.9rem;transition:opacity .8s var(--d,0s),translate .8s var(--d,0s) var(--ease),transform .3s ease-out,border-color .3s}
+.service-card::before{content:'';position:absolute;inset:0;background:radial-gradient(380px circle at var(--mx,50%) var(--my,0%),rgba(119,141,169,.2),transparent 60%);opacity:0;transition:opacity .35s;pointer-events:none}
+.service-card::after{content:'';position:absolute;left:0;bottom:0;height:2px;width:100%;background:linear-gradient(90deg,var(--accent-teal),var(--palette-slate));transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.service-card:hover{border-color:rgba(255,255,255,.22)}.service-card:hover::before{opacity:1}.service-card:hover::after{transform:scaleX(1)}
+.service-card .num{font:italic 400 1.5rem/1 var(--serif);color:var(--accent-teal);margin-bottom:2.6rem}
+.service-card h3{font-size:1.25rem;font-weight:700;letter-spacing:-.015em;margin-bottom:.7rem}
+.service-card p{color:var(--text-muted);font-size:.92rem;line-height:1.65}
+
+/* reveal */
+.rv{opacity:0;translate:0 28px;transition:opacity .9s var(--d,0s),translate .9s var(--d,0s) var(--ease)}
+.rv.in{opacity:1;translate:0 0}
+
+/* contact */
+#contact{padding:clamp(5rem,11vw,9rem) 0 clamp(4rem,9vw,7rem)}
+#contact .section-container{max-width:1100px}
+#contact h2,#contact .section-lead{text-align:left}
+.contact-card{background:rgba(14,21,36,.86);border:1px solid var(--card-border);border-radius:24px;padding:clamp(1.5rem,4vw,3rem);max-width:760px;box-shadow:0 20px 50px -20px rgba(0,0,0,.6)}
+.form-group{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.4rem}
+.form-group label{font-size:.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;font-weight:700}
+.form-group input,.form-group textarea{background:var(--input-bg);border:1px solid var(--input-border);color:var(--text-main);padding:14px 16px;border-radius:var(--radius-sm);font:400 1rem 'Plus Jakarta Sans',sans-serif;outline:0;width:100%;transition:border-color .25s,box-shadow .25s}
+.form-group textarea{min-height:140px;resize:vertical}
+.form-group input:focus,.form-group textarea:focus{border-color:var(--palette-slate);box-shadow:0 0 0 4px rgba(119,141,169,.14)}
+.terms-row{display:flex;align-items:flex-start;gap:10px;margin:1.5rem 0;font-size:.9rem;color:var(--text-muted)}
+.terms-row input{width:18px;height:18px;margin-top:2px;cursor:pointer;accent-color:var(--palette-slate)}
+.terms-row label{cursor:pointer;line-height:1.4}.terms-row a{color:var(--palette-frost)}
+.submit-btn{width:100%;background:var(--palette-frost);color:var(--palette-midnight);border:0;border-radius:var(--radius-sm);padding:1rem;font:700 1rem 'Plus Jakarta Sans',sans-serif;cursor:pointer;transition:.25s}
+.submit-btn:hover:not(:disabled){background:#fff;transform:translateY(-2px)}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+#form-success-msg{display:none;margin-top:1.25rem;padding:1rem;background:rgba(119,141,169,.1);border:1px solid var(--palette-slate);border-radius:var(--radius-sm);color:var(--palette-frost);text-align:center;font-size:.9rem}
+
+/* about: sticky team stage */
+#about{position:relative}
+.about-sticky{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;padding:6rem var(--pad) 1.5rem;overflow:hidden}
+.about-top h2{font-size:clamp(1.7rem,4vw,3rem);font-weight:800;letter-spacing:-.035em;line-height:1.1}
+.about-top p{color:var(--text-muted);font-size:.95rem;margin-top:.5rem}
+.about-stage{position:relative;flex:1;width:100%;max-width:1180px;margin:0 auto}
+.about-slide{position:absolute;inset:0;display:grid;grid-template-columns:minmax(220px,380px) 1fr;gap:clamp(1.5rem,5vw,5rem);align-items:center;opacity:0;visibility:hidden;translate:0 44px;transition:opacity .6s,translate .8s var(--ease),visibility .6s}
+.about-slide.active{opacity:1;visibility:visible;translate:0 0}
+.about-slide.past{translate:0 -44px}
+.about-slide::before{content:attr(data-n);position:absolute;right:0;top:50%;translate:0 -50%;font:italic 400 clamp(10rem,28vw,24rem)/1 var(--serif);color:rgba(255,255,255,.035);pointer-events:none}
+.about-avatar-wrapper{position:relative;width:min(100%,340px);aspect-ratio:1;justify-self:center}
+.about-avatar-wrapper::before{content:'';position:absolute;inset:-10px;border-radius:50%;background:conic-gradient(from 0deg,var(--accent-teal),var(--palette-steel),var(--palette-frost),var(--palette-steel),var(--accent-teal));animation:spin 10s linear infinite;-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px))}
+@keyframes spin{to{transform:rotate(360deg)}}
+.about-slide:not(.active) .about-avatar-wrapper::before{animation-play-state:paused}
+.about-avatar-wrapper::before{will-change:transform}
+.lite .hero-badge::before,.lite .about-avatar-wrapper::before{animation:none}
+.lite .cursor{display:none}
+.about-avatar{width:100%;height:100%;object-fit:cover;border-radius:50%;background:var(--palette-navy);display:block}
+.about-avatar.fallback{display:grid;place-items:center;font:italic 400 5rem var(--serif);color:var(--palette-frost)}
+.about-content{position:relative}
+.about-role-badge{display:inline-block;padding:6px 14px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;margin-bottom:1.1rem;background:linear-gradient(135deg,var(--palette-steel),var(--palette-slate))}
+.about-role-badge.b3{background:linear-gradient(135deg,#415A77,#778DA9)}
+.about-role-badge.b4{background:linear-gradient(135deg,#1B263B,#415A77)}
+.about-role-badge.b5{background:linear-gradient(135deg,#415A77,#E0E1DD);color:#0D1B2A}
+.about-name{font-size:clamp(2rem,5vw,4.2rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;margin-bottom:1rem}
+.about-bio{color:var(--text-muted);font-size:1.02rem;line-height:1.75;max-width:560px}
+.about-progress{position:absolute;right:clamp(.5rem,1.5vw,1.5rem);top:22%;bottom:22%;width:2px;background:rgba(255,255,255,.08);overflow:hidden}
+.about-progress i{display:block;height:100%;background:var(--accent-teal);transform-origin:top;transform:scaleY(0)}
+.about-indicators{display:flex;justify-content:center;gap:10px;padding-top:.5rem}
+.about-dot{width:8px;height:8px;border-radius:99px;background:rgba(255,255,255,.18);cursor:pointer;transition:.4s var(--ease);position:relative}
+.about-dot::after{content:'';position:absolute;inset:-10px}
+.about-dot.active{width:28px;background:var(--palette-frost)}
+
+footer{text-align:center;padding:3rem 1.5rem 3.5rem;border-top:1px solid rgba(255,255,255,.06);background:rgba(3,7,18,.7);color:var(--text-muted);font-size:.875rem}
+footer a{color:var(--palette-frost);text-decoration:none}footer a:hover{text-decoration:underline}
+.copyright{margin-top:.5rem;font-size:.8rem;opacity:.75}
+
+@media(max-width:1024px){.services-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:820px){
+ header{top:.75rem;width:calc(100% - 1.5rem);padding:.7rem 1rem;background:rgba(8,16,30,.95);backdrop-filter:none;-webkit-backdrop-filter:none}
+ .mobile-menu-toggle{display:flex}
+ nav{position:absolute;top:calc(100% + .5rem);left:0;right:0;flex-direction:column;align-items:stretch;gap:0;padding:.75rem;background:rgba(6,12,24,.98);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);opacity:0;visibility:hidden;translate:0 -10px;transition:.3s var(--ease)}
+ nav.mobile-open{opacity:1;visibility:visible;translate:0 0}
+ nav a:not(.nav-cta){font-size:1.1rem;padding:1rem .75rem;border-bottom:1px solid rgba(255,255,255,.06);color:var(--palette-frost)}
+ nav a:not(.nav-cta)::after{display:none}
+ .google-btn{justify-content:center;padding:.9rem;margin:.6rem 0;font-size:.95rem}
+ .nav-cta{text-align:center;padding:.95rem;font-size:1rem}
+ .hero{align-items:flex-end;padding-bottom:14vh}
+ .cue{display:none}
+ .services{--rad:28px}
+ .services-grid{grid-template-columns:1fr}
+ .service-card{min-height:0;padding:1.6rem}.service-card .num{margin-bottom:1.4rem}
+ .about-sticky{padding-top:5.2rem}
+ .about-slide{grid-template-columns:1fr;grid-template-rows:auto auto;align-content:center;justify-items:center;text-align:center;gap:1.4rem}
+ .about-avatar-wrapper{width:min(52vw,190px)}
+ .about-avatar.fallback{font-size:3.2rem}
+ .about-bio{font-size:.93rem;line-height:1.65;margin:0 auto}
+ .about-name{font-size:clamp(1.8rem,8vw,2.4rem)}
+ .about-progress{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}html{scroll-behavior:auto}}
+</style>
 </head>
 <body>
+<div class="loader" aria-hidden="true"><b><i style="--i:0">A</i><i style="--i:1">E</i><i style="--i:2">V</i><i style="--i:3">I</i><i style="--i:4">X</i></b></div>
+<div class="cursor"></div>
+<canvas id="bg-canvas"></canvas>
 
-    <!-- 3D Evolving Background Canvas -->
-    <canvas id="bg-canvas"></canvas>
+<header id="main-header">
+  <a href="index.html" class="brand-link"><img src="logo.png" alt="Aevix Studio Logo" class="brand-logo"><span class="brand-name">AEVIX STUDIO</span></a>
+  <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Menu"><span></span><span></span><span></span></button>
+  <nav id="nav-menu">
+    <a href="#services">Services</a>
+    <a href="#about">About Us</a>
+    <a href="terms/">Terms & Policies</a>
+    <button id="google-login-btn" type="button" class="google-btn" aria-label="Sign in with Google">
+      <svg width="14" height="14" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+      Sign In
+    </button>
+    <a href="#contact" class="nav-cta">Start Project</a>
+  </nav>
+</header>
 
-    <!-- Header Navigation -->
-    <header id="main-header">
-        <a href="index.html" class="brand-link">
-            <img src="logo.png" alt="Aevix Studio Logo" class="brand-logo">
-            <span class="brand-name">AEVIX STUDIO</span>
-        </a>
-
-        <button class="mobile-menu-toggle" id="menu-toggle" aria-label="Toggle Menu">
-            <span></span>
-            <span></span>
-            <span></span>
-        </button>
-
-        <nav id="nav-menu">
-            <a href="#services">Services</a>
-            <a href="#about">About Us</a>
-            <a href="terms/">Terms & Policies</a>
-            
-            <button id="google-login-btn" type="button" class="google-btn">
-                <svg width="14" height="14" viewBox="0 0 24 24">
-                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                Sign In
-            </button>
-
-            <a href="#contact" class="nav-cta">Start Project</a>
-        </nav>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero" id="hero">
-        <div class="hero-badge">Growing your page to something Great</div>
-        <h1>Crafting Digital Experiences That Scale</h1>
-        <p>Aevix Studio delivers high-performance web development, creative direction, social media management, and digital media assets for global brands.</p>
-        <a href="#contact" class="cta-btn">Get Started Today</a>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="section-container">
-        <h2>Our Core Services</h2>
-        <p class="section-lead">Engineered for impact. Designed to dominate your market sector.</p>
-        
-        <div class="services-grid">
-            <div class="service-card">
-                <div>
-                    <h3>Creative Direction</h3>
-                    <p>Strategic brand positioning, visual storytelling, and comprehensive art direction to build brands that stand out.</p>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div>
-                    <h3>Social Media Management</h3>
-                    <p>End-to-end strategy, content curation, profile optimization (SMM), and audience engagement strategies.</p>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div>
-                    <h3>Web Development</h3>
-                    <p>High-performance, responsive websites built with modern frameworks and robust security protocols.</p>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div>
-                    <h3>Visual & Media Design</h3>
-                    <p>Industry-standard video editing, photo editing, motion graphics, and tailored brand asset generation that captivates audiences.</p>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div>
-                    <h3>Digital Solutions</h3>
-                    <p>End-to-end technical consulting, infrastructure management, and high-velocity performance optimization for scalable growth.</p>
-                </div>
-            </div>
-
-            <div class="service-card">
-                <div>
-                    <h3>Brand Strategy</h3>
-                    <p>Comprehensive market analysis and growth scaling blueprints designed to elevate your enterprise to industry leadership.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Form Section -->
-    <section id="contact" class="section-container" style="margin-bottom: 9rem;">
-        <h2>Start Your Project</h2>
-        <p class="section-lead">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
-
-        <div class="contact-card">
-            <form id="contact-form" action="https://formspree.io/f/aevixstudio962@gmail.com" method="POST">
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Your Name or Business" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="your@email.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="message">Project Details</label>
-                    <textarea id="message" name="message" rows="5" placeholder="Tell us about your project scope, timeline, and budget..." required></textarea>
-                </div>
-
-                <!-- Acceptance Checkbox -->
-                <div style="display: flex; align-items: flex-start; gap: 10px; margin: 1.5rem 0; font-size: 0.9rem; color: var(--text-muted);">
-                    <input type="checkbox" id="terms" name="terms_agreed" value="agreed" required style="width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: var(--palette-slate);">
-                    <label for="terms" style="cursor: pointer; line-height: 1.4; color: var(--text-muted);">
-                        I have read and agree to the <a href="terms/" target="_blank" style="color: var(--palette-frost); text-decoration: underline;">Terms & Policies</a>.
-                    </label>
-                </div>
-
-                <button type="submit" id="submit-btn" class="submit-btn" disabled>Send Message</button>
-            </form>
-            <div id="form-success-msg" style="display: none; margin-top: 1.25rem; padding: 1rem; background: rgba(119, 141, 169, 0.1); border: 1px solid var(--palette-slate); border-radius: var(--radius-sm); color: var(--palette-frost); text-align: center; font-weight: 600;">
-                Thank you! Your message has been received. Our team will contact you within 48 hours.
-            </div>
-        </div>
-    </section>
-
-    <!-- About Us Wrapper (5 Active Members) -->
-    <div id="about-wrapper">
-        <div class="about-top-fade"></div>
-
-        <section id="about">
-            <div class="about-sticky-wrapper">
-                <div class="about-top-bar">
-                    <h2>Meet The Minds Behind Aevix</h2>
-                    <p>Scroll to reveal executive leadership and creative directors.</p>
-                </div>
-
-                <div class="about-slides-container">
-                    <!-- Slide 1: Ettihad Madhurjo -->
-                    <div class="about-slide active" data-index="0">
-                        <div class="about-avatar-wrapper">
-                            <img src="etti.png" alt="Ettihad Madhurjo" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=EM'">
-                        </div>
-                        <div class="about-content">
-                            <span class="about-role-badge">Founder & Chief Executive Officer</span>
-                            <h3 class="about-name">Ettihad Madhurjo</h3>
-                            <p class="about-bio">The visionary driving Aevix Studio forward. An exceptional Social Media Manager whose brilliant work instantly captivates audiences, paired with his stellar expertise as an essential member of our advanced editing team.</p>
-                        </div>
-                    </div>
-
-                    <!-- Slide 2: Dahiyat Danesh Chowdhury -->
-                    <div class="about-slide" data-index="1">
-                        <div class="about-avatar-wrapper">
-                            <img src="dahi.png" alt="Dahiyat Danesh Chowdhury" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=DC'">
-                        </div>
-                        <div class="about-content">
-                            <span class="about-role-badge" style="background: linear-gradient(135deg, var(--palette-steel), var(--palette-slate));">Co-Founder, COO & Head of Social Media Management</span>
-                            <h3 class="about-name">Dahiyat Danesh Chowdhury</h3>
-                            <p class="about-bio">The mastermind behind studio operations spanning web development, photo and video curation, and brand strategy. A relentless multi-disciplinary operator delivering pristine execution on every engagement.</p>
-                        </div>
-                    </div>
-
-                    <!-- Slide 3: Ahnaf Tahmid -->
-                    <div class="about-slide" data-index="2">
-                        <div class="about-avatar-wrapper">
-                            <img src="ahnaf.png" alt="Ahnaf Tahmid" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=AT'">
-                        </div>
-                        <div class="about-content">
-                            <span class="about-role-badge" style="background: linear-gradient(135deg, #415A77, #778DA9);">Dedicated Web Developer</span>
-                            <h3 class="about-name">Ahnaf Tahmid</h3>
-                            <p class="about-bio">A computer mastermind building exceptionally fast and attractive UI frontends, whilst seamlessly integrating backend systems for total operational stability.</p>
-                        </div>
-                    </div>
-
-                    <!-- Slide 4: Md Nafasat Kalbi -->
-                    <div class="about-slide" data-index="3">
-                        <div class="about-avatar-wrapper">
-                            <img src="nafa.png" alt="Md Nafasat Kalbi" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=NK'">
-                        </div>
-                        <div class="about-content">
-                            <span class="about-role-badge" style="background: linear-gradient(135deg, #1B263B, #415A77);">Expert Video & Photo Editor</span>
-                            <h3 class="about-name">Md Nafasat Kalbi</h3>
-                            <p class="about-bio">A true master of his craft and a literal example of gifted talent on professional editing software. Producing mesmerizing videos with custom assets, flawless color grading, and meticulous color correction—handling photo editing without breaking a sweat.</p>
-                        </div>
-                    </div>
-
-                    <!-- Slide 5: Munkadeer Mahmud -->
-                    <div class="about-slide" data-index="4">
-                        <div class="about-avatar-wrapper">
-                            <img src="munkadeer.png" alt="Munkadeer Mahmud" class="about-avatar" onerror="this.src='https://via.placeholder.com/280?text=MM'">
-                        </div>
-                        <div class="about-content">
-                            <span class="about-role-badge" style="background: linear-gradient(135deg, #415A77, #E0E1DD); color: #0D1B2A;">Designer & Animator</span>
-                            <h3 class="about-name">Munkadeer Mahmud</h3>
-                            <p class="about-bio">Infuses motion energy into brilliant creative doodles that transform into living, breathing videos. A master of content creation ideation who loves taking bold, visionary leaps.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Slide Progress Indicators (Reduced to 5) -->
-                <div class="about-indicators" id="about-indicators">
-                    <div class="about-dot active"></div>
-                    <div class="about-dot"></div>
-                    <div class="about-dot"></div>
-                    <div class="about-dot"></div>
-                    <div class="about-dot"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer>
-            <p>&copy; 2026 Aevix Studio. All rights reserved.</p>
-            <div class="copyright">Crafted with precision & human intent.</div>
-        </footer>
+<main>
+  <section class="hero" id="hero">
+    <div class="hero-inner">
+      <div class="hero-badge">Growing your page to something Great</div>
+      <h1><span class="ln"><span>Crafting Digital</span></span><span class="ln"><span>Experiences</span></span><span class="ln"><span>That <em>Scale</em></span></span></h1>
+      <p>Aevix Studio delivers high-performance web development, creative direction, social media management, and digital media assets for global brands.</p>
+      <a href="#contact" class="cta-btn">Get Started Today</a>
     </div>
+    <div class="cue"><i></i>Scroll</div>
+  </section>
 
-    <script>
-        // Header Hide/Show on Scroll Logic
-        let lastScrollTop = 0;
+  <section id="services" class="services">
+    <div class="marquee" aria-hidden="true"><ul>
+      <li>Creative Direction</li><li>Social Media Management</li><li>Web Development</li><li>Visual & Media Design</li><li>Digital Solutions</li><li>Brand Strategy</li>
+      <li>Creative Direction</li><li>Social Media Management</li><li>Web Development</li><li>Visual & Media Design</li><li>Digital Solutions</li><li>Brand Strategy</li>
+    </ul></div>
+    <div class="section-container">
+      <h2 class="rv">Our <em>Core</em> Services</h2>
+      <p class="section-lead rv">Engineered for impact. Designed to dominate your market sector.</p>
+      <div class="services-grid">
+        <div class="service-card rv" data-tilt><span class="num">01</span><div><h3>Creative Direction</h3><p>Strategic brand positioning, visual storytelling, and comprehensive art direction to build brands that stand out.</p></div></div>
+        <div class="service-card rv" data-tilt><span class="num">02</span><div><h3>Social Media Management</h3><p>End-to-end strategy, content curation, profile optimization (SMM), and audience engagement strategies.</p></div></div>
+        <div class="service-card rv" data-tilt><span class="num">03</span><div><h3>Web Development</h3><p>High-performance, responsive websites built with modern frameworks and robust security protocols.</p></div></div>
+        <div class="service-card rv" data-tilt><span class="num">04</span><div><h3>Visual & Media Design</h3><p>Industry-standard video editing, photo editing, motion graphics, and tailored brand asset generation that captivates audiences.</p></div></div>
+        <div class="service-card rv" data-tilt><span class="num">05</span><div><h3>Digital Solutions</h3><p>End-to-end technical consulting, infrastructure management, and high-velocity performance optimization for scalable growth.</p></div></div>
+        <div class="service-card rv" data-tilt><span class="num">06</span><div><h3>Brand Strategy</h3><p>Comprehensive market analysis and growth scaling blueprints designed to elevate your enterprise to industry leadership.</p></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<section id="contact">
+  <div class="section-container">
+    <h2 class="rv">Start Your <em>Project</em></h2>
+    <p class="section-lead rv">Fill out the brief below or reach out directly—our team will respond within 48 hours.</p>
+    <div class="contact-card rv">
+      <form id="contact-form" action="https://formspree.io/f/aevixstudio962@gmail.com" method="POST">
+        <div class="form-group"><label for="name">Name</label><input type="text" id="name" name="name" placeholder="Your Name or Business" required></div>
+        <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email" placeholder="your@email.com" required></div>
+        <div class="form-group"><label for="message">Project Details</label><textarea id="message" name="message" rows="5" placeholder="Tell us about your project scope, timeline, and budget..." required></textarea></div>
+        <div class="terms-row"><input type="checkbox" id="terms" name="terms_agreed" value="agreed" required><label for="terms">I have read and agree to the <a href="terms/" target="_blank">Terms & Policies</a>.</label></div>
+        <button type="submit" id="submit-btn" class="submit-btn" disabled>Send Message</button>
+      </form>
+      <div id="form-success-msg">Thank you! Your message has been received. Our team will contact you within 48 hours.</div>
+    </div>
+  </div>
+</section>
+
+<div id="about-wrapper">
+  <section id="about">
+    <div class="about-sticky">
+      <div class="about-top"><h2>Meet The <em>Minds</em> Behind Aevix</h2><p>Scroll to reveal executive leadership and creative directors.</p></div>
+      <div class="about-stage">
+        <div class="about-slide active" data-n="01">
+          <div class="about-avatar-wrapper" data-tilt><img src="etti.png" alt="Ettihad Madhurjo" class="about-avatar" onerror="this.replaceWith(initials(this.alt))"></div>
+          <div class="about-content"><span class="about-role-badge">Founder & Chief Executive Officer</span><h3 class="about-name">Ettihad Madhurjo</h3><p class="about-bio">The visionary driving Aevix Studio forward. An exceptional Social Media Manager whose brilliant work instantly captivates audiences, paired with his stellar expertise as an essential member of our advanced editing team.</p></div>
+        </div>
+        <div class="about-slide" data-n="02">
+          <div class="about-avatar-wrapper" data-tilt><img src="dahi.png" alt="Dahiyat Danesh Chowdhury" class="about-avatar" onerror="this.replaceWith(initials(this.alt))"></div>
+          <div class="about-content"><span class="about-role-badge">Co-Founder, COO & Head of Social Media Management</span><h3 class="about-name">Dahiyat Danesh Chowdhury</h3><p class="about-bio">The mastermind behind studio operations spanning web development, photo and video curation, and brand strategy. A relentless multi-disciplinary operator delivering pristine execution on every engagement.</p></div>
+        </div>
+        <div class="about-slide" data-n="03">
+          <div class="about-avatar-wrapper" data-tilt><img src="ahnaf.png" alt="Ahnaf Tahmid" class="about-avatar" onerror="this.replaceWith(initials(this.alt))"></div>
+          <div class="about-content"><span class="about-role-badge b3">Dedicated Web Developer</span><h3 class="about-name">Ahnaf Tahmid</h3><p class="about-bio">A computer mastermind building exceptionally fast and attractive UI frontends, whilst seamlessly integrating backend systems for total operational stability.</p></div>
+        </div>
+        <div class="about-slide" data-n="04">
+          <div class="about-avatar-wrapper" data-tilt><img src="nafa.png" alt="Md Nafasat Kalbi" class="about-avatar" onerror="this.replaceWith(initials(this.alt))"></div>
+          <div class="about-content"><span class="about-role-badge b4">Expert Video & Photo Editor</span><h3 class="about-name">Md Nafasat Kalbi</h3><p class="about-bio">A true master of his craft and a literal example of gifted talent on professional editing software. Producing mesmerizing videos with custom assets, flawless color grading, and meticulous color correction—handling photo editing without breaking a sweat.</p></div>
+        </div>
+        <div class="about-slide" data-n="05">
+          <div class="about-avatar-wrapper" data-tilt><img src="munkadeer.png" alt="Munkadeer Mahmud" class="about-avatar" onerror="this.replaceWith(initials(this.alt))"></div>
+          <div class="about-content"><span class="about-role-badge b5">Designer & Animator</span><h3 class="about-name">Munkadeer Mahmud</h3><p class="about-bio">Infuses motion energy into brilliant creative doodles that transform into living, breathing videos. A master of content creation ideation who loves taking bold, visionary leaps.</p></div>
+        </div>
+        <div class="about-progress"><i id="about-bar"></i></div>
+      </div>
+      <div class="about-indicators" id="about-indicators"><div class="about-dot active"></div><div class="about-dot"></div><div class="about-dot"></div><div class="about-dot"></div><div class="about-dot"></div></div>
+    </div>
+  </section>
+  <footer>
+    <p style="margin-bottom:.5rem">Direct Email: <a href="mailto:aevixstudio962@gmail.com"><strong>aevixstudio962@gmail.com</strong></a> | Instagram: <a href="https://www.instagram.com/aevixstudio?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer"><strong>@aevixstudio</strong></a></p>
+    <div class="copyright">&copy; 2026 Aevix Studio. All Rights Reserved. | <a href="terms/">Terms & Policies</a></div>
+  </footer>
+</div>
+
+<script>
+function initials(alt){const d=document.createElement('div');d.className='about-avatar fallback';d.textContent=alt.split(' ').map(w=>w[0]).slice(0,2).join('');return d}
+const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)];
+const touch=matchMedia('(hover:none)').matches,reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+const saver=navigator.connection&&navigator.connection.saveData,lite=!!saver||(navigator.hardwareConcurrency||8)<=4||(navigator.deviceMemory||8)<=4;
+if(lite)document.body.classList.add('lite');
+
+// loader (once per session)
+(function(){let seen=false;try{seen=sessionStorage.getItem('av')}catch(e){}
+ const done=()=>document.body.classList.add('loaded');
+ if(seen||reduce){done();$('.loader').remove()}else{setTimeout(done,1000);try{sessionStorage.setItem('av','1')}catch(e){}}})();
+
         const header = document.getElementById('main-header');
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+        let lastScrollY = window.scrollY;
+
         window.addEventListener('scroll', () => {
-            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
                 header.classList.add('header-hidden');
+                if (navMenu.classList.contains('mobile-open')) {
+                    navMenu.classList.remove('mobile-open');
+                    menuToggle.classList.remove('active');
+                }
             } else {
                 header.classList.remove('header-hidden');
             }
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            lastScrollY = currentScrollY;
         });
 
-        // Mobile Menu Toggle Logic
-        const menuToggle = document.getElementById('menu-toggle');
-        const navMenu = document.getElementById('nav-menu');
-        menuToggle.addEventListener('click', () => {
-            menuToggle.classList.toggle('active');
-            navMenu.classList.toggle('mobile-open');
-        });
-
-        // Close mobile menu when clicking nav links
-        document.querySelectorAll('#nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                menuToggle.classList.remove('active');
-                navMenu.classList.remove('mobile-open');
+        if (menuToggle && navMenu) {
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('mobile-open');
+                menuToggle.classList.toggle('active');
             });
-        });
 
-        // Form Terms Checkbox Validation Logic
-        const termsCheckbox = document.getElementById('terms');
-        const submitBtn = document.getElementById('submit-btn');
-        if (termsCheckbox && submitBtn) {
-            termsCheckbox.addEventListener('change', () => {
-                submitBtn.disabled = !termsCheckbox.checked;
+            navMenu.querySelectorAll('a, button').forEach(el => {
+                el.addEventListener('click', () => {
+                    navMenu.classList.remove('mobile-open');
+                    menuToggle.classList.remove('active');
+                });
             });
         }
 
-        // About Sticky Scroll & Slide Transition Logic
-        const aboutSection = document.getElementById('about');
-        const slides = document.querySelectorAll('.about-slide');
-        const dots = document.querySelectorAll('.about-dot');
-        const totalSlides = slides.length;
+        // --- AJAX Formspree Handler with Sent State & Cooldown ---
+        const contactForm = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const successMsg = document.getElementById('form-success-msg');
 
-        window.addEventListener('scroll', () => {
-            const rect = aboutSection.getBoundingClientRect();
-            const stickyWrapperHeight = aboutSection.offsetHeight - window.innerHeight;
-            
-            if (stickyWrapperHeight <= 0) return;
+        if (contactForm) {
+            contactForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
 
-            // Calculate progress through the sticky section (0 to 1)
-            let progress = -rect.top / stickyWrapperHeight;
-            progress = Math.max(0, Math.min(1, progress));
+                const formData = new FormData(contactForm);
 
-            let activeIndex = Math.floor(progress * totalSlides);
-            if (activeIndex >= totalSlides) activeIndex = totalSlides - 1;
+                try {
+                    const response = await fetch(contactForm.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
 
-            slides.forEach((slide, index) => {
-                if (index === activeIndex) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
+                    if (response.ok) {
+                        submitBtn.style.background = 'var(--palette-slate)';
+                        submitBtn.style.color = '#ffffff';
+                        submitBtn.textContent = 'Sent!';
+                        contactForm.reset();
+                        successMsg.style.display = 'block';
+
+                        // Cooldown / disable for 5 seconds before resetting
+                        setTimeout(() => {
+                            submitBtn.style.background = '';
+                            submitBtn.style.color = '';
+                            submitBtn.textContent = 'Send Message';
+                            successMsg.style.display = 'none';
+                            const termsCheckbox = document.getElementById('terms');
+                            submitBtn.disabled = termsCheckbox ? !termsCheckbox.checked : false;
+                        }, 5000);
+                    } else {
+                        alert('Oops! There was a problem submitting your form.');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Send Message';
+                    }
+                } catch (error) {
+                    alert('Network error. Please try again.');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Send Message';
                 }
             });
+        }
 
-            dots.forEach((dot, index) => {
-                if (index === activeIndex) {
-                    dot.classList.add('active');
-                } else {
-                    dot.classList.remove('active');
+
+// --- cached geometry: no layout reads while scrolling ---
+const aboutSection=$('#about'),slides=$$('.about-slide'),dots=$$('.about-dot'),slideCount=slides.length,bar=$('#about-bar');
+const heroIn=$('.hero-inner'),sheet=$('#services');
+aboutSection.style.height=`${slideCount*70}vh`;
+let VH=innerHeight,sheetTop=0,sheetBottom=0,aboutTop=0,aboutSpan=1,lastW=innerWidth,lastP=-1,cur=-1,covered=false,tick=false,mt=0;
+
+// --- Hero cover: services sheet rises as a widening mask ---
+function cover(){
+ const y=scrollY,p=Math.min(1,Math.max(0,1-(sheetTop-y)/VH));
+ covered=y>=sheetTop&&y+VH<=sheetBottom; // 3D canvas is fully hidden behind the sheet
+ if(p===lastP)return;lastP=p;
+ if(p>=1){sheet.classList.add('open');heroIn.style.visibility='hidden';return}
+ sheet.classList.remove('open');heroIn.style.visibility='';
+ const q=1-p;
+ sheet.style.setProperty('--r',q*9+'vh');sheet.style.setProperty('--s',q*5+'%');sheet.style.setProperty('--rad',(10+q*30)+'px');
+ heroIn.style.transform=`translate3d(0,${-p*7}vh,0) scale(${1-p*.07})`;heroIn.style.opacity=1-p*.9;
+}
+
+// --- About: sticky scroll team stage (5 members) ---
+function about(){
+ const top=aboutTop-scrollY;if(top>VH||top<-aboutSpan-VH)return;
+ const p=Math.min(.999,Math.max(0,-top/aboutSpan)),i=Math.min(slideCount-1,Math.floor(p*slideCount));
+ bar.style.transform=`scaleY(${p})`;
+ if(i!==cur){cur=i;slides.forEach((s,k)=>{s.classList.toggle('active',k===i);s.classList.toggle('past',k<i)});dots.forEach((d,k)=>d.classList.toggle('active',k===i))}
+}
+dots.forEach((d,k)=>d.addEventListener('click',()=>scrollTo({top:aboutTop+(k+.5)/slideCount*aboutSpan})));
+
+const upd=()=>{tick=false;cover();about()};
+function measure(){
+ VH=innerHeight;const y=scrollY;
+ sheetTop=sheet.getBoundingClientRect().top+y;sheetBottom=sheetTop+sheet.offsetHeight;
+ aboutTop=aboutSection.getBoundingClientRect().top+y;aboutSpan=Math.max(1,aboutSection.offsetHeight-VH);
+ lastP=-1;cur=-1;upd();
+}
+const rm=()=>{cancelAnimationFrame(mt);mt=requestAnimationFrame(measure)};
+addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});
+addEventListener('resize',()=>{if(touch&&innerWidth===lastW)return;lastW=innerWidth;rm()});
+addEventListener('load',measure);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(rm);
+if('ResizeObserver' in window)new ResizeObserver(rm).observe(document.body);
+measure();
+
+// --- reveal on scroll ---
+$$('.services-grid .rv').forEach((c,i)=>c.style.setProperty('--d',(i%3)*.09+'s'));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+$$('.rv').forEach(el=>io.observe(el));
+
+// --- pointer: tilt + spotlight + cursor (desktop only, rAF-throttled) ---
+if(!touch){
+ $$('[data-tilt]').forEach(el=>{let raf=0,ev;
+  el.addEventListener('pointermove',e=>{ev=e;if(raf)return;raf=requestAnimationFrame(()=>{raf=0;
+   const b=el.getBoundingClientRect(),x=(ev.clientX-b.left)/b.width,y=(ev.clientY-b.top)/b.height;
+   el.style.setProperty('--mx',x*100+'%');el.style.setProperty('--my',y*100+'%');
+   el.style.transform=`perspective(900px) rotateX(${(.5-y)*8}deg) rotateY(${(x-.5)*10}deg) translateY(-4px)`})},{passive:true});
+  el.addEventListener('pointerleave',()=>{cancelAnimationFrame(raf);raf=0;el.style.transform=''});
+ });
+ if(!lite){
+  const c=$('.cursor');let x=0,y=0,cx=0,cy=0,run=false;
+  const f=()=>{cx+=(x-cx)*.2;cy+=(y-cy)*.2;c.style.transform=`translate3d(${cx}px,${cy}px,0)`;
+   if(Math.abs(x-cx)+Math.abs(y-cy)>.4)requestAnimationFrame(f);else run=false};
+  addEventListener('pointermove',e=>{x=e.clientX;y=e.clientY;c.classList.add('on');if(!run){run=true;requestAnimationFrame(f)}},{passive:true});
+  document.addEventListener('pointerover',e=>c.classList.toggle('big',!!e.target.closest('a,button,[data-tilt],input,textarea,label')));
+ }
+}
+
+// --- 3D scene: loaded after first paint, paused when hidden, auto-downgrades on slow devices ---
+function scene(){
+ const T=THREE,cv=$('#bg-canvas');
+ let R;try{R=new T.WebGLRenderer({canvas:cv,alpha:true,antialias:false,powerPreference:'low-power'})}catch(e){return}
+ R.setPixelRatio(Math.min(devicePixelRatio,touch||lite?1.25:1.5));
+ const sc=new T.Scene(),cam=new T.PerspectiveCamera(45,1,.1,100);cam.position.z=6;
+ const g=new T.Group();sc.add(g);
+ const seg=lite?[64,8]:touch?[90,12]:[130,16];
+ const knot=new T.Mesh(new T.TorusKnotGeometry(1.15,.34,seg[0],seg[1],2,3),new T.MeshBasicMaterial({color:0x778da9,wireframe:true,transparent:true,opacity:.36}));
+ const core=new T.Mesh(new T.IcosahedronGeometry(.72,1),new T.MeshBasicMaterial({color:0x2dd4bf,wireframe:true,transparent:true,opacity:.6}));
+ g.add(knot,core);
+ const n=lite?120:touch?200:420,pos=new Float32Array(n*3);
+ for(let i=0;i<n*3;i++)pos[i]=(Math.random()-.5)*(i%3===2?14:24);
+ const pg=new T.BufferGeometry();pg.setAttribute('position',new T.BufferAttribute(pos,3));
+ const pts=new T.Points(pg,new T.PointsMaterial({color:0xe0e1dd,size:.028,transparent:true,opacity:.55}));sc.add(pts);
+ let W=0,wide=true;
+ function size(){if(touch&&innerWidth===W)return;W=innerWidth;R.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();wide=cam.aspect>1.05}
+ size();addEventListener('resize',size);
+ let mx=0,my=0,sp=scrollY,t=0,pulse=0,last=0,acc=0,frames=0,stage=0,fpsInt=(touch||lite)?1000/30:0;
+ if(reduce)fpsInt=1000/20;
+ if(!touch)addEventListener('pointermove',e=>{mx=e.clientX/innerWidth-.5;my=e.clientY/innerHeight-.5},{passive:true});
+ addEventListener('pointerdown',()=>{pulse=1},{passive:true});
+ function degrade(){stage++;
+  if(stage===1){R.setPixelRatio(1);R.setSize(innerWidth,innerHeight,false);pts.visible=false;fpsInt=1000/30}
+  else{knot.visible=false;fpsInt=1000/20}}
+ function loop(now){
+  requestAnimationFrame(loop);
+  if(document.hidden||covered)return;
+  const dt=now-last;if(dt<fpsInt)return;last=now;
+  if(stage<2&&dt<200){acc+=dt;if(++frames===90){const avg=acc/frames;acc=0;frames=0;if(avg>(fpsInt?44:26))degrade()}}
+  const k=reduce?0:1;t+=.008*k*Math.min(dt,50)/16.7;sp+=(scrollY-sp)*.07;
+  const p=sp/VH;pulse*=.92;
+  g.rotation.y=t*.6+mx*.9*k+p*1.1;g.rotation.x=t*.25+my*.6*k+p*.35;
+  core.rotation.y=-t*1.5;core.rotation.x=t;
+  g.scale.setScalar((wide?1:.78)*(1+pulse*.3)*(1-Math.min(p,2)*.12));
+  g.position.set(wide?2.3-Math.min(p,2)*.8:0,(wide?0:1.15)+Math.min(p,3)*.25,0);
+  knot.material.color.setHSL(.58+Math.min(p/10,.12),.25,.62);
+  pts.rotation.y=t*.04+p*.06;pts.position.y=p*.4;
+  R.render(sc,cam);
+ }
+ requestAnimationFrame(loop);
+}
+(function(){
+ const go=()=>{const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';s.onload=scene;document.head.appendChild(s)};
+ const idle=()=>('requestIdleCallback' in window)?requestIdleCallback(go,{timeout:2500}):setTimeout(go,1200);
+ if(document.readyState==='complete')idle();else addEventListener('load',idle);
+})();
+
+        // --- Supabase Auth Routing Logic ---
+        const SUPABASE_URL = 'https://hvivguwursdsyitmuwbf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aXZndXd1cnNkc3lpdG11d2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM0MTMsImV4cCI6MjEwNjc4OTQxM30.ZtrxQN9b_3PNt0Zj8us8Iv3FDjbM0PlZ2bLthnMpiDg';
+
+        let supabaseClient = null;
+
+        function getSupabase() {
+            if (!supabaseClient) {
+                const config = {
+                    auth: {
+                        flowType: 'pkce',
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                };
+                if (window.supabase && typeof window.supabase.createClient === 'function') {
+                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+                } else if (typeof createClient === 'function') {
+                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
                 }
-            });
+            }
+            return supabaseClient;
+        }
+
+        async function handleRoleRouting(session) {
+            if (!session || !session.user) return;
+            const email = (session.user.email || '').toLowerCase();
+            if (email === 'aevixstudio962@gmail.com') {
+                window.location.replace('admin-portal.html');
+                return;
+            }
+
+            const client = getSupabase();
+            try {
+                const { data: profile } = await client
+                    .from('profiles')
+                    .select('role')
+                    .eq('id', session.user.id)
+                    .maybeSingle();
+
+                if (profile && (profile.role === 'admin' || profile.role === 'hadmin' || profile.role === 'team')) {
+                    window.location.replace('admin-portal.html');
+                } else {
+                    window.location.replace('client-portal.html');
+                }
+            } catch (err) {
+                console.error('Routing check error:', err);
+                window.location.replace('client-portal.html');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            const client = getSupabase();
+
+            if (client) {
+                const { data: { session } } = await client.auth.getSession();
+                if (session) {
+                    await handleRoleRouting(session);
+                }
+
+                client.auth.onAuthStateChange(async (event, session) => {
+                    if (session && event === 'SIGNED_IN') {
+                        await handleRoleRouting(session);
+                    }
+                });
+            }
+
+            const termsCheckbox = document.getElementById('terms');
+            const submitBtn = document.getElementById('submit-btn');
+
+            function syncSubmitButtonState() {
+                if (termsCheckbox && submitBtn && submitBtn.textContent === 'Send Message') {
+                    submitBtn.disabled = !termsCheckbox.checked;
+                }
+            }
+
+            if (termsCheckbox && submitBtn) {
+                syncSubmitButtonState();
+                termsCheckbox.addEventListener('change', syncSubmitButtonState);
+                termsCheckbox.addEventListener('click', syncSubmitButtonState);
+            }
+
+            const googleLoginBtn = document.getElementById('google-login-btn');
+            if (googleLoginBtn) {
+                googleLoginBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    if (!client) {
+                        alert('Supabase SDK failed to load.');
+                        return;
+                    }
+
+                    try {
+                        const { error } = await client.auth.signInWithOAuth({
+                            provider: 'google',
+                            options: {
+                                redirectTo: window.location.origin + '/index.html',
+                                queryParams: { access_type: 'offline', prompt: 'consent' }
+                            }
+                        });
+                        if (error) alert('Login Error: ' + error.message);
+                    } catch (err) {
+                        alert('Authentication exception: ' + err.message);
+                    }
+                });
+            }
         });
-    </script>
+</script>
 </body>
 </html>
