@@ -1,807 +1,491 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Viewing Deck | Aevix Studio</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --bg-dark: #04060f;
-            --bg-gradient: radial-gradient(circle at 50% 0%, #0d152f 0%, #04060f 75%);
-            --card-bg: rgba(13, 19, 38, 0.75);
-            --card-bg-hover: rgba(19, 28, 54, 0.85);
-            --card-border: rgba(56, 189, 248, 0.12);
-            --card-border-hover: rgba(56, 189, 248, 0.35);
-            --border-color: #1e294b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-blue-glow: rgba(56, 189, 248, 0.3);
-            --accent-green: #34d399;
-            --accent-red: #f87171;
-            --accent-yellow: #fbbf24;
-            --accent-purple: #c084fc;
-            --input-bg: #070a17;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 18px;
-            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.03) inset;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#060b14">
+<title>Client Viewing Deck | Aevix Studio</title>
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#060b14;--surface:#0d1523;--surface-2:#101a2b;--line:rgba(255,255,255,.08);--line-2:rgba(255,255,255,.16);--text:#e8edf4;--muted:#8a9bb2;--frost:#E0E1DD;--slate:#778DA9;--steel:#415A77;--teal:#2dd4bf;--green:#4ade80;--yellow:#fbbf24;--red:#f87171;--purple:#c4a5fb;--r-sm:8px;--r-md:12px;--r-lg:16px;--serif:'Instrument Serif',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg) radial-gradient(900px 420px at 50% -80px,#12203a 0%,transparent 70%) no-repeat;color:var(--text);font:400 .95rem/1.55 'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px;border-radius:4px}
+.shell{max-width:1120px;margin:0 auto;padding:max(1rem,env(safe-area-inset-top)) max(.9rem,env(safe-area-inset-right)) max(2.5rem,env(safe-area-inset-bottom)) max(.9rem,env(safe-area-inset-left))}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.9rem 0 1.25rem;margin-bottom:1.25rem;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:.8rem;min-width:0}
+.logo{width:36px;height:36px;border-radius:8px;object-fit:contain;flex-shrink:0}
+.top h1{font-size:1.1rem;font-weight:700;letter-spacing:-.01em;line-height:1.2}
+.who{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:.8rem;margin-top:2px;overflow-wrap:anywhere}
+.who::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);flex-shrink:0}
+.btn-out{min-height:40px;padding:0 1rem;background:transparent;color:var(--muted);border:1px solid var(--line-2);border-radius:var(--r-sm);font:600 .82rem 'Plus Jakarta Sans',sans-serif;cursor:pointer;white-space:nowrap;transition:color .2s,border-color .2s,background .2s}
+.btn-out:hover{color:var(--red);border-color:rgba(248,113,113,.5);background:rgba(248,113,113,.06)}
 
-        body {
-            background-color: var(--bg-dark);
-            background-image: var(--bg-gradient);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-            min-height: 100vh;
-            line-height: 1.5;
-            -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
-        }
+/* loading / empty */
+.loading{display:flex;flex-direction:column;align-items:center;gap:1rem;padding:5rem 0;color:var(--muted)}
+.spin{width:26px;height:26px;border-radius:50%;border:2px solid var(--line-2);border-top-color:var(--teal);animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.empty{text-align:center;padding:2.75rem 1.25rem}
+.empty h2{font:italic 400 1.7rem/1.2 var(--serif);margin-bottom:.5rem}
+.muted{color:var(--muted)}
 
-        .portal-container {
-            max-width: 1280px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 1rem 0.75rem;
-        }
+/* project chips */
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr));gap:.75rem;margin-bottom:1.25rem}
+.chip{position:relative;text-align:left;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:var(--r-md);padding:.9rem 1rem .9rem 1.2rem;cursor:pointer;min-width:0;font:inherit;transition:border-color .2s,background .2s}
+.chip::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;border-radius:0 3px 3px 0;background:var(--steel);transition:background .2s}
+.chip:hover{border-color:var(--line-2);background:var(--surface-2)}
+.chip[aria-current="true"]{border-color:rgba(45,212,191,.45);background:var(--surface-2)}
+.chip[aria-current="true"]::before{background:var(--teal)}
+.chip b{display:block;font-weight:600;font-size:.92rem;overflow-wrap:anywhere}
+.chip span{display:block;font:500 .74rem ui-monospace,Menlo,Consolas,monospace;color:var(--slate);margin-top:3px}
 
-        @media (min-width: 640px) {
-            .portal-container {
-                padding: 1.5rem 1.25rem;
-            }
-        }
+/* cards */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:1.2rem;margin-bottom:1rem;min-width:0;transition:opacity .25s}
+.card[aria-busy="true"]{opacity:.65}
+.card h3{font-size:.95rem;font-weight:700;margin-bottom:.9rem;letter-spacing:-.005em}
+.head{display:flex;justify-content:space-between;align-items:flex-start;gap:.75rem;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid var(--line)}
+.head>div{min-width:0}
+.head h2{font:400 1.7rem/1.15 var(--serif);overflow-wrap:anywhere}
+.code{display:inline-block;margin-top:.5rem;font:500 .74rem ui-monospace,Menlo,Consolas,monospace;color:var(--slate);border:1px solid var(--line-2);padding:2px 9px;border-radius:999px}
+.badge{display:inline-block;padding:3px 11px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.02em;white-space:nowrap;border:1px solid var(--line-2);color:var(--muted);flex-shrink:0}
+.is-ok{color:var(--green);background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.28)}
+.is-info{color:var(--teal);background:rgba(45,212,191,.1);border-color:rgba(45,212,191,.28)}
+.is-warn{color:var(--yellow);background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.28)}
+.is-bad{color:var(--red);background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.28)}
+.is-adj{color:var(--purple);background:rgba(196,165,251,.1);border-color:rgba(196,165,251,.28)}
 
-        @media (min-width: 1024px) {
-            .portal-container {
-                padding: 2.5rem 2rem;
-            }
-        }
+.meta{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.25rem}
+.meta label,.tile label{display:block;font-size:.68rem;text-transform:uppercase;letter-spacing:.09em;font-weight:700;color:var(--muted);margin-bottom:4px}
+.meta p{overflow-wrap:anywhere}
+#active-proj-members{color:var(--frost);font-weight:600}
 
-        /* Header Navigation */
-        .portal-header {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding: 1.25rem;
-            border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(180deg, rgba(13, 19, 38, 0.6) 0%, transparent 100%);
-            backdrop-filter: blur(10px);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-card);
-        }
+.tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:.85rem .95rem;min-width:0}
+.tile output{display:block;font-size:1.2rem;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tile small{display:block;margin-top:2px;font-size:.7rem;color:var(--yellow);font-weight:600}
+.t-blue{color:var(--frost)}.t-green{color:var(--green)}.t-yellow{color:var(--yellow)}
+.meter-row{display:flex;justify-content:space-between;gap:1rem;margin:1.1rem 0 .45rem;font-size:.78rem;color:var(--muted)}
+.meter{height:6px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--steel),var(--teal));border-radius:99px;transition:width .7s cubic-bezier(.2,.7,.2,1)}
+.notice{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem;padding:.8rem 1rem;border:1px solid rgba(248,113,113,.3);background:rgba(248,113,113,.07);border-radius:var(--r-md);color:#fca5a5;font-size:.85rem}
+.notice button{background:none;border:1px solid currentColor;color:inherit;border-radius:var(--r-sm);padding:.35rem .8rem;font:600 .8rem inherit;cursor:pointer}
 
-        @media (min-width: 640px) {
-            .portal-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1.5rem 2rem;
-            }
-        }
+/* tables */
+.wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:var(--r-md);background:var(--bg)}
+table{width:100%;border-collapse:collapse;font-size:.85rem;text-align:left}
+th{padding:.7rem .9rem;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700;white-space:nowrap;border-bottom:1px solid var(--line);background:var(--surface-2)}
+td{padding:.8rem .9rem;border-bottom:1px solid var(--line);vertical-align:middle;overflow-wrap:anywhere}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+td.num{font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap}
+td.nw{white-space:nowrap}
+td.empty-row{text-align:center;color:var(--muted);padding:1.6rem}
+.val{display:block}
+.sub{display:block;font-size:.68rem;margin-top:2px;font-weight:500}
+.fee{color:var(--red)}.paidon{color:var(--green)}.adj-note{color:var(--purple)}
 
-        .brand-title {
-            font-size: 1.35rem;
-            font-weight: 800;
-            letter-spacing: -0.03em;
-            background: linear-gradient(135deg, #ffffff 20%, var(--accent-blue) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
-        }
+/* timeline */
+.timeline{display:flex;flex-direction:column;gap:1.1rem;border-left:1px solid var(--line-2);margin-left:.4rem;padding-left:1.2rem}
+.timeline.is-empty{border:0;margin:0;padding:0}
+.tl{position:relative;min-width:0}
+.tl::before{content:'';position:absolute;left:calc(-1.2rem - 4px);top:.45rem;width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.tl time{display:block;font-size:.73rem;color:var(--muted)}
+.tl p{margin-top:.2rem;font-size:.9rem;overflow-wrap:anywhere}
 
-        @media (min-width: 768px) {
-            .brand-title {
-                font-size: 1.6rem;
-            }
-        }
-
-        .user-info {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            word-break: break-all;
-        }
-
-        .user-info::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
-            border-radius: 50%;
-            box-shadow: 0 0 8px var(--accent-green);
-            flex-shrink: 0;
-        }
-
-        .logout-btn {
-            background: rgba(248, 113, 113, 0.1);
-            color: var(--accent-red);
-            border: 1px solid rgba(248, 113, 113, 0.3);
-            padding: 10px 18px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: var(--transition-smooth);
-            align-self: flex-start;
-            white-space: nowrap;
-        }
-
-        @media (min-width: 640px) {
-            .logout-btn {
-                align-self: auto;
-            }
-        }
-
-        .logout-btn:hover {
-            background: rgba(248, 113, 113, 0.22);
-            border-color: var(--accent-red);
-            box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
-            transform: translateY(-2px);
-        }
-
-        /* Project Selector Cards */
-        .project-cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 0.85rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .project-card-btn {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.15rem;
-            text-align: left;
-            cursor: pointer;
-            color: var(--text-main);
-            transition: var(--transition-smooth);
-            box-shadow: var(--shadow-card);
-            position: relative;
-            overflow: hidden;
-            min-width: 0;
-        }
-
-        .project-card-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--text-muted);
-            opacity: 0.3;
-            transition: var(--transition-smooth);
-        }
-
-        .project-card-btn:hover {
-            transform: translateY(-2px);
-            border-color: var(--card-border-hover);
-            background: var(--card-bg-hover);
-        }
-
-        .project-card-btn.active {
-            border-color: var(--accent-blue);
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, var(--card-bg) 100%);
-            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.2);
-        }
-
-        .project-card-btn.active::before {
-            background: var(--accent-blue);
-            opacity: 1;
-            box-shadow: 0 0 10px var(--accent-blue);
-        }
-
-        /* Card container */
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--card-border);
-            border-radius: var(--radius-lg);
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
-            box-shadow: var(--shadow-card);
-            transition: var(--transition-smooth);
-            min-width: 0;
-        }
-
-        @media (min-width: 640px) {
-            .card {
-                padding: 1.75rem;
-                margin-bottom: 1.5rem;
-            }
-        }
-
-        .card:hover {
-            border-color: rgba(56, 189, 248, 0.2);
-        }
-
-        .card-header-flex {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-bottom: 1.25rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-            padding-bottom: 1rem;
-            min-width: 0;
-        }
-
-        @media (min-width: 640px) {
-            .card-header-flex {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: flex-start;
-            }
-        }
-
-        /* Meta Info Box (Team members & scope) */
-        .project-meta-box {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-bottom: 1.25rem;
-            background: rgba(4, 6, 15, 0.5);
-            padding: 1rem;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            min-width: 0;
-        }
-
-        @media (min-width: 768px) {
-            .project-meta-box {
-                grid-template-columns: 1fr 1fr;
-                padding: 1.25rem;
-            }
-        }
-
-        .meta-group {
-            min-width: 0;
-        }
-
-        .meta-group label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.08em;
-            font-weight: 700;
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .meta-group p {
-            font-size: 0.9rem;
-            color: #e2e8f0;
-            line-height: 1.5;
-        }
-
-        /* Financial Metrics Grid */
-        .project-details-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 0.85rem;
-            padding-top: 1.15rem;
-            border-top: 1px solid var(--border-color);
-            min-width: 0;
-        }
-
-        @media (min-width: 768px) {
-            .project-details-grid {
-                grid-template-columns: repeat(4, 1fr);
-                gap: 1.25rem;
-            }
-        }
-
-        .detail-item {
-            display: flex;
-            flex-direction: column;
-            gap: 0.35rem;
-            background: rgba(4, 6, 15, 0.4);
-            padding: 0.85rem;
-            border-radius: var(--radius-sm);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            min-width: 0;
-        }
-
-        .detail-label {
-            font-size: 0.68rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.08em;
-            font-weight: 700;
-        }
-
-        .detail-val {
-            font-size: 1.15rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -0.02em;
-            word-break: break-all;
-        }
-
-        @media (min-width: 768px) {
-            .detail-val {
-                font-size: 1.35rem;
-            }
-        }
-
-        .text-green { color: var(--accent-green) !important; }
-        .text-yellow { color: var(--accent-yellow) !important; }
-        .text-red { color: var(--accent-red) !important; }
-        .text-blue { color: var(--accent-blue) !important; }
-        .text-purple { color: var(--accent-purple) !important; }
-
-        /* Tables & Responsive Wrapper */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-color);
-            background: rgba(4, 6, 15, 0.5);
-            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
-            margin-top: 0.5rem;
-        }
-
-        .ledger-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: left;
-        }
-
-        .ledger-table th {
-            background: #070a17;
-            color: var(--text-muted);
-            padding: 10px 14px;
-            font-weight: 700;
-            border-bottom: 1px solid var(--border-color);
-            text-transform: uppercase;
-            font-size: 0.68rem;
-            letter-spacing: 0.08em;
-            white-space: nowrap;
-        }
-
-        .ledger-table td {
-            padding: 12px 14px;
-            border-bottom: 1px solid var(--border-color);
-            color: #e2e8f0;
-            vertical-align: middle;
-        }
-
-        .ledger-table tr:hover td {
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        /* Status Badges */
-        .status-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 999px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.03em;
-            white-space: nowrap;
-        }
-
-        .status-paid {
-            background: rgba(52, 211, 153, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(52, 211, 153, 0.3);
-        }
-
-        .status-pending {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent-blue);
-            border: 1px solid rgba(56, 189, 248, 0.3);
-        }
-
-        .status-overdue {
-            background: rgba(248, 113, 113, 0.15);
-            color: var(--accent-red);
-            border: 1px solid rgba(248, 113, 113, 0.3);
-        }
-
-        .status-adjustment {
-            background: rgba(192, 132, 252, 0.15);
-            color: var(--accent-purple);
-            border: 1px solid rgba(192, 132, 252, 0.3);
-        }
-
-        /* Timeline Updates */
-        .timeline-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.15rem;
-            border-left: 2px solid var(--border-color);
-            padding-left: 1.15rem;
-            margin-left: 0.5rem;
-            min-width: 0;
-        }
-
-        .timeline-item {
-            position: relative;
-            min-width: 0;
-        }
-
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -1.4rem;
-            top: 0.35rem;
-            width: 9px;
-            height: 9px;
-            border-radius: 50%;
-            background: var(--accent-blue);
-            box-shadow: 0 0 10px var(--accent-blue);
-        }
-    </style>
+@media(min-width:640px){
+ .shell{padding-left:1.5rem;padding-right:1.5rem}
+ .top h1{font-size:1.25rem}
+ .card{padding:1.6rem;margin-bottom:1.15rem}
+ .head h2{font-size:2.1rem}
+ .meta{grid-template-columns:1fr 1fr;gap:1.5rem}
+}
+@media(min-width:768px){
+ .tiles{grid-template-columns:repeat(4,1fr);gap:.9rem}
+ .tile output{font-size:1.4rem}
+}
+@media(max-width:639px){
+ .btn-out{min-height:44px}
+ .chips.many{display:flex;overflow-x:auto;scroll-snap-type:x proximity;scroll-padding-inline:.9rem;margin-inline:-.9rem;padding:0 .9rem .35rem;scrollbar-width:none}
+ .chips.many::-webkit-scrollbar{display:none}
+ .chips.many .chip{flex:0 0 78%;scroll-snap-align:start}
+ /* tables become stacked cards instead of sideways scrolling */
+ .wrap{border:0;background:none}
+ table,tbody,tr,td{display:block;width:100%}
+ thead{display:none}
+ tr{background:var(--bg);border:1px solid var(--line);border-radius:var(--r-md);padding:.4rem .95rem;margin-bottom:.65rem}
+ td{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.5rem 0;border:0;text-align:right}
+ td::before{content:attr(data-label);flex-shrink:0;text-align:left;font-size:.66rem;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+ td.empty-row{display:block;text-align:center}
+ td.empty-row::before{display:none}
+ tbody tr:hover td{background:none}
+ .sub{text-align:right}
+}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+</style>
 </head>
 <body>
-
-    <div class="portal-container">
-        <!-- Top Navigation Header -->
-        <div class="portal-header">
-            <div>
-                <h1 class="brand-title">Client Viewing Deck</h1>
-                <div id="user-info-display" class="user-info">Authenticating access session...</div>
-            </div>
-            <button id="logout-btn" class="logout-btn" style="display: none;">Sign Out</button>
-        </div>
-
-        <div id="auth-loading" style="text-align: center; padding: 5rem 0;">
-            <p style="color: var(--text-muted); font-size: 1rem;">Loading secure workspace content...</p>
-        </div>
-
-        <div id="portal-main-view" style="display: none;">
-            <!-- Project Selection Cards Grid -->
-            <div id="project-cards-grid" class="project-cards-grid"></div>
-
-            <!-- Active Project Overview Card -->
-            <div class="card">
-                <div class="card-header-flex">
-                    <div style="min-width: 0; flex: 1;">
-                        <h2 id="active-proj-title" style="font-size: 1.25rem; color:#fff; font-weight:700; word-break: break-word;">Project Title</h2>
-                        <span id="active-proj-code" style="display: inline-block; margin-top: 4px; font-family: monospace; color: var(--accent-blue); font-size: 0.8rem; background: rgba(56,189,248,0.1); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(56,189,248,0.2);">#000000</span>
-                    </div>
-                    <span id="active-proj-status" class="status-badge status-pending" style="margin-top: 0.25rem;">Active</span>
-                </div>
-
-                <!-- Team Members & Project Scope Metadata Box -->
-                <div class="project-meta-box">
-                    <div class="meta-group">
-                        <label>Assigned Team Members Working</label>
-                        <p id="active-proj-members" style="color: var(--accent-blue); font-weight: 600;">Loading members...</p>
-                    </div>
-                    <div class="meta-group">
-                        <label>Project Scope & Overview</label>
-                        <p id="active-proj-desc">No overview description specified.</p>
-                    </div>
-                </div>
-
-                <!-- Financial Deck Metrics -->
-                <div class="project-details-grid">
-                    <div class="detail-item">
-                        <span class="detail-label">Project Budget</span>
-                        <span id="active-proj-budget" class="detail-val">৳0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Total Billed</span>
-                        <span id="active-proj-billed" class="detail-val text-blue">৳0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Current Paid</span>
-                        <span id="active-proj-paid" class="detail-val text-green">৳0.00</span>
-                    </div>
-                    <div class="detail-item">
-                        <span class="detail-label">Current Due</span>
-                        <span id="active-proj-due" class="detail-val text-yellow">৳0.00</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Billed Breakdown Section -->
-            <div class="card">
-                <h3 style="color:#fff; margin-bottom:0.85rem; font-size:1.05rem; font-weight:700;">Issued Bills Breakdown</h3>
-                <div class="table-responsive">
-                    <table class="ledger-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Description</th>
-                                <th>Amount Billed</th>
-                            </tr>
-                        </thead>
-                        <tbody id="billing-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Payment Ledger Section -->
-            <div class="card">
-                <h3 style="color:#fff; margin-bottom:0.85rem; font-size:1.05rem; font-weight:700;">Payments & Transactions Ledger</h3>
-                <div class="table-responsive">
-                    <table class="ledger-table">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Payer Name</th>
-                                <th>Milestone / Description</th>
-                                <th>Amount</th>
-                                <th>Overdue Fee</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ledger-tbody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Timeline Updates -->
-            <div class="card">
-                <h3 style="color:#fff; margin-bottom:1rem; font-size:1.05rem; font-weight:700;">Project Timeline Updates</h3>
-                <div id="timeline-list" class="timeline-list"></div>
-            </div>
-        </div>
+<div class="shell">
+  <header class="top">
+    <div class="brand">
+      <img class="logo" src="logo.png" alt="" onerror="this.remove()">
+      <div>
+        <h1>Client Viewing Deck</h1>
+        <div id="user-info-display" class="who">Authenticating access session...</div>
+      </div>
     </div>
+    <button id="logout-btn" class="btn-out" type="button" hidden>Sign Out</button>
+  </header>
 
-    <script>
-        const SUPABASE_URL = 'https://hvivguwursdsyitmuwbf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aXZndXd1cnNkc3lpdG11d2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM0MTMsImV4cCI6MjEwNjc4OTQxM30.ZtrxQN9b_3PNt0Zj8us8Iv3FDjbM0PlZ2bLthnMpiDg';
+  <div id="auth-loading" class="loading" role="status"><span class="spin"></span><p>Loading secure workspace content...</p></div>
 
-        let supabaseClient = null;
-        let userProjects = [];
-        let selectedProjectId = null;
+  <main id="portal-main-view" hidden>
+    <div id="empty-state" class="card empty" hidden></div>
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
-        }
+    <div id="project-view" hidden>
+      <nav id="project-cards-grid" class="chips" aria-label="Your projects"></nav>
 
-        function extractCleanEmail(raw) {
-            if (!raw) return '';
-            const match = String(raw).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-            return match ? match[0].toLowerCase().trim() : String(raw).toLowerCase().trim();
-        }
+      <div id="load-error" class="notice" role="alert" hidden><span>Some project details could not be loaded.</span><button id="retry-btn" type="button">Try again</button></div>
 
-        function getSupabase() {
-            if (!supabaseClient) {
-                const config = {
-                    auth: {
-                        flowType: 'pkce',
-                        autoRefreshToken: true,
-                        persistSession: true,
-                        detectSessionInUrl: true
-                    }
-                };
-                if (window.supabase && typeof window.supabase.createClient === 'function') {
-                    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
-                } else if (typeof createClient === 'function') {
-                    supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
-                }
-            }
-            return supabaseClient;
-        }
+      <section id="overview-card" class="card" aria-busy="false">
+        <div class="head">
+          <div>
+            <h2 id="active-proj-title">Project Title</h2>
+            <span id="active-proj-code" class="code">#000000</span>
+          </div>
+          <span id="active-proj-status" class="badge is-info">Active</span>
+        </div>
 
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            const client = getSupabase();
-            if (client) await client.auth.signOut();
-            window.location.replace('index.html');
-        });
+        <div class="meta">
+          <div><label>Assigned Team Members Working</label><p id="active-proj-members">Loading members...</p></div>
+          <div><label>Project Scope &amp; Overview</label><p id="active-proj-desc">No overview description specified.</p></div>
+        </div>
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const client = getSupabase();
-            if (!client) {
-                document.getElementById('auth-loading').innerHTML = `<p style="color: var(--accent-red);">Failed to initialize Supabase client.</p>`;
-                return;
-            }
+        <div class="tiles">
+          <div class="tile"><label>Project Budget</label><output id="active-proj-budget" class="t-blue">—</output><small id="budget-ext" hidden></small></div>
+          <div class="tile"><label>Total Billed</label><output id="active-proj-billed" class="t-blue">—</output><small id="billed-fee" hidden></small></div>
+          <div class="tile"><label>Current Paid</label><output id="active-proj-paid" class="t-green">—</output></div>
+          <div class="tile"><label>Current Due</label><output id="active-proj-due" class="t-yellow">—</output></div>
+        </div>
 
-            const { data: { session } } = await client.auth.getSession();
+        <div class="meter-row"><span>Paid so far</span><span id="paid-pct">—</span></div>
+        <div class="meter" id="paid-meter" role="progressbar" aria-label="Share of billed amount paid" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="paid-fill"></i></div>
+      </section>
 
-            if (!session || !session.user) {
-                window.location.replace('index.html');
-                return;
-            }
+      <section class="card">
+        <h3>Issued Bills Breakdown</h3>
+        <div class="wrap"><table>
+          <thead><tr><th>Date</th><th>Description</th><th>Amount Billed</th></tr></thead>
+          <tbody id="billing-tbody"></tbody>
+        </table></div>
+      </section>
 
-            const userId = session.user.id;
-            const email = extractCleanEmail(session.user.email);
+      <section class="card">
+        <h3>Payments &amp; Transactions Ledger</h3>
+        <div class="wrap"><table>
+          <thead><tr><th>Date</th><th>Payer Name</th><th>Milestone / Description</th><th>Amount</th><th>Overdue Fee</th><th>Status</th></tr></thead>
+          <tbody id="ledger-tbody"></tbody>
+        </table></div>
+      </section>
 
-            try {
-                const { data: existingProfile, error: fetchErr } = await client
-                    .from('profiles')
-                    .select('id, role')
-                    .eq('id', userId)
-                    .maybeSingle();
+      <section class="card">
+        <h3>Project Timeline Updates</h3>
+        <div id="timeline-list" class="timeline"></div>
+      </section>
+    </div>
+  </main>
+</div>
 
-                if (!existingProfile) {
-                    await client.from('profiles').insert([{
-                        id: userId,
-                        email: email,
-                        role: 'client'
-                    }]);
-                } else if (!existingProfile.role || existingProfile.role === '') {
-                    await client.from('profiles')
-                        .update({ role: 'client', email: email })
-                        .eq('id', userId);
-                }
-            } catch (err) {
-                console.error('Error logging client profile:', err);
-            }
+<script>
+const SUPABASE_URL = 'https://hvivguwursdsyitmuwbf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2aXZndXd1cnNkc3lpdG11d2JmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyMTM0MTMsImV4cCI6MjEwNjc4OTQxM30.ZtrxQN9b_3PNt0Zj8us8Iv3FDjbM0PlZ2bLthnMpiDg';
 
-            document.getElementById('user-info-display').textContent = `Logged in as ${email}`;
-            document.getElementById('logout-btn').style.display = 'inline-block';
+let supabaseClient = null;
+let userProjects = [];
+let selectedProjectId = null;
+let requestSeq = 0; // guards against out-of-order responses when switching projects quickly
 
-            const { data: projects, error } = await client.from('projects').select('*').ilike('client_email', email);
+const $ = id => document.getElementById(id);
 
-            document.getElementById('auth-loading').style.display = 'none';
+/* ---------- helpers ---------- */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
 
-            if (projects && projects.length > 0) {
-                userProjects = projects;
-                document.getElementById('portal-main-view').style.display = 'block';
-                renderProjectSelector();
-                selectProject(userProjects[0].id);
-            } else {
-                document.getElementById('portal-main-view').style.display = 'block';
-                document.getElementById('portal-main-view').innerHTML = `
-                    <div class="card" style="text-align: center; padding: 2.5rem 1.25rem;">
-                        <h3 style="color: #fff; margin-bottom: 0.5rem; font-size: 1.15rem;">No Projects Found</h3>
-                        <p style="color: var(--text-muted); font-size: 0.9rem;">No active projects are currently linked to your email address (${email}).</p>
-                    </div>
-                `;
-            }
-        });
+function extractCleanEmail(raw) {
+  if (!raw) return '';
+  const match = String(raw).match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+  return match ? match[0].toLowerCase().trim() : String(raw).toLowerCase().trim();
+}
 
-        function renderProjectSelector() {
-            const grid = document.getElementById('project-cards-grid');
-            grid.innerHTML = userProjects.map(p => `
-                <button class="project-card-btn ${p.id === selectedProjectId ? 'active' : ''}" onclick="selectProject('${p.id}')">
-                    <div style="font-weight:700; color:#fff; font-size:0.95rem; margin-bottom:4px; word-break: break-word;">${escapeHtml(p.title || p.project_name || 'Untitled Project')}</div>
-                    <div style="font-family:monospace; font-size:0.75rem; color:var(--accent-blue);">#${escapeHtml(p.hex_code || 'N/A')}</div>
-                </button>
-            `).join('');
-        }
+// ILIKE treats "_" and "%" as wildcards; escape them so one client's email can never match another's
+function escapeLike(s) { return s.replace(/[\\%_]/g, '\\$&'); }
 
-        async function selectProject(projectId) {
-            selectedProjectId = projectId;
-            renderProjectSelector();
+// Money is summed in whole paisa (integers) so decimals never drift, then formatted once for display
+const toMinor = v => { const n = Number(v); return Number.isFinite(n) ? Math.round(n * 100) : 0; };
+function money(minor) {
+  const n = Math.abs(minor) / 100;
+  const txt = n.toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 });
+  return (minor < 0 ? '−' : '') + '৳' + txt;
+}
 
-            const p = userProjects.find(item => item.id === projectId);
-            document.getElementById('active-proj-title').textContent = p.title || p.project_name || 'Untitled Project';
-            document.getElementById('active-proj-code').textContent = `#${p.hex_code || 'N/A'}`;
-            
-            document.getElementById('active-proj-members').textContent = p.members_working ? p.members_working : 'Unassigned';
-            document.getElementById('active-proj-desc').textContent = p.description ? p.description : 'No scope or overview details specified for this project yet.';
+const fmtDate = v => { const d = new Date(v); return isNaN(d) ? '—' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); };
+const fmtStamp = v => { const d = new Date(v); return isNaN(d) ? '—' : d.toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }); };
 
-            const projStatus = p.status || 'Active';
-            const statusEl = document.getElementById('active-proj-status');
-            statusEl.textContent = projStatus;
-            statusEl.className = `status-badge status-${projStatus.toLowerCase().replace(/\s+/g, '-')}`;
+const STATUS_TONE = { paid: 'ok', completed: 'ok', complete: 'ok', active: 'info', pending: 'info', 'in-progress': 'info', overdue: 'bad', cancelled: 'bad', canceled: 'bad', 'on-hold': 'warn', partial: 'warn', adjustment: 'adj' };
+const tone = s => 'is-' + (STATUS_TONE[String(s).toLowerCase().trim().replace(/\s+/g, '-')] || 'neutral');
 
-            const baseBudget = Number(p.budget || 0);
-            const extendedBy = Number(p.budget_extended_by || 0);
-            const totalAgreedBudget = baseBudget + extendedBy;
+const payStatus = p => String(p.status || p.payment_status || 'Pending');
+// Error-log adjustments: undercharged counts toward paid (+), overcharged is taken back out (−)
+const adjSign = t => { t = String(t || '').toLowerCase(); return t.includes('undercharged') ? 1 : t.includes('overcharged') ? -1 : 0; };
 
-            let budgetHtml = `৳${totalAgreedBudget.toLocaleString()}`;
-            if (extendedBy > 0) {
-                budgetHtml += ` <span style="font-size:0.7rem; color:var(--accent-yellow); font-weight:600; display:inline-block;">(৳${baseBudget.toLocaleString()} + ৳${extendedBy.toLocaleString()} ext)</span>`;
-            }
-            document.getElementById('active-proj-budget').innerHTML = budgetHtml;
+function getSupabase() {
+  if (!supabaseClient) {
+    const config = { auth: { flowType: 'pkce', autoRefreshToken: true, persistSession: true, detectSessionInUrl: true } };
+    if (window.supabase && typeof window.supabase.createClient === 'function') {
+      supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+    } else if (typeof createClient === 'function') {
+      supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, config);
+    }
+  }
+  return supabaseClient;
+}
 
-            const client = getSupabase();
+/* ---------- session + data ---------- */
+$('logout-btn').addEventListener('click', async () => {
+  const client = getSupabase();
+  if (client) await client.auth.signOut();
+  window.location.replace('index.html');
+});
 
-            const [billRes, payRes, logRes] = await Promise.all([
-                client.from('billing').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
-                client.from('payments').select('*').eq('project_id', projectId).order('created_at', { ascending: false }),
-                client.from('activity_logs').select('*').eq('project_id', projectId).order('created_at', { ascending: false })
-            ]);
+document.addEventListener('DOMContentLoaded', async () => {
+  const client = getSupabase();
+  if (!client) {
+    $('auth-loading').innerHTML = '<p style="color:var(--red)">Failed to initialize Supabase client.</p>';
+    return;
+  }
 
-            const bills = billRes.data || [];
-            const payments = payRes.data || [];
-            const logs = logRes.data || [];
+  const { data: { session } } = await client.auth.getSession();
+  if (!session || !session.user) { window.location.replace('index.html'); return; }
 
-            const totalBilled = bills.reduce((sum, b) => sum + Number(b.amount || 0), 0);
+  const userId = session.user.id;
+  const email = extractCleanEmail(session.user.email);
 
-            let totalPaid = 0;
-            payments.forEach(pay => {
-                const amt = Number(pay.amount || 0);
-                const overdueFee = Number(pay.overdue_amount || 0);
-                if (pay.is_error_log) {
-                    if ((pay.transaction_type || '').toLowerCase().includes('undercharged')) totalPaid += amt;
-                    else if ((pay.transaction_type || '').toLowerCase().includes('overcharged')) totalPaid -= amt;
-                } else if ((pay.status || pay.payment_status || '').toLowerCase() === 'paid') {
-                    totalPaid += (amt + overdueFee);
-                }
-            });
+  try {
+    const { data: existingProfile } = await client.from('profiles').select('id, role').eq('id', userId).maybeSingle();
+    if (!existingProfile) {
+      await client.from('profiles').insert([{ id: userId, email: email, role: 'client' }]);
+    } else if (!existingProfile.role || existingProfile.role === '') {
+      await client.from('profiles').update({ role: 'client', email: email }).eq('id', userId);
+    }
+  } catch (err) {
+    console.error('Error logging client profile:', err);
+  }
 
-            const currentDue = Math.max(0, totalBilled - totalPaid);
+  $('user-info-display').textContent = `Logged in as ${email}`;
+  $('logout-btn').hidden = false;
 
-            document.getElementById('active-proj-billed').textContent = `৳${totalBilled.toLocaleString()}`;
-            document.getElementById('active-proj-paid').textContent = `৳${totalPaid.toLocaleString()}`;
-            document.getElementById('active-proj-due').textContent = `৳${currentDue.toLocaleString()}`;
+  const { data: projects, error } = await client.from('projects').select('*').ilike('client_email', escapeLike(email));
 
-            // Render Billing Breakdown Table
-            document.getElementById('billing-tbody').innerHTML = bills.length === 0 ? 
-                '<tr><td colspan="3" style="color:var(--text-muted); text-align:center;">No bills issued yet.</td></tr>' :
-                bills.map(b => `
-                    <tr>
-                        <td style="white-space: nowrap;">${new Date(b.created_at).toLocaleDateString()}</td>
-                        <td>${escapeHtml(b.description)}</td>
-                        <td style="color:var(--accent-blue); font-weight:600; white-space: nowrap;">৳${Number(b.amount).toLocaleString()}</td>
-                    </tr>
-                `).join('');
+  $('auth-loading').hidden = true;
+  $('portal-main-view').hidden = false;
 
-            // Render Payment Ledger Table
-            document.getElementById('ledger-tbody').innerHTML = payments.length === 0 ? 
-                '<tr><td colspan="6" style="color:var(--text-muted); text-align:center;">No payments recorded.</td></tr>' :
-                payments.map(pay => {
-                    const createdDateStr = new Date(pay.created_at).toLocaleDateString();
-                    const overdueFee = Number(pay.overdue_amount || 0);
+  if (error) {
+    showEmpty('We could not load your projects', 'Please refresh the page in a moment. If this keeps happening, contact the studio.');
+  } else if (projects && projects.length > 0) {
+    userProjects = projects;
+    $('project-view').hidden = false;
+    selectProject(userProjects[0].id);
+  } else {
+    showEmpty('No Projects Found', `No active projects are currently linked to your email address (${escapeHtml(email)}).`);
+  }
+});
 
-                    if (pay.is_error_log) {
-                        return `
-                            <tr style="background: rgba(248, 113, 113, 0.02);">
-                                <td style="white-space: nowrap;">${createdDateStr}</td>
-                                <td><strong>${escapeHtml(pay.client_name || 'N/A')}</strong></td>
-                                <td style="color: #fca5a5;">${escapeHtml(pay.milestone)}</td>
-                                <td style="font-weight: 700; color: var(--accent-purple); white-space: nowrap;">৳${Number(pay.amount).toLocaleString()} (${escapeHtml(pay.transaction_type)})</td>
-                                <td style="white-space: nowrap;">-</td>
-                                <td><span class="status-badge status-adjustment">Adjustment</span></td>
-                            </tr>
-                        `;
-                    }
+function showEmpty(title, text) {
+  const box = $('empty-state');
+  box.innerHTML = `<h2>${escapeHtml(title)}</h2><p class="muted">${text}</p>`;
+  box.hidden = false;
+}
 
-                    const currentStatus = (pay.status || pay.payment_status || 'Pending').toLowerCase();
-                    const isPaid = currentStatus === 'paid';
-                    const paidDateStr = pay.paid_at ? new Date(pay.paid_at).toLocaleDateString() : '';
+const projectName = p => p.title || p.project_name || 'Untitled Project';
 
-                    return `
-                        <tr>
-                            <td style="white-space: nowrap;">
-                                <div>${createdDateStr}</div>
-                                ${isPaid && paidDateStr ? `<div style="font-size: 0.65rem; color: var(--accent-green); white-space: nowrap; margin-top: 2px;">Paid: ${paidDateStr}</div>` : ''}
-                            </td>
-                            <td><strong>${escapeHtml(pay.client_name || 'N/A')}</strong></td>
-                            <td>${escapeHtml(pay.milestone || 'N/A')}</td>
-                            <td style="font-weight: 600; white-space: nowrap;">৳${Number(pay.amount || 0).toLocaleString()}</td>
-                            <td style="color: var(--accent-red); font-weight: 600; white-space: nowrap;">
-                                ${overdueFee > 0 ? `+৳${overdueFee.toLocaleString()}` : '৳0.00'}
-                            </td>
-                            <td>
-                                <span class="status-badge status-${currentStatus}">${escapeHtml(pay.status || pay.payment_status || 'Pending')}</span>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
+function renderProjectSelector() {
+  const grid = $('project-cards-grid');
+  grid.classList.toggle('many', userProjects.length > 2);
+  grid.innerHTML = userProjects.map(p => `
+    <button type="button" class="chip" data-id="${escapeHtml(p.id)}" aria-current="${p.id === selectedProjectId}">
+      <b>${escapeHtml(projectName(p))}</b>
+      <span>#${escapeHtml(p.hex_code || 'N/A')}</span>
+    </button>`).join('');
+}
 
-            // Render Activity Logs Timeline
-            document.getElementById('timeline-list').innerHTML = logs.length === 0 ? 
-                '<p style="color:var(--text-muted); font-size: 0.9rem;">No activity updates posted yet.</p>' :
-                logs.map(l => `
-                    <div class="timeline-item">
-                        <div style="font-size:0.75rem; color:var(--text-muted);">${new Date(l.created_at).toLocaleString()}</div>
-                        <div style="color:#e5e7eb; margin-top:0.25rem; font-size:0.875rem;">${escapeHtml(l.log_text || l.message)}</div>
-                    </div>
-                `).join('');
-        }
-    </script>
+$('project-cards-grid').addEventListener('click', e => {
+  const btn = e.target.closest('.chip');
+  if (btn && btn.dataset.id !== String(selectedProjectId)) selectProject(btn.dataset.id);
+});
+$('retry-btn').addEventListener('click', () => selectProject(selectedProjectId));
+
+function setFigures(billed, paid, due) {
+  $('active-proj-billed').textContent = billed;
+  $('active-proj-paid').textContent = paid;
+  $('active-proj-due').textContent = due;
+}
+
+function setMeter(pct) {
+  const shown = pct === null ? null : Math.round(pct);
+  $('paid-fill').style.width = (pct || 0) + '%';
+  $('paid-meter').setAttribute('aria-valuenow', shown === null ? 0 : shown);
+  $('paid-pct').textContent = shown === null ? '—' : `${shown}% of billed`;
+}
+
+async function selectProject(projectId) {
+  const p = userProjects.find(item => String(item.id) === String(projectId));
+  if (!p) return;
+  selectedProjectId = p.id;
+  renderProjectSelector();
+
+  // Instant part: everything that comes straight from the project row
+  $('active-proj-title').textContent = projectName(p);
+  $('active-proj-code').textContent = `#${p.hex_code || 'N/A'}`;
+  $('active-proj-members').textContent = p.members_working ? p.members_working : 'Unassigned';
+  $('active-proj-desc').textContent = p.description ? p.description : 'No scope or overview details specified for this project yet.';
+
+  const projStatus = p.status || 'Active';
+  const statusEl = $('active-proj-status');
+  statusEl.textContent = projStatus;
+  statusEl.className = `badge ${tone(projStatus)}`;
+
+  const baseMinor = toMinor(p.budget);
+  const extMinor = toMinor(p.budget_extended_by);
+  $('active-proj-budget').textContent = money(baseMinor + extMinor);
+  const extEl = $('budget-ext');
+  extEl.hidden = !(extMinor > 0);
+  if (extMinor > 0) extEl.textContent = `${money(baseMinor)} + ${money(extMinor)} extended`;
+
+  // Clear the money tiles so figures from the previous project never linger
+  setFigures('—', '—', '—');
+  $('billed-fee').hidden = true;
+  setMeter(null);
+  $('load-error').hidden = true;
+  $('overview-card').setAttribute('aria-busy', 'true');
+
+  const mySeq = ++requestSeq;
+  const client = getSupabase();
+  let billRes, payRes, logRes;
+  try {
+    [billRes, payRes, logRes] = await Promise.all([
+      client.from('billing').select('*').eq('project_id', p.id).order('created_at', { ascending: false }),
+      client.from('payments').select('*').eq('project_id', p.id).order('created_at', { ascending: false }),
+      client.from('activity_logs').select('*').eq('project_id', p.id).order('created_at', { ascending: false })
+    ]);
+  } catch (err) {
+    console.error('Project load failed:', err);
+    billRes = payRes = logRes = { data: null, error: err };
+  }
+  if (mySeq !== requestSeq) return; // a newer selection already took over
+
+  $('overview-card').setAttribute('aria-busy', 'false');
+  $('load-error').hidden = !(billRes.error || payRes.error || logRes.error);
+
+  const bills = billRes.data || [];
+  const payments = payRes.data || [];
+  const logs = logRes.data || [];
+
+  if (!billRes.error && !payRes.error) {
+    const billsMinor = bills.reduce((sum, b) => sum + toMinor(b.amount), 0);
+
+    let feesMinor = 0; // every overdue fee on a payment is added to the billed total...
+    let paidMinor = 0; // ...and only comes off the due once that payment is actually paid
+    for (const pay of payments) {
+      const amt = toMinor(pay.amount);
+      if (pay.is_error_log) {
+        paidMinor += adjSign(pay.transaction_type) * amt;
+        continue;
+      }
+      const fee = Math.max(0, toMinor(pay.overdue_amount));
+      feesMinor += fee;
+      if (payStatus(pay).toLowerCase() === 'paid') paidMinor += amt + fee;
+    }
+
+    const billedMinor = billsMinor + feesMinor;
+    const dueMinor = Math.max(0, billedMinor - paidMinor);
+    setFigures(money(billedMinor), money(paidMinor), money(dueMinor));
+    const feeEl = $('billed-fee');
+    feeEl.hidden = !(feesMinor > 0);
+    if (feesMinor > 0) feeEl.textContent = `incl. ${money(feesMinor)} overdue fees`;
+    setMeter(billedMinor > 0 ? Math.min(100, Math.max(0, paidMinor / billedMinor * 100)) : 0);
+  }
+
+  renderBills(bills, billRes.error);
+  renderLedger(payments, payRes.error);
+  renderTimeline(logs, logRes.error);
+}
+
+/* ---------- renderers ---------- */
+const emptyRow = (cols, text) => `<tr><td class="empty-row" colspan="${cols}">${text}</td></tr>`;
+
+function renderBills(bills, err) {
+  $('billing-tbody').innerHTML = err ? emptyRow(3, 'Could not load bills.') : bills.length === 0 ? emptyRow(3, 'No bills issued yet.') :
+    bills.map(b => `
+      <tr>
+        <td class="nw" data-label="Date">${fmtDate(b.created_at)}</td>
+        <td data-label="Description">${escapeHtml(b.description)}</td>
+        <td class="num" data-label="Amount Billed">${money(toMinor(b.amount))}</td>
+      </tr>`).join('');
+}
+
+function renderLedger(payments, err) {
+  $('ledger-tbody').innerHTML = err ? emptyRow(6, 'Could not load payments.') : payments.length === 0 ? emptyRow(6, 'No payments recorded.') :
+    payments.map(pay => {
+      const created = fmtDate(pay.created_at);
+      const name = escapeHtml(pay.client_name || 'N/A');
+
+      if (pay.is_error_log) {
+        const sign = adjSign(pay.transaction_type);
+        return `
+        <tr>
+          <td class="nw" data-label="Date">${created}</td>
+          <td data-label="Payer Name"><strong>${name}</strong></td>
+          <td data-label="Milestone">${escapeHtml(pay.milestone)}</td>
+          <td class="num adj-note" data-label="Amount"><span class="val">${sign > 0 ? '+' : sign < 0 ? '−' : ''}${money(toMinor(pay.amount))}<span class="sub">${escapeHtml(pay.transaction_type)}</span></span></td>
+          <td class="nw" data-label="Overdue Fee">—</td>
+          <td data-label="Status"><span class="badge is-adj">Adjustment</span></td>
+        </tr>`;
+      }
+
+      const status = payStatus(pay);
+      const isPaid = status.toLowerCase() === 'paid';
+      const fee = toMinor(pay.overdue_amount);
+      return `
+        <tr>
+          <td class="nw" data-label="Date"><span class="val">${created}${isPaid && pay.paid_at ? `<span class="sub paidon">Paid: ${fmtDate(pay.paid_at)}</span>` : ''}</span></td>
+          <td data-label="Payer Name"><strong>${name}</strong></td>
+          <td data-label="Milestone">${escapeHtml(pay.milestone || 'N/A')}</td>
+          <td class="num" data-label="Amount">${money(toMinor(pay.amount))}</td>
+          <td class="num ${fee > 0 ? 'fee' : ''}" data-label="Overdue Fee">${fee > 0 ? '+' + money(fee) : '—'}</td>
+          <td data-label="Status"><span class="badge ${tone(status)}">${escapeHtml(status)}</span></td>
+        </tr>`;
+    }).join('');
+}
+
+function renderTimeline(logs, err) {
+  const box = $('timeline-list');
+  box.classList.toggle('is-empty', err || logs.length === 0);
+  box.innerHTML = err ? '<p class="muted">Could not load updates.</p>' : logs.length === 0 ? '<p class="muted">No activity updates posted yet.</p>' :
+    logs.map(l => `
+      <div class="tl">
+        <time>${fmtStamp(l.created_at)}</time>
+        <p>${escapeHtml(l.log_text || l.message)}</p>
+      </div>`).join('');
+}
+</script>
 </body>
 </html>
