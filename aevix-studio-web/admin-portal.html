@@ -492,6 +492,12 @@
             text-shadow: 0 0 8px rgba(251, 113, 133, 0.3);
         }
 
+        .status-on-hold {
+            background: rgba(251, 191, 36, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.35);
+        }
+
         .status-adjustment {
             background: rgba(192, 132, 252, 0.15);
             color: var(--neon-purple);
@@ -1109,6 +1115,22 @@
         let cachedLogs = [];
         let cachedProfiles = [];
 
+        const toMinor = v => {
+            const n = Number(v);
+            return Number.isFinite(n) ? Math.round(n * 100) : 0;
+        };
+
+        const fromMinor = minor => minor / 100;
+
+        function formatTk(minor, includeDecimals = false) {
+            const val = Math.abs(fromMinor(minor));
+            const formatted = val.toLocaleString('en-US', {
+                minimumFractionDigits: includeDecimals ? 2 : (Number.isInteger(val) ? 0 : 2),
+                maximumFractionDigits: 2
+            });
+            return (minor < 0 ? '−' : '') + '৳' + formatted;
+        }
+
         function escapeHtml(str) {
             if (!str) return '';
             return String(str)
@@ -1353,35 +1375,38 @@
         }
 
         function calculateMetrics() {
-            let totalRevenue = 0;
+            let totalRevenueMinor = 0;
 
             cachedPayments.forEach(p => {
-                const amt = Number(p.amount || 0);
-                const overdueAmt = Number(p.overdue_amount || 0);
-                const st = (p.status || p.payment_status || '').toLowerCase();
+                const amtMinor = toMinor(p.amount);
+                const overdueMinor = Math.max(0, toMinor(p.overdue_amount));
+                const st = (p.status || p.payment_status || '').toLowerCase().trim();
 
                 if (p.is_error_log) {
                     const type = (p.transaction_type || '').toLowerCase();
                     if (type.includes('undercharged')) {
-                        totalRevenue += amt;
+                        totalRevenueMinor += amtMinor;
                     } else if (type.includes('overcharged')) {
-                        totalRevenue -= amt;
+                        totalRevenueMinor -= amtMinor;
                     }
                     return;
                 }
 
                 if (st === 'paid') {
-                    totalRevenue += (amt + overdueAmt);
+                    totalRevenueMinor += (amtMinor + overdueMinor);
                 }
             });
 
-            const totalBilled = cachedBilling.reduce((sum, b) => sum + Number(b.amount || 0), 0);
-            const activeProjectsCount = cachedProjects.filter(p => 
-                (p.status || '').toLowerCase() !== 'completed' && (p.status || '').toLowerCase() !== 'cancelled'
-            ).length;
+            const totalBilledMinor = cachedBilling.reduce((sum, b) => sum + toMinor(b.amount), 0);
 
-            document.getElementById('metric-revenue').textContent = `৳${totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
-            document.getElementById('metric-billed').textContent = `৳${totalBilled.toLocaleString(undefined, {minimumFractionDigits: 2})}`;
+            // Exclude Completed, Cancelled, and On Hold from Active Projects
+            const activeProjectsCount = cachedProjects.filter(p => {
+                const status = (p.status || '').toLowerCase().trim();
+                return status !== 'completed' && status !== 'cancelled' && status !== 'canceled' && status !== 'on hold';
+            }).length;
+
+            document.getElementById('metric-revenue').textContent = formatTk(totalRevenueMinor, true);
+            document.getElementById('metric-billed').textContent = formatTk(totalBilledMinor, true);
             document.getElementById('metric-projects').textContent = activeProjectsCount;
         }
 
@@ -1412,8 +1437,8 @@
             }
 
             tbody.innerHTML = projects.map(p => {
-                const baseBudget = Number(p.budget || 0);
-                const extendedBy = Number(p.budget_extended_by || 0);
+                const baseBudgetMinor = toMinor(p.budget);
+                const extendedByMinor = toMinor(p.budget_extended_by);
                 const cleanEmail = extractCleanEmail(p.client_email);
 
                 return `
@@ -1423,9 +1448,9 @@
                         <td>${escapeHtml(p.client_name || 'N/A')}</td>
                         <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
                         <td>${escapeHtml(p.members_working || 'Unassigned')}</td>
-                        <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
+                        <td><span class="status-badge status-${(p.status || 'in-progress').toLowerCase().trim().replace(/\s+/g, '-')}">${escapeHtml(p.status || 'In Progress')}</span></td>
                         <td>${p.progress || 0}%</td>
-                        <td>৳${baseBudget.toLocaleString()}${extendedBy > 0 ? ` <span style="font-size:0.7rem; color:var(--neon-teal);">(+৳${extendedBy.toLocaleString()})</span>` : ''}</td>
+                        <td>${formatTk(baseBudgetMinor)}${extendedByMinor > 0 ? ` <span style="font-size:0.7rem; color:var(--neon-teal);">(+${formatTk(extendedByMinor)})</span>` : ''}</td>
                         <td>${p.deadline ? new Date(p.deadline).toLocaleDateString() : 'N/A'}</td>
                         <td>
                             <button class="edit-btn" onclick="openEditProject('${p.id}')">Edit</button>
@@ -1446,6 +1471,7 @@
             tbody.innerHTML = billing.map(b => {
                 const proj = cachedProjects.find(p => p.id === b.project_id);
                 const cleanEmail = extractCleanEmail(b.client_email || (proj ? proj.client_email : ''));
+                const amtMinor = toMinor(b.amount);
                 return `
                     <tr>
                         <td>${new Date(b.created_at).toLocaleDateString()}</td>
@@ -1453,12 +1479,12 @@
                         <td><span class="hex-code-badge">${escapeHtml(proj ? proj.hex_code : 'N/A')}</span></td>
                         <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
                         <td>${escapeHtml(b.description)}</td>
-                        <td style="font-weight:600; color:var(--neon-teal);">৳${Number(b.amount).toLocaleString()}</td>
+                        <td style="font-weight:600; color:var(--neon-teal);">${formatTk(amtMinor)}</td>
                         <td>
                             ${currentUserRole === 'hadmin' ? `
-                                <button class="edit-btn" onclick="openEditBill('${b.id}',${b.amount})">Edit</button>
+                                <button class="edit-btn" onclick="openEditBill('${b.id}',${fromMinor(amtMinor)})">Edit</button>
                                 <button class="danger-btn" onclick="deleteBill('${b.id}')">Delete</button>
-                            ` : '<span style="color:var(--text-muted); font-size:0.75rem;">Hadmin Restricted</span>'}
+                            ` : '<span style="color:var(--text-muted); font-size:0.75rem;">Head admin Restricted</span>'}
                         </td>
                     </tr>
                 `;
@@ -1476,6 +1502,7 @@
                 const cleanEmail = extractCleanEmail(p.client_email);
                 const loggedBy = p.created_by_email ? extractCleanEmail(p.created_by_email) : 'System';
                 const createdDateStr = new Date(p.created_at).toLocaleDateString();
+                const amtMinor = toMinor(p.amount);
 
                 if (p.is_error_log) {
                     return `
@@ -1485,7 +1512,7 @@
                             <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
                             <td style="color: var(--neon-purple); font-size: 0.75rem;">🔑 ${escapeHtml(loggedBy)}</td>
                             <td style="color: #fda4af;">${escapeHtml(p.milestone)}</td>
-                            <td style="font-weight: 700; color: var(--neon-purple);">৳${Number(p.amount).toLocaleString()} (${escapeHtml(p.transaction_type)})</td>
+                            <td style="font-weight: 700; color: var(--neon-purple);">${formatTk(amtMinor)} (${escapeHtml(p.transaction_type)})</td>
                             <td>-</td>
                             <td><span class="status-badge status-adjustment">Adjustment</span></td>
                             <td>${currentUserRole === 'hadmin' ? `<button class="danger-btn" onclick="deletePayment('${p.id}')">Delete</button>` : ''}</td>
@@ -1493,9 +1520,9 @@
                     `;
                 }
 
-                const currentStatus = (p.status || p.payment_status || 'Pending').toLowerCase();
+                const currentStatus = (p.status || p.payment_status || 'Pending').toLowerCase().trim();
                 const isPaid = currentStatus === 'paid';
-                const overdueFee = Number(p.overdue_amount || 0);
+                const overdueMinor = Math.max(0, toMinor(p.overdue_amount));
                 const paidDateStr = p.paid_at ? new Date(p.paid_at).toLocaleDateString() : '';
 
                 return `
@@ -1508,10 +1535,10 @@
                         <td>${cleanEmail ? `<a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(cleanEmail)}" target="_blank" class="gmail-link">${escapeHtml(cleanEmail)}</a>` : 'N/A'}</td>
                         <td style="color: var(--text-muted); font-size: 0.75rem;">${escapeHtml(loggedBy)}</td>
                         <td>${escapeHtml(p.milestone || 'N/A')}</td>
-                        <td style="font-weight: 600;">৳${Number(p.amount || 0).toLocaleString()}</td>
+                        <td style="font-weight: 600;">${formatTk(amtMinor)}</td>
                         <td style="color: var(--accent-red); font-weight: 600;">
-                            ${overdueFee > 0 ? `+৳${overdueFee.toLocaleString()}` : '৳0.00'}
-                            <button class="edit-btn" style="margin-left:4px; padding:1px 4px; font-size:0.65rem;" onclick="openEditOverdue('${p.id}', ${overdueFee})" ${isPaid ? 'disabled' : ''}>Set</button>
+                            ${overdueMinor > 0 ? `+${formatTk(overdueMinor)}` : '৳0.00'}
+                            <button class="edit-btn" style="margin-left:4px; padding:1px 4px; font-size:0.65rem;" onclick="openEditOverdue('${p.id}', ${fromMinor(overdueMinor)})" ${isPaid ? 'disabled' : ''}>Set</button>
                         </td>
                         <td>
                             ${isPaid ? `
@@ -1555,47 +1582,69 @@
             const tbody = document.getElementById('clients-table-body');
             const clientMap = {};
 
-            cachedBilling.forEach(b => {
-                const email = extractCleanEmail(b.client_email);
-                if (!email) return;
-                if (!clientMap[email]) clientMap[email] = { email, billed: 0, paid: 0, extraPaid: 0, note: '' };
-                clientMap[email].billed += Number(b.amount || 0);
+            // Map project ID -> clean client email for billing records missing client_email
+            const projEmailById = {};
+            cachedProjects.forEach(p => {
+                if (p.id) {
+                    projEmailById[p.id] = extractCleanEmail(p.client_email);
+                }
             });
 
-            cachedPayments.forEach(p => {
-                const email = extractCleanEmail(p.client_email);
-                if (!email) return;
-                if (!clientMap[email]) clientMap[email] = { email, billed: 0, paid: 0, extraPaid: 0, note: '' };
+            const ensureClient = (email) => {
+                if (!clientMap[email]) {
+                    clientMap[email] = {
+                        email,
+                        billedMinor: 0,
+                        paidMinor: 0,
+                        extraPaidMinor: 0,
+                        note: '',
+                        profileId: ''
+                    };
+                }
+                return clientMap[email];
+            };
 
-                const amt = Number(p.amount || 0);
-                const overdue = Number(p.overdue_amount || 0);
+            // 1. Total Billed strictly from billing ledger
+            cachedBilling.forEach(b => {
+                const email = extractCleanEmail(b.client_email) || projEmailById[b.project_id] || '';
+                if (!email) return;
+                const entry = ensureClient(email);
+                entry.billedMinor += Math.max(0, toMinor(b.amount));
+            });
+
+            // 2. Total Paid strictly from payments ledger (settled payments & adjustments)
+            cachedPayments.forEach(p => {
+                const email = extractCleanEmail(p.client_email) || projEmailById[p.project_id] || '';
+                if (!email) return;
+                const entry = ensureClient(email);
+
+                const amtMinor = toMinor(p.amount);
+                const overdueMinor = Math.max(0, toMinor(p.overdue_amount));
 
                 if (p.is_error_log) {
                     const type = (p.transaction_type || '').toLowerCase();
                     if (type.includes('undercharged')) {
-                        clientMap[email].paid += amt;
+                        entry.paidMinor += amtMinor;
                     } else if (type.includes('overcharged')) {
-                        clientMap[email].paid -= amt;
+                        entry.paidMinor -= amtMinor;
                     }
                     return;
                 }
 
-                if ((p.status || p.payment_status || '').toLowerCase() === 'paid') {
-                    clientMap[email].paid += amt;
-                    if (overdue > 0) clientMap[email].extraPaid += overdue;
+                if ((p.status || p.payment_status || '').toLowerCase().trim() === 'paid') {
+                    entry.paidMinor += amtMinor;
+                    if (overdueMinor > 0) entry.extraPaidMinor += overdueMinor;
                 }
             });
 
+            // Ensure clients associated with projects appear even if unbilled/unpaid so far (billed stays 0)
             cachedProjects.forEach(p => {
                 const email = extractCleanEmail(p.client_email);
                 if (!email) return;
-                if (!clientMap[email]) {
-                    clientMap[email] = { email, billed: Number(p.budget || 0), paid: 0, extraPaid: 0, note: '' };
-                } else {
-                    if (clientMap[email].billed === 0) clientMap[email].billed = Number(p.budget || 0);
-                }
+                ensureClient(email);
             });
 
+            // Attach private admin notes from profiles
             cachedProfiles.forEach(prof => {
                 const email = extractCleanEmail(prof.email);
                 if (email && clientMap[email]) {
@@ -1615,17 +1664,18 @@
             }
 
             tbody.innerHTML = clientList.map(c => {
-                const netDue = Math.max(0, c.billed - c.paid);
-                const extraPaidCalc = c.extraPaid + Math.max(0, c.paid - c.billed);
+                const safeBilledMinor = Math.max(0, c.billedMinor);
+                const netDueMinor = Math.max(0, safeBilledMinor - c.paidMinor);
+                const extraPaidCalcMinor = c.extraPaidMinor + Math.max(0, c.paidMinor - safeBilledMinor);
                 const hasExistingNote = c.note && c.note.trim().length > 0;
 
                 return `
                     <tr>
                         <td><a href="https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}" target="_blank" class="gmail-link">${escapeHtml(c.email)}</a></td>
-                        <td style="color:var(--neon-teal); font-weight:600;">৳${Math.max(0, c.billed).toLocaleString()}</td>
-                        <td style="color:var(--neon-lime); font-weight:600;">৳${Math.max(0, c.paid).toLocaleString()}</td>
-                        <td style="color:var(--neon-purple); font-weight:600;">৳${Math.max(0, extraPaidCalc).toLocaleString()}</td>
-                        <td style="color:var(--accent-red); font-weight:700;">৳${netDue.toLocaleString()}</td>
+                        <td style="color:var(--neon-teal); font-weight:600;">${formatTk(safeBilledMinor)}</td>
+                        <td style="color:var(--neon-lime); font-weight:600;">${formatTk(c.paidMinor)}</td>
+                        <td style="color:var(--neon-purple); font-weight:600;">${formatTk(Math.max(0, extraPaidCalcMinor))}</td>
+                        <td style="color:var(--accent-red); font-weight:700;">${formatTk(netDueMinor)}</td>
                         <td>
                             <textarea id="note-${c.profileId || c.email.replace(/[^a-zA-Z0-9]/g, '_')}" class="client-note-textarea" placeholder="Add internal note...">${escapeHtml(c.note)}</textarea>
                             <button class="save-note-btn" onclick="saveClientNote('${c.profileId || ''}', '${escapeHtml(c.email)}')">${hasExistingNote ? 'Update Note' : 'Save Note'}</button>
@@ -1826,10 +1876,10 @@
 
             if (currentUserRole === 'hadmin') {
                 budgetInput.disabled = false;
-                roleBadge.textContent = '(Hadmin Only)';
+                roleBadge.textContent = '(Head admin Only)';
             } else {
                 budgetInput.disabled = true;
-                roleBadge.textContent = '(Locked: Hadmin required)';
+                roleBadge.textContent = '(Locked: Head admin required)';
             }
 
             openModal('edit-project-modal');
@@ -1901,7 +1951,7 @@
         }
 
         async function deleteBill(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete bills.');
+            if (currentUserRole !== 'hadmin') return alert('Only Head admin can delete bills.');
             if (confirm('Delete bill entry?')) {
                 await getSupabase().from('billing').delete().eq('id', id);
                 await loadAllAdminData();
@@ -1909,7 +1959,7 @@
         }
 
         async function deletePayment(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete payment records.');
+            if (currentUserRole !== 'hadmin') return alert('Only Head admin can delete payment records.');
             if (confirm('Delete payment record?')) {
                 await getSupabase().from('payments').delete().eq('id', id);
                 await loadAllAdminData();
@@ -1917,7 +1967,7 @@
         }
 
         async function deleteLog(id) {
-            if (currentUserRole !== 'hadmin') return alert('Only Hadmin can delete logs.');
+            if (currentUserRole !== 'hadmin') return alert('Only Head admin can delete logs.');
             if (confirm('Delete activity log?')) {
                 await getSupabase().from('activity_logs').delete().eq('id', id);
                 await loadAllAdminData();
